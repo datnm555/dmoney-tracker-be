@@ -1,0 +1,43 @@
+using Application.Abstractions.Messaging;
+using Application.Transactions;
+using Microsoft.Extensions.Localization;
+using SharedKernel;
+using Web.Api.Infrastructure;
+using Web.Api.Middleware;
+
+namespace Web.Api.Endpoints.Transactions;
+
+internal sealed class UpdateTransaction : IEndpoint
+{
+    internal sealed record UpdateTransactionRequest(
+        DateOnly Date,
+        string Content,
+        decimal CreditAmount,
+        decimal DebitAmount,
+        string? Note,
+        string? Category);
+
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/transactions/{id:guid}", async (
+            Guid id,
+            UpdateTransactionRequest request,
+            ICommandHandler<UpdateTransactionCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            var command = new UpdateTransactionCommand(
+                id,
+                request.Date,
+                request.Content,
+                request.CreditAmount,
+                request.DebitAmount,
+                request.Note,
+                request.Category);
+
+            Result result = await handler.Handle(command, cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}

@@ -1,0 +1,34 @@
+using SharedKernel;
+
+namespace Domain.Transactions;
+
+public static class TransactionErrors
+{
+    public static readonly Error NotFound = Error.NotFound(
+        "Transactions.NotFound",
+        "Record not found.");
+
+    public static readonly Error ContentRequired = Error.Validation(
+        "Transactions.ContentRequired",
+        "Please enter content.");
+
+    public static readonly Error ContentTooLong = Error.Validation(
+        "Transactions.ContentTooLong",
+        $"Content must be at most {TransactionConstants.ContentMaxLength} characters.");
+
+    public static readonly Error NoteTooLong = Error.Validation(
+        "Transactions.NoteTooLong",
+        $"Note must be at most {TransactionConstants.NoteMaxLength} characters.");
+
+    public static readonly Error EmptyAmount = Error.Validation(
+        "Transactions.EmptyAmount",
+        "At least one amount must be greater than 0.");
+
+    public static readonly Error InvalidCategory = Error.Validation(
+        "Transactions.InvalidCategory",
+        "Invalid category.");
+
+    public static readonly Error InvalidMonth = Error.Validation(
+        "Transactions.InvalidMonth",
+        "Invalid month (expected format YYYY-MM).");
+}

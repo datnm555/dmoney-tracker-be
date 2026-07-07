@@ -1,0 +1,10 @@
+namespace Application.Transactions.Data;
+
+public sealed record TransactionResponse(
+    Guid Id,
+    DateOnly Date,
+    string Content,
+    MoneyResponse Credit,
+    MoneyResponse Debit,
+    string? Note,
+    string? Category);

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="app.title" xml:space="preserve"><value>DMoney Tracker</value></data>
+  <data name="menu.dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="menu.summary" xml:space="preserve"><value>Summary</value></data>
+  <data name="auth.login" xml:space="preserve"><value>Sign in</value></data>
+  <data name="auth.register" xml:space="preserve"><value>Sign up</value></data>
+  <data name="auth.identifier" xml:space="preserve"><value>Email or username</value></data>
+  <data name="auth.email" xml:space="preserve"><value>Email</value></data>
+  <data name="auth.username" xml:space="preserve"><value>Username</value></data>
+  <data name="auth.displayName" xml:space="preserve"><value>Display name</value></data>
+  <data name="auth.password" xml:space="preserve"><value>Password</value></data>
+  <data name="auth.noAccount" xml:space="preserve"><value>No account? Sign up</value></data>
+  <data name="auth.haveAccount" xml:space="preserve"><value>Have an account? Sign in</value></data>
+  <data name="auth.logout" xml:space="preserve"><value>Sign out</value></data>
+  <data name="auth.registerSuccess" xml:space="preserve"><value>Registration successful, please sign in</value></data>
+  <data name="summary.title" xml:space="preserve"><value>Money summary</value></data>
+  <data name="summary.create" xml:space="preserve"><value>New record</value></data>
+  <data name="summary.month" xml:space="preserve"><value>Month</value></data>
+  <data name="summary.colDate" xml:space="preserve"><value>Date</value></data>
+  <data name="summary.colContent" xml:space="preserve"><value>Content</value></data>
+  <data name="summary.colCredit" xml:space="preserve"><value>Credit</value></data>
+  <data name="summary.colDebit" xml:space="preserve"><value>Debit</value></data>
+  <data name="summary.colNote" xml:space="preserve"><value>Note</value></data>
+  <data name="summary.colActions" xml:space="preserve"><value>Actions</value></data>
+  <data name="summary.edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="summary.delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="summary.deleteConfirm" xml:space="preserve"><value>Delete this record?</value></data>
+  <data name="summary.totalCredit" xml:space="preserve"><value>Total credit</value></data>
+  <data name="summary.totalDebit" xml:space="preserve"><value>Total debit</value></data>
+  <data name="summary.balance" xml:space="preserve"><value>Balance</value></data>
+  <data name="summary.createTitle" xml:space="preserve"><value>Create record</value></data>
+  <data name="summary.editTitle" xml:space="preserve"><value>Edit record</value></data>
+  <data name="summary.submit" xml:space="preserve"><value>Save</value></data>
+  <data name="summary.cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="summary.empty" xml:space="preserve"><value>No records in this month</value></data>
+  <data name="form.date" xml:space="preserve"><value>Date</value></data>
+  <data name="form.content" xml:space="preserve"><value>Content</value></data>
+  <data name="form.credit" xml:space="preserve"><value>Credit amount (money in)</value></data>
+  <data name="form.debit" xml:space="preserve"><value>Debit amount (money out)</value></data>
+  <data name="form.note" xml:space="preserve"><value>Note</value></data>
+  <data name="form.dateRequired" xml:space="preserve"><value>Please pick a date</value></data>
+  <data name="form.contentRequired" xml:space="preserve"><value>Please enter content</value></data>
+  <data name="form.amountRequired" xml:space="preserve"><value>At least one amount must be greater than 0</value></data>
+  <data name="error.network" xml:space="preserve"><value>Cannot reach the server</value></data>
+  <data name="Users.InvalidEmail" xml:space="preserve"><value>Email is not valid.</value></data>
+  <data name="Users.InvalidUsername" xml:space="preserve"><value>Username must be 3-30 characters, letters and digits only.</value></data>
+  <data name="Users.InvalidDisplayName" xml:space="preserve"><value>Display name must not be empty.</value></data>
+  <data name="Users.PasswordTooShort" xml:space="preserve"><value>Password must be at least 8 characters.</value></data>
+  <data name="Users.EmailNotUnique" xml:space="preserve"><value>This email is already registered.</value></data>
+  <data name="Users.UsernameNotUnique" xml:space="preserve"><value>This username is already taken.</value></data>
+  <data name="Users.InvalidCredentials" xml:space="preserve"><value>Invalid credentials.</value></data>
+  <data name="Users.Unauthenticated" xml:space="preserve"><value>You must be signed in to perform this action.</value></data>
+  <data name="Transactions.NotFound" xml:space="preserve"><value>Record not found.</value></data>
+  <data name="Transactions.ContentRequired" xml:space="preserve"><value>Please enter content.</value></data>
+  <data name="Transactions.ContentTooLong" xml:space="preserve"><value>Content must be at most 500 characters.</value></data>
+  <data name="Transactions.NoteTooLong" xml:space="preserve"><value>Note must be at most 1000 characters.</value></data>
+  <data name="Transactions.EmptyAmount" xml:space="preserve"><value>At least one amount must be greater than 0.</value></data>
+  <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Invalid month (expected format YYYY-MM).</value></data>
+  <data name="Money.NegativeAmount" xml:space="preserve"><value>Amount must not be negative.</value></data>
+  <data name="Money.UnsupportedCurrency" xml:space="preserve"><value>This currency is not supported.</value></data>
+  <data name="category.food" xml:space="preserve"><value>Food &amp; Drink</value></data>
+  <data name="category.transport" xml:space="preserve"><value>Transport</value></data>
+  <data name="category.bills" xml:space="preserve"><value>Bills</value></data>
+  <data name="category.shopping" xml:space="preserve"><value>Shopping</value></data>
+  <data name="category.entertainment" xml:space="preserve"><value>Entertainment</value></data>
+  <data name="category.salary" xml:space="preserve"><value>Salary</value></data>
+  <data name="category.other" xml:space="preserve"><value>Other</value></data>
+  <data name="dashboard.title" xml:space="preserve"><value>Overview</value></data>
+  <data name="dashboard.monthlyChart" xml:space="preserve"><value>Income vs spending (last 12 months)</value></data>
+  <data name="dashboard.balanceChart" xml:space="preserve"><value>Monthly balance</value></data>
+  <data name="dashboard.dailyChart" xml:space="preserve"><value>Daily spending</value></data>
+  <data name="dashboard.categoryChart" xml:space="preserve"><value>Spending by category</value></data>
+  <data name="dashboard.empty" xml:space="preserve"><value>No data yet</value></data>
+  <data name="form.category" xml:space="preserve"><value>Category</value></data>
+  <data name="summary.colCategory" xml:space="preserve"><value>Category</value></data>
+  <data name="Transactions.InvalidCategory" xml:space="preserve"><value>Invalid category.</value></data>
+</root>

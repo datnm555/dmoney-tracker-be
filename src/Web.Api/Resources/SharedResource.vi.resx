@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="app.title" xml:space="preserve"><value>DMoney Tracker</value></data>
+  <data name="menu.dashboard" xml:space="preserve"><value>Tổng quan</value></data>
+  <data name="menu.summary" xml:space="preserve"><value>Tổng hợp</value></data>
+  <data name="auth.login" xml:space="preserve"><value>Đăng nhập</value></data>
+  <data name="auth.register" xml:space="preserve"><value>Đăng ký</value></data>
+  <data name="auth.identifier" xml:space="preserve"><value>Email hoặc tên đăng nhập</value></data>
+  <data name="auth.email" xml:space="preserve"><value>Email</value></data>
+  <data name="auth.username" xml:space="preserve"><value>Tên đăng nhập</value></data>
+  <data name="auth.displayName" xml:space="preserve"><value>Tên hiển thị</value></data>
+  <data name="auth.password" xml:space="preserve"><value>Mật khẩu</value></data>
+  <data name="auth.noAccount" xml:space="preserve"><value>Chưa có tài khoản? Đăng ký</value></data>
+  <data name="auth.haveAccount" xml:space="preserve"><value>Đã có tài khoản? Đăng nhập</value></data>
+  <data name="auth.logout" xml:space="preserve"><value>Đăng xuất</value></data>
+  <data name="auth.registerSuccess" xml:space="preserve"><value>Đăng ký thành công, hãy đăng nhập</value></data>
+  <data name="summary.title" xml:space="preserve"><value>Tổng hợp thu chi</value></data>
+  <data name="summary.create" xml:space="preserve"><value>Tạo mới</value></data>
+  <data name="summary.month" xml:space="preserve"><value>Tháng</value></data>
+  <data name="summary.colDate" xml:space="preserve"><value>Ngày</value></data>
+  <data name="summary.colContent" xml:space="preserve"><value>Nội dung</value></data>
+  <data name="summary.colCredit" xml:space="preserve"><value>Ghi có</value></data>
+  <data name="summary.colDebit" xml:space="preserve"><value>Ghi nợ</value></data>
+  <data name="summary.colNote" xml:space="preserve"><value>Ghi chú</value></data>
+  <data name="summary.colActions" xml:space="preserve"><value>Thao tác</value></data>
+  <data name="summary.edit" xml:space="preserve"><value>Sửa</value></data>
+  <data name="summary.delete" xml:space="preserve"><value>Xóa</value></data>
+  <data name="summary.deleteConfirm" xml:space="preserve"><value>Xóa bản ghi này?</value></data>
+  <data name="summary.totalCredit" xml:space="preserve"><value>Tổng ghi có</value></data>
+  <data name="summary.totalDebit" xml:space="preserve"><value>Tổng ghi nợ</value></data>
+  <data name="summary.balance" xml:space="preserve"><value>Chênh lệch</value></data>
+  <data name="summary.createTitle" xml:space="preserve"><value>Tạo bản ghi thu chi</value></data>
+  <data name="summary.editTitle" xml:space="preserve"><value>Sửa bản ghi thu chi</value></data>
+  <data name="summary.submit" xml:space="preserve"><value>Lưu</value></data>
+  <data name="summary.cancel" xml:space="preserve"><value>Hủy</value></data>
+  <data name="summary.empty" xml:space="preserve"><value>Chưa có bản ghi nào trong tháng này</value></data>
+  <data name="form.date" xml:space="preserve"><value>Ngày</value></data>
+  <data name="form.content" xml:space="preserve"><value>Nội dung</value></data>
+  <data name="form.credit" xml:space="preserve"><value>Số tiền ghi có (tiền vào)</value></data>
+  <data name="form.debit" xml:space="preserve"><value>Số tiền ghi nợ (tiền ra)</value></data>
+  <data name="form.note" xml:space="preserve"><value>Ghi chú</value></data>
+  <data name="form.dateRequired" xml:space="preserve"><value>Vui lòng chọn ngày</value></data>
+  <data name="form.contentRequired" xml:space="preserve"><value>Vui lòng nhập nội dung</value></data>
+  <data name="form.amountRequired" xml:space="preserve"><value>Cần ít nhất một số tiền lớn hơn 0</value></data>
+  <data name="error.network" xml:space="preserve"><value>Không kết nối được máy chủ</value></data>
+  <data name="Users.InvalidEmail" xml:space="preserve"><value>Email không hợp lệ.</value></data>
+  <data name="Users.InvalidUsername" xml:space="preserve"><value>Tên đăng nhập phải dài 3–30 ký tự và chỉ gồm chữ cái hoặc chữ số.</value></data>
+  <data name="Users.InvalidDisplayName" xml:space="preserve"><value>Tên hiển thị không được để trống.</value></data>
+  <data name="Users.PasswordTooShort" xml:space="preserve"><value>Mật khẩu phải có ít nhất 8 ký tự.</value></data>
+  <data name="Users.EmailNotUnique" xml:space="preserve"><value>Email này đã được đăng ký.</value></data>
+  <data name="Users.UsernameNotUnique" xml:space="preserve"><value>Tên đăng nhập này đã tồn tại.</value></data>
+  <data name="Users.InvalidCredentials" xml:space="preserve"><value>Thông tin đăng nhập không đúng.</value></data>
+  <data name="Users.Unauthenticated" xml:space="preserve"><value>Bạn cần đăng nhập để thực hiện thao tác này.</value></data>
+  <data name="Transactions.NotFound" xml:space="preserve"><value>Không tìm thấy bản ghi.</value></data>
+  <data name="Transactions.ContentRequired" xml:space="preserve"><value>Vui lòng nhập nội dung.</value></data>
+  <data name="Transactions.ContentTooLong" xml:space="preserve"><value>Nội dung tối đa 500 ký tự.</value></data>
+  <data name="Transactions.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 1000 ký tự.</value></data>
+  <data name="Transactions.EmptyAmount" xml:space="preserve"><value>Cần ít nhất một số tiền lớn hơn 0.</value></data>
+  <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Tháng không hợp lệ (định dạng YYYY-MM).</value></data>
+  <data name="Money.NegativeAmount" xml:space="preserve"><value>Số tiền không được âm.</value></data>
+  <data name="Money.UnsupportedCurrency" xml:space="preserve"><value>Loại tiền tệ chưa được hỗ trợ.</value></data>
+  <data name="category.food" xml:space="preserve"><value>Ăn uống</value></data>
+  <data name="category.transport" xml:space="preserve"><value>Di chuyển</value></data>
+  <data name="category.bills" xml:space="preserve"><value>Hóa đơn</value></data>
+  <data name="category.shopping" xml:space="preserve"><value>Mua sắm</value></data>
+  <data name="category.entertainment" xml:space="preserve"><value>Giải trí</value></data>
+  <data name="category.salary" xml:space="preserve"><value>Lương</value></data>
+  <data name="category.other" xml:space="preserve"><value>Khác</value></data>
+  <data name="dashboard.title" xml:space="preserve"><value>Tổng quan thu chi</value></data>
+  <data name="dashboard.monthlyChart" xml:space="preserve"><value>Thu chi 12 tháng gần nhất</value></data>
+  <data name="dashboard.balanceChart" xml:space="preserve"><value>Chênh lệch theo tháng</value></data>
+  <data name="dashboard.dailyChart" xml:space="preserve"><value>Chi tiêu theo ngày</value></data>
+  <data name="dashboard.categoryChart" xml:space="preserve"><value>Chi tiêu theo danh mục</value></data>
+  <data name="dashboard.empty" xml:space="preserve"><value>Chưa có dữ liệu</value></data>
+  <data name="form.category" xml:space="preserve"><value>Danh mục</value></data>
+  <data name="summary.colCategory" xml:space="preserve"><value>Danh mục</value></data>
+  <data name="Transactions.InvalidCategory" xml:space="preserve"><value>Danh mục không hợp lệ.</value></data>
+</root>
