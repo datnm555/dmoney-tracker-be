@@ -53,5 +53,16 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
 
         builder.Property(t => t.Category)
             .HasMaxLength(TransactionCategories.MaxLength);
+
+        builder.Property(t => t.PaymentMethod)
+            .HasMaxLength(PaymentMethods.MaxLength)
+            .IsRequired()
+            .HasDefaultValue(PaymentMethods.Transfer);
+
+        builder.Property(t => t.CardType)
+            .HasMaxLength(CardTypes.MaxLength);
+
+        builder.Property(t => t.Bank)
+            .HasMaxLength(TransactionConstants.BankMaxLength);
     }
 }
