@@ -180,6 +180,51 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             paymentMethod = "card"
         });
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        string body = await response.Content.ReadAsStringAsync();
+        body.ShouldContain("Transactions.CardTypeRequired");
+    }
+
+    [Fact]
+    public async Task UpdateWithCardPayment_RoundTripsThroughGet()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("cardupdate@example.com", "cardupdate");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var createResponse = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Netflix Premium",
+            creditAmount = 0m,
+            debitAmount = 260000m,
+            note = (string?)null,
+            category = "entertainment",
+            paymentMethod = "card",
+            cardType = "visa",
+            bank = "Techcombank"
+        });
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
+        CreatedBody? created = await createResponse.Content.ReadFromJsonAsync<CreatedBody>();
+
+        var updateResponse = await client.PutAsJsonAsync($"/transactions/{created!.Id}", new
+        {
+            date = today,
+            content = "Netflix Premium 4K",
+            creditAmount = 0m,
+            debitAmount = 320000m,
+            note = (string?)null,
+            category = "entertainment",
+            paymentMethod = "card",
+            cardType = "credit",
+            bank = "VPBank"
+        });
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        ItemBody item = summary!.Items.Single(i => i.Content == "Netflix Premium 4K");
+        item.PaymentMethod.ShouldBe("card");
+        item.CardType.ShouldBe("credit");
+        item.Bank.ShouldBe("VPBank");
     }
 
     [Fact]

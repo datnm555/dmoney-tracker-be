@@ -15,7 +15,10 @@ internal sealed class UpdateTransaction : IEndpoint
         decimal CreditAmount,
         decimal DebitAmount,
         string? Note,
-        string? Category);
+        string? Category,
+        string? PaymentMethod = null,
+        string? CardType = null,
+        string? Bank = null);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -33,7 +36,10 @@ internal sealed class UpdateTransaction : IEndpoint
                 request.CreditAmount,
                 request.DebitAmount,
                 request.Note,
-                request.Category);
+                request.Category,
+                request.PaymentMethod,
+                request.CardType,
+                request.Bank);
 
             Result result = await handler.Handle(command, cancellationToken);
 
