@@ -243,6 +243,18 @@ public class TransactionTests
     }
 
     [Fact]
+    public void Create_CardWithBankTooLong_Fails()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Netflix",
+            Money.Zero(), Vnd(260_000m), null,
+            null, PaymentMethods.Card, CardTypes.Visa, new string('x', 101));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.BankTooLong);
+    }
+
+    [Fact]
     public void Update_CanChangePaymentMethod()
     {
         Transaction transaction = Transaction.Create(
