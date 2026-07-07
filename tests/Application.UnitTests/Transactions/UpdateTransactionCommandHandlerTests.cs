@@ -105,4 +105,21 @@ public class UpdateTransactionCommandHandlerTests
         result.IsSuccess.ShouldBeTrue();
         tx.Category.ShouldBe("bills");
     }
+
+    [Fact]
+    public async Task Handle_PassesPaymentFieldsToTransaction()
+    {
+        Transaction tx = OwnTx();
+        var handler = CreateHandler(tx);
+        var command = new UpdateTransactionCommand(
+            tx.Id, new DateOnly(2026, 7, 10), "Netflix", 0m, 260_000m, null,
+            "entertainment", "card", "visa", "Techcombank");
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        tx.PaymentMethod.ShouldBe(PaymentMethods.Card);
+        tx.CardType.ShouldBe(CardTypes.Visa);
+        tx.Bank.ShouldBe("Techcombank");
+    }
 }

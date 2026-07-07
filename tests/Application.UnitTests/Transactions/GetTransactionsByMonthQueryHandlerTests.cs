@@ -89,4 +89,22 @@ public class GetTransactionsByMonthQueryHandlerTests
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.InvalidMonth");
     }
+
+    [Fact]
+    public async Task Handle_ProjectsPaymentFieldsIntoResponse()
+    {
+        Transaction tx = Transaction.Create(
+            UserId, new DateOnly(2026, 7, 5), "Netflix",
+            Money.Zero(), Money.Create(260_000m).Value, null,
+            "entertainment", PaymentMethods.Card, CardTypes.Visa, "Techcombank").Value;
+        var handler = CreateHandler(tx);
+
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07"), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Items.Count.ShouldBe(1);
+        result.Value.Items[0].PaymentMethod.ShouldBe(PaymentMethods.Card);
+        result.Value.Items[0].CardType.ShouldBe(CardTypes.Visa);
+        result.Value.Items[0].Bank.ShouldBe("Techcombank");
+    }
 }

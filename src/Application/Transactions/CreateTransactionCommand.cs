@@ -8,4 +8,7 @@ public sealed record CreateTransactionCommand(
     decimal CreditAmount,
     decimal DebitAmount,
     string? Note,
-    string? Category) : ICommand<Guid>;
+    string? Category,
+    string? PaymentMethod = null,
+    string? CardType = null,
+    string? Bank = null) : ICommand<Guid>;

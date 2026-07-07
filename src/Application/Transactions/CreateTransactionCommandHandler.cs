@@ -34,7 +34,9 @@ internal sealed class CreateTransactionCommandHandler(
         }
 
         Result<Transaction> transaction = Transaction.Create(
-            userId, command.Date, command.Content, credit.Value, debit.Value, command.Note, command.Category);
+            userId, command.Date, command.Content, credit.Value, debit.Value,
+            command.Note, command.Category,
+            command.PaymentMethod, command.CardType, command.Bank);
         if (transaction.IsFailure)
         {
             return Result.Failure<Guid>(transaction.Error);
