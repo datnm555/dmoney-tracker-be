@@ -38,7 +38,7 @@ Five projects with a compiler-enforced dependency rule — `tests/ArchitectureTe
 
 **i18n:** `Web.Api/Resources/SharedResource.{vi,en}.resx` is the single translation source for BOTH backend error messages and ALL frontend labels. `GET /resources?lang=vi|en` serves the whole dictionary (output-cached 1h, vary by lang). Culture comes from `?lang=` query (first) or Accept-Language; default `vi`. When adding any user-facing string, add the key to BOTH resx files — the frontend's `t()` falls back silently to raw keys, so a missing key will not fail any test.
 
-**Cross-repo contract:** the category codes in `Domain/Transactions/TransactionCategories.cs` are comment-synced with `src/utils/categories.ts` in the web repo; response DTO shapes (camelCased by ASP.NET) are mirrored in the web repo's `src/api/types.ts`. Change both sides together.
+**Cross-repo contract:** the category codes in `Domain/Transactions/TransactionCategories.cs` are comment-synced with `src/utils/categories.ts` in the web repo; payment method / card type codes in `Domain/Transactions/PaymentMethods.cs` + `CardTypes.cs` are comment-synced with `src/utils/paymentMethods.ts` in the web repo; response DTO shapes (camelCased by ASP.NET) are mirrored in the web repo's `src/api/types.ts`. Change both sides together.
 
 **Middleware order in Program.cs matters:** `UseCors` must come before `UseOutputCache` (cached `/resources` responses must carry CORS headers). Config keys `Cors:Origins` (`;`-separated) and `Database:AutoMigrate` exist for the Docker deployment; dev defaults preserve local behavior.
 

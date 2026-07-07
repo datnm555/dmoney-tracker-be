@@ -4,7 +4,7 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <data name="app.title" xml:space="preserve"><value>DMoney Tracker</value></data>
+  <data name="app.title" xml:space="preserve"><value>MoneyTrack</value></data>
   <data name="menu.dashboard" xml:space="preserve"><value>Dashboard</value></data>
   <data name="menu.summary" xml:space="preserve"><value>Summary</value></data>
   <data name="auth.login" xml:space="preserve"><value>Sign in</value></data>
@@ -79,4 +79,40 @@
   <data name="form.category" xml:space="preserve"><value>Category</value></data>
   <data name="summary.colCategory" xml:space="preserve"><value>Category</value></data>
   <data name="Transactions.InvalidCategory" xml:space="preserve"><value>Invalid category.</value></data>
+  <data name="payment.method" xml:space="preserve"><value>Payment method</value></data>
+  <data name="payment.transfer" xml:space="preserve"><value>Bank transfer</value></data>
+  <data name="payment.cash" xml:space="preserve"><value>Cash</value></data>
+  <data name="payment.card" xml:space="preserve"><value>Card</value></data>
+  <data name="payment.cardType" xml:space="preserve"><value>Card type</value></data>
+  <data name="payment.cardType.visa" xml:space="preserve"><value>VISA</value></data>
+  <data name="payment.cardType.credit" xml:space="preserve"><value>Credit</value></data>
+  <data name="payment.bank" xml:space="preserve"><value>Bank</value></data>
+  <data name="payment.bank.other" xml:space="preserve"><value>Other</value></data>
+  <data name="Transactions.InvalidPaymentMethod" xml:space="preserve"><value>Invalid payment method.</value></data>
+  <data name="Transactions.CardTypeRequired" xml:space="preserve"><value>Please select a card type for card payments.</value></data>
+  <data name="Transactions.InvalidCardType" xml:space="preserve"><value>Invalid card type.</value></data>
+  <data name="Transactions.CardDetailsNotAllowed" xml:space="preserve"><value>Card details are only allowed for card payments.</value></data>
+  <data name="Transactions.BankTooLong" xml:space="preserve"><value>Bank name must be at most 100 characters.</value></data>
+  <data name="menu.transactions" xml:space="preserve"><value>Transactions</value></data>
+  <data name="menu.reports" xml:space="preserve"><value>Reports</value></data>
+  <data name="menu.settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="breadcrumb.home" xml:space="preserve"><value>Home</value></data>
+  <data name="dashboard.totalBalance" xml:space="preserve"><value>Total balance</value></data>
+  <data name="dashboard.vsLastMonth" xml:space="preserve"><value>vs last month</value></data>
+  <data name="dashboard.txThisMonth" xml:space="preserve"><value>transactions this month</value></data>
+  <data name="dashboard.cashflow" xml:space="preserve"><value>Income / expense — 6 months</value></data>
+  <data name="dashboard.recent" xml:space="preserve"><value>Recent transactions</value></data>
+  <data name="dashboard.viewAll" xml:space="preserve"><value>View all</value></data>
+  <data name="transactions.filterAll" xml:space="preserve"><value>All</value></data>
+  <data name="transactions.creditThisMonth" xml:space="preserve"><value>Money in this month</value></data>
+  <data name="transactions.debitThisMonth" xml:space="preserve"><value>Money out this month</value></data>
+  <data name="transactions.today" xml:space="preserve"><value>Today</value></data>
+  <data name="transactions.count" xml:space="preserve"><value>transactions</value></data>
+  <data name="form.moneyIn" xml:space="preserve"><value>Money in</value></data>
+  <data name="form.moneyOut" xml:space="preserve"><value>Money out</value></data>
+  <data name="form.amount" xml:space="preserve"><value>Amount</value></data>
+  <data name="form.currency" xml:space="preserve"><value>Currency</value></data>
+  <data name="form.cardTypeRequired" xml:space="preserve"><value>Please select a card type</value></data>
+  <data name="auth.loginHint" xml:space="preserve"><value>Enter your email and password</value></data>
+  <data name="auth.forgotPassword" xml:space="preserve"><value>Forgot password?</value></data>
 </root>
