@@ -129,4 +129,9 @@
   <data name="import.errInvalidDate" xml:space="preserve"><value>Ngày không hợp lệ</value></data>
   <data name="import.errInvalidAmount" xml:space="preserve"><value>Số tiền không hợp lệ</value></data>
   <data name="import.errEmptyContent" xml:space="preserve"><value>Thiếu nội dung</value></data>
+  <data name="filters.title" xml:space="preserve"><value>Bộ lọc</value></data>
+  <data name="filters.type" xml:space="preserve"><value>Loại giao dịch</value></data>
+  <data name="filters.month" xml:space="preserve"><value>Tháng</value></data>
+  <data name="filters.optional" xml:space="preserve"><value>(tùy chọn)</value></data>
+  <data name="filters.reset" xml:space="preserve"><value>Xóa lọc</value></data>
 </root>

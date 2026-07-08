@@ -129,4 +129,9 @@
   <data name="import.errInvalidDate" xml:space="preserve"><value>Invalid date</value></data>
   <data name="import.errInvalidAmount" xml:space="preserve"><value>Invalid amount</value></data>
   <data name="import.errEmptyContent" xml:space="preserve"><value>Missing content</value></data>
+  <data name="filters.title" xml:space="preserve"><value>Filters</value></data>
+  <data name="filters.type" xml:space="preserve"><value>Transaction type</value></data>
+  <data name="filters.month" xml:space="preserve"><value>Month</value></data>
+  <data name="filters.optional" xml:space="preserve"><value>(optional)</value></data>
+  <data name="filters.reset" xml:space="preserve"><value>Reset</value></data>
 </root>
