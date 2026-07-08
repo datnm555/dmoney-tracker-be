@@ -139,4 +139,6 @@
   <data name="dashboard.legendIn" xml:space="preserve"><value>Thu</value></data>
   <data name="dashboard.legendOut" xml:space="preserve"><value>Chi</value></data>
   <data name="common.to" xml:space="preserve"><value>đến</value></data>
+  <data name="form.saveAndContinue" xml:space="preserve"><value>Lưu & Tiếp tục</value></data>
+  <data name="form.saved" xml:space="preserve"><value>Đã lưu giao dịch</value></data>
 </root>
