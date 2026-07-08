@@ -11,4 +11,5 @@ public sealed record TransactionResponse(
     string PaymentMethod,
     string? CardType,
     string? Bank,
-    bool IsAdvance);
+    bool IsAdvance,
+    Guid? AdvanceTransactionId);

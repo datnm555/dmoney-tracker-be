@@ -56,6 +56,18 @@ public static class TransactionErrors
         "Transactions.ImportEmpty",
         "The import contains no rows.");
 
+    public static readonly Error AdvanceLinkInvalid = Error.Validation(
+        "Transactions.AdvanceLinkInvalid",
+        "Only a non-advance money-in transaction can be linked to an advance.");
+
+    public static readonly Error AdvanceNotFound = Error.NotFound(
+        "Transactions.AdvanceNotFound",
+        "Advance transaction not found.");
+
+    public static readonly Error AdvanceAlreadySettled = Error.Validation(
+        "Transactions.AdvanceAlreadySettled",
+        "This advance has already been reimbursed.");
+
     public static readonly Error ImportTooManyRows = Error.Validation(
         "Transactions.ImportTooManyRows",
         $"An import may contain at most {TransactionConstants.ImportMaxRows} rows.");

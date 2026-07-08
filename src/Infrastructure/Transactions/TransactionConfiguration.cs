@@ -67,5 +67,10 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
 
         builder.Property(t => t.IsAdvance)
             .HasDefaultValue(false);
+
+        builder.HasOne<Transaction>()
+            .WithMany()
+            .HasForeignKey(t => t.AdvanceTransactionId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -29,6 +29,9 @@ public sealed class Transaction : AuditedEntity
     /// <summary>Paid in advance on someone else's behalf; expected to be reimbursed later.</summary>
     public bool IsAdvance { get; private set; }
 
+    /// <summary>For a money-in row: the advance transaction this credit reimburses.</summary>
+    public Guid? AdvanceTransactionId { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         DateOnly date,
@@ -40,8 +43,14 @@ public sealed class Transaction : AuditedEntity
         string? paymentMethod = null,
         string? cardType = null,
         string? bank = null,
-        bool isAdvance = false)
+        bool isAdvance = false,
+        Guid? advanceTransactionId = null)
     {
+        if (advanceTransactionId is not null && (credit.Amount <= 0m || isAdvance))
+        {
+            return Result.Failure<Transaction>(TransactionErrors.AdvanceLinkInvalid);
+        }
+
         string? normalizedCategory = Normalize(category);
         string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
         string? normalizedCardType = Normalize(cardType);
@@ -68,7 +77,8 @@ public sealed class Transaction : AuditedEntity
             PaymentMethod = normalizedPaymentMethod,
             CardType = normalizedCardType,
             Bank = normalizedBank,
-            IsAdvance = isAdvance
+            IsAdvance = isAdvance,
+            AdvanceTransactionId = advanceTransactionId
         };
 
         return transaction;
@@ -84,8 +94,14 @@ public sealed class Transaction : AuditedEntity
         string? paymentMethod = null,
         string? cardType = null,
         string? bank = null,
-        bool isAdvance = false)
+        bool isAdvance = false,
+        Guid? advanceTransactionId = null)
     {
+        if (advanceTransactionId is not null && (credit.Amount <= 0m || isAdvance))
+        {
+            return Result.Failure(TransactionErrors.AdvanceLinkInvalid);
+        }
+
         string? normalizedCategory = Normalize(category);
         string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
         string? normalizedCardType = Normalize(cardType);
@@ -109,6 +125,7 @@ public sealed class Transaction : AuditedEntity
         CardType = normalizedCardType;
         Bank = normalizedBank;
         IsAdvance = isAdvance;
+        AdvanceTransactionId = advanceTransactionId;
 
         return Result.Success();
     }

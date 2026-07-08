@@ -40,10 +40,28 @@ internal sealed class UpdateTransactionCommandHandler(
             return Result.Failure(debit.Error);
         }
 
+        if (command.AdvanceTransactionId is { } advanceId)
+        {
+            bool advanceExists = await dbContext.Transactions.AnyAsync(
+                t => t.Id == advanceId && t.UserId == userId && t.IsAdvance, cancellationToken);
+            if (!advanceExists)
+            {
+                return Result.Failure(TransactionErrors.AdvanceNotFound);
+            }
+
+            bool alreadySettled = await dbContext.Transactions.AnyAsync(
+                t => t.AdvanceTransactionId == advanceId && t.Id != command.Id, cancellationToken);
+            if (alreadySettled)
+            {
+                return Result.Failure(TransactionErrors.AdvanceAlreadySettled);
+            }
+        }
+
         Result updated = transaction.Update(
             command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.Category,
-            command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance);
+            command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
+            command.AdvanceTransactionId);
         if (updated.IsFailure)
         {
             return updated;

@@ -13,4 +13,5 @@ public sealed record UpdateTransactionCommand(
     string? PaymentMethod = null,
     string? CardType = null,
     string? Bank = null,
-    bool IsAdvance = false) : ICommand;
+    bool IsAdvance = false,
+    Guid? AdvanceTransactionId = null) : ICommand;

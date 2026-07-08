@@ -66,7 +66,8 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                 t.PaymentMethod,
                 t.CardType,
                 t.Bank,
-                t.IsAdvance))
+                t.IsAdvance,
+                t.AdvanceTransactionId))
             .ToListAsync(cancellationToken);
 
         decimal totalCredit = await monthScope.SumAsync(t => t.Credit.Amount, cancellationToken);

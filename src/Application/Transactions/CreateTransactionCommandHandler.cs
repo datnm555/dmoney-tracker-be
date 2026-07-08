@@ -3,6 +3,7 @@ using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Transactions;
 using Domain.Users;
+using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Application.Transactions;
@@ -33,10 +34,20 @@ internal sealed class CreateTransactionCommandHandler(
             return Result.Failure<Guid>(debit.Error);
         }
 
+        if (command.AdvanceTransactionId is { } advanceId)
+        {
+            Result advanceCheck = await ValidateAdvanceLinkAsync(advanceId, userId, null, cancellationToken);
+            if (advanceCheck.IsFailure)
+            {
+                return Result.Failure<Guid>(advanceCheck.Error);
+            }
+        }
+
         Result<Transaction> transaction = Transaction.Create(
             userId, command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.Category,
-            command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance);
+            command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
+            command.AdvanceTransactionId);
         if (transaction.IsFailure)
         {
             return Result.Failure<Guid>(transaction.Error);
@@ -46,5 +57,20 @@ internal sealed class CreateTransactionCommandHandler(
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return transaction.Value.Id;
+    }
+
+    private async Task<Result> ValidateAdvanceLinkAsync(
+        Guid advanceId, Guid userId, Guid? excludeTransactionId, CancellationToken cancellationToken)
+    {
+        bool advanceExists = await dbContext.Transactions.AnyAsync(
+            t => t.Id == advanceId && t.UserId == userId && t.IsAdvance, cancellationToken);
+        if (!advanceExists)
+        {
+            return Result.Failure(TransactionErrors.AdvanceNotFound);
+        }
+
+        bool alreadySettled = await dbContext.Transactions.AnyAsync(
+            t => t.AdvanceTransactionId == advanceId && t.Id != excludeTransactionId, cancellationToken);
+        return alreadySettled ? Result.Failure(TransactionErrors.AdvanceAlreadySettled) : Result.Success();
     }
 }

@@ -147,4 +147,10 @@
   <data name="form.isAdvance" xml:space="preserve"><value>Advance payment</value></data>
   <data name="form.isAdvanceHint" xml:space="preserve"><value>Paid on someone's behalf, to be reimbursed later</value></data>
   <data name="transactions.net" xml:space="preserve"><value>Net</value></data>
+  <data name="form.reimburseAdvance" xml:space="preserve"><value>Reimburses an advance</value></data>
+  <data name="form.selectAdvance" xml:space="preserve"><value>Select the advance</value></data>
+  <data name="form.advanceRequired" xml:space="preserve"><value>Please select an advance</value></data>
+  <data name="Transactions.AdvanceLinkInvalid" xml:space="preserve"><value>Only a non-advance money-in transaction can be linked to an advance.</value></data>
+  <data name="Transactions.AdvanceNotFound" xml:space="preserve"><value>Advance transaction not found.</value></data>
+  <data name="Transactions.AdvanceAlreadySettled" xml:space="preserve"><value>This advance has already been reimbursed.</value></data>
 </root>

@@ -332,10 +332,74 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         summary!.Items.Single(i => i.Content == "Tiền xe bus ứng trước").IsAdvance.ShouldBeFalse();
     }
 
+
+    [Fact]
+    public async Task AdvanceReimbursement_LinksAndClosesTheAdvance()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("reimburse@example.com", "reimburse");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var createAdvance = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Ứng trước tiền xe",
+            creditAmount = 0m,
+            debitAmount = 2_000_000m,
+            note = (string?)null,
+            category = (string?)null,
+            isAdvance = true
+        });
+        createAdvance.StatusCode.ShouldBe(HttpStatusCode.Created);
+        CreatedBody? advance = await createAdvance.Content.ReadFromJsonAsync<CreatedBody>();
+
+        List<AdvanceBody>? open = await client.GetFromJsonAsync<List<AdvanceBody>>("/transactions/advances/open");
+        open!.Single().Id.ShouldBe(advance!.Id);
+
+        var createReimb = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Nhận hoàn ứng",
+            creditAmount = 2_000_000m,
+            debitAmount = 0m,
+            note = (string?)null,
+            category = (string?)null,
+            advanceTransactionId = advance.Id
+        });
+        createReimb.StatusCode.ShouldBe(HttpStatusCode.Created);
+        CreatedBody? reimb = await createReimb.Content.ReadFromJsonAsync<CreatedBody>();
+
+        open = await client.GetFromJsonAsync<List<AdvanceBody>>("/transactions/advances/open");
+        open!.ShouldBeEmpty();
+
+        // Editing the reimbursement still sees its own advance in the list.
+        open = await client.GetFromJsonAsync<List<AdvanceBody>>($"/transactions/advances/open?forTransaction={reimb!.Id}");
+        open!.Single().Id.ShouldBe(advance.Id);
+
+        // A second reimbursement against the same advance is rejected.
+        var second = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Hoàn lần 2",
+            creditAmount = 2_000_000m,
+            debitAmount = 0m,
+            note = (string?)null,
+            category = (string?)null,
+            advanceTransactionId = advance.Id
+        });
+        second.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await second.Content.ReadAsStringAsync()).ShouldContain("Transactions.AdvanceAlreadySettled");
+
+        string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        summary!.Items.Single(i => i.Content == "Nhận hoàn ứng").AdvanceTransactionId.ShouldBe(advance.Id);
+    }
+
+    internal sealed record AdvanceBody(Guid Id, string Date, string Content, MoneyBody Debit);
+
     internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record MoneyBody(decimal Amount, string Currency);
-    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, string? Category, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance);
+    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, string? Category, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance, Guid? AdvanceTransactionId);
     internal sealed record SummaryBody(List<ItemBody> Items, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
 }
