@@ -249,6 +249,50 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         summary!.Items.Single(i => i.Content == "Lunch").PaymentMethod.ShouldBe("transfer");
     }
 
+    [Fact]
+    public async Task ImportTransactions_SavesSignedRowsWithOtherCategory()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("importer@example.com", "importer1");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var response = await client.PostAsJsonAsync("/transactions/import", new
+        {
+            rows = new object[]
+            {
+                new { date = today, content = "Lương import", amount = 28_000_000m, note = (string?)null },
+                new { date = today, content = "Tiền điện import", amount = -1_200_000m, note = "kỳ 07/2026" }
+            }
+        });
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        ImportedBody? imported = await response.Content.ReadFromJsonAsync<ImportedBody>();
+        imported!.Imported.ShouldBe(2);
+
+        string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        ItemBody salary = summary!.Items.Single(i => i.Content == "Lương import");
+        salary.Credit.Amount.ShouldBe(28_000_000m);
+        salary.Debit.Amount.ShouldBe(0m);
+        salary.Category.ShouldBe("other");
+        ItemBody bill = summary.Items.Single(i => i.Content == "Tiền điện import");
+        bill.Credit.Amount.ShouldBe(0m);
+        bill.Debit.Amount.ShouldBe(1_200_000m);
+        bill.Category.ShouldBe("other");
+        bill.Note.ShouldBe("kỳ 07/2026");
+    }
+
+    [Fact]
+    public async Task ImportTransactions_EmptyRows_Returns400()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("importempty@example.com", "importempty");
+
+        var response = await client.PostAsJsonAsync("/transactions/import", new { rows = Array.Empty<object>() });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        string body = await response.Content.ReadAsStringAsync();
+        body.ShouldContain("Transactions.ImportEmpty");
+    }
+
+    internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record MoneyBody(decimal Amount, string Currency);

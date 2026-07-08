@@ -115,4 +115,18 @@
   <data name="form.cardTypeRequired" xml:space="preserve"><value>Vui lòng chọn loại thẻ</value></data>
   <data name="auth.loginHint" xml:space="preserve"><value>Nhập email và mật khẩu của bạn</value></data>
   <data name="auth.forgotPassword" xml:space="preserve"><value>Quên mật khẩu?</value></data>
+  <data name="Transactions.ImportEmpty" xml:space="preserve"><value>File không có dòng nào để nhập.</value></data>
+  <data name="Transactions.ImportTooManyRows" xml:space="preserve"><value>Mỗi lần nhập tối đa 1000 dòng.</value></data>
+  <data name="import.title" xml:space="preserve"><value>Nhập giao dịch</value></data>
+  <data name="import.button" xml:space="preserve"><value>Nhập file</value></data>
+  <data name="import.hint" xml:space="preserve"><value>Chọn file CSV hoặc XLSX với các cột: Ngày, Nội dung, Số tiền (âm = ghi nợ, dương = ghi có), Ghi chú. Danh mục sẽ được đặt là Khác.</value></data>
+  <data name="import.chooseFile" xml:space="preserve"><value>Chọn file</value></data>
+  <data name="import.rowsValid" xml:space="preserve"><value>dòng hợp lệ</value></data>
+  <data name="import.rowsInvalid" xml:space="preserve"><value>dòng lỗi</value></data>
+  <data name="import.save" xml:space="preserve"><value>Nhập</value></data>
+  <data name="import.success" xml:space="preserve"><value>Đã nhập</value></data>
+  <data name="import.skipped" xml:space="preserve"><value>bỏ qua</value></data>
+  <data name="import.errInvalidDate" xml:space="preserve"><value>Ngày không hợp lệ</value></data>
+  <data name="import.errInvalidAmount" xml:space="preserve"><value>Số tiền không hợp lệ</value></data>
+  <data name="import.errEmptyContent" xml:space="preserve"><value>Thiếu nội dung</value></data>
 </root>
