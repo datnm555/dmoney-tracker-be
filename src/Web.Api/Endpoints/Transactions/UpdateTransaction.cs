@@ -18,7 +18,8 @@ internal sealed class UpdateTransaction : IEndpoint
         string? Category,
         string? PaymentMethod = null,
         string? CardType = null,
-        string? Bank = null);
+        string? Bank = null,
+        bool IsAdvance = false);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -39,7 +40,8 @@ internal sealed class UpdateTransaction : IEndpoint
                 request.Category,
                 request.PaymentMethod,
                 request.CardType,
-                request.Bank);
+                request.Bank,
+                request.IsAdvance);
 
             Result result = await handler.Handle(command, cancellationToken);
 

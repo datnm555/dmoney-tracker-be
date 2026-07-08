@@ -26,6 +26,9 @@ public sealed class Transaction : AuditedEntity
 
     public string? Bank { get; private set; }
 
+    /// <summary>Paid in advance on someone else's behalf; expected to be reimbursed later.</summary>
+    public bool IsAdvance { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         DateOnly date,
@@ -36,7 +39,8 @@ public sealed class Transaction : AuditedEntity
         string? category = null,
         string? paymentMethod = null,
         string? cardType = null,
-        string? bank = null)
+        string? bank = null,
+        bool isAdvance = false)
     {
         string? normalizedCategory = Normalize(category);
         string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
@@ -63,7 +67,8 @@ public sealed class Transaction : AuditedEntity
             Category = normalizedCategory,
             PaymentMethod = normalizedPaymentMethod,
             CardType = normalizedCardType,
-            Bank = normalizedBank
+            Bank = normalizedBank,
+            IsAdvance = isAdvance
         };
 
         return transaction;
@@ -78,7 +83,8 @@ public sealed class Transaction : AuditedEntity
         string? category = null,
         string? paymentMethod = null,
         string? cardType = null,
-        string? bank = null)
+        string? bank = null,
+        bool isAdvance = false)
     {
         string? normalizedCategory = Normalize(category);
         string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
@@ -102,6 +108,7 @@ public sealed class Transaction : AuditedEntity
         PaymentMethod = normalizedPaymentMethod;
         CardType = normalizedCardType;
         Bank = normalizedBank;
+        IsAdvance = isAdvance;
 
         return Result.Success();
     }

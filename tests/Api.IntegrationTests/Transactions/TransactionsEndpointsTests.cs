@@ -292,10 +292,50 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         body.ShouldContain("Transactions.ImportEmpty");
     }
 
+
+    [Fact]
+    public async Task AdvanceFlag_RoundTripsThroughCreateAndUpdate()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("advance@example.com", "advance1");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var create = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Tiền xe bus ứng trước",
+            creditAmount = 0m,
+            debitAmount = 2_000_000m,
+            note = (string?)null,
+            category = (string?)null,
+            isAdvance = true
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        CreatedBody? created = await create.Content.ReadFromJsonAsync<CreatedBody>();
+
+        string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        summary!.Items.Single(i => i.Content == "Tiền xe bus ứng trước").IsAdvance.ShouldBeTrue();
+
+        var update = await client.PutAsJsonAsync($"/transactions/{created!.Id}", new
+        {
+            date = today,
+            content = "Tiền xe bus ứng trước",
+            creditAmount = 0m,
+            debitAmount = 2_000_000m,
+            note = (string?)null,
+            category = (string?)null,
+            isAdvance = false
+        });
+        update.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        summary!.Items.Single(i => i.Content == "Tiền xe bus ứng trước").IsAdvance.ShouldBeFalse();
+    }
+
     internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record MoneyBody(decimal Amount, string Currency);
-    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, string? Category, string PaymentMethod, string? CardType, string? Bank);
+    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, string? Category, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance);
     internal sealed record SummaryBody(List<ItemBody> Items, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
 }

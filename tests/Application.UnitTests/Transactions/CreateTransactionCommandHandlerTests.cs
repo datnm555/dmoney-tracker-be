@@ -112,4 +112,23 @@ public class CreateTransactionCommandHandlerTests
         captured.CardType.ShouldBe(CardTypes.Visa);
         captured.Bank.ShouldBe("Techcombank");
     }
+
+    [Fact]
+    public async Task Handle_PersistsIsAdvanceFlag()
+    {
+        var handler = CreateHandler(UserId);
+        Transaction? captured = null;
+        _dbContext.Transactions.When(x => x.Add(Arg.Any<Transaction>()))
+            .Do(x => captured = x.Arg<Transaction>());
+
+        var command = new CreateTransactionCommand(
+            new DateOnly(2026, 7, 9), "Tiền xe bus ứng trước", 0m, 2_000_000m, null,
+            null, null, null, null, true);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        captured.ShouldNotBeNull();
+        captured.IsAdvance.ShouldBeTrue();
+    }
 }

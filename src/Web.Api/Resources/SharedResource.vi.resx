@@ -144,4 +144,6 @@
   <data name="common.to" xml:space="preserve"><value>đến</value></data>
   <data name="form.saveAndContinue" xml:space="preserve"><value>Lưu &amp; Tiếp tục</value></data>
   <data name="form.saved" xml:space="preserve"><value>Đã lưu giao dịch</value></data>
+  <data name="form.isAdvance" xml:space="preserve"><value>Ứng trước</value></data>
+  <data name="form.isAdvanceHint" xml:space="preserve"><value>Khoản chi hộ, sẽ được hoàn lại sau</value></data>
 </root>

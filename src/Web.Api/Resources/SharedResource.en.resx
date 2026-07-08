@@ -144,4 +144,6 @@
   <data name="common.to" xml:space="preserve"><value>to</value></data>
   <data name="form.saveAndContinue" xml:space="preserve"><value>Save &amp; Continue</value></data>
   <data name="form.saved" xml:space="preserve"><value>Transaction saved</value></data>
+  <data name="form.isAdvance" xml:space="preserve"><value>Advance payment</value></data>
+  <data name="form.isAdvanceHint" xml:space="preserve"><value>Paid on someone's behalf, to be reimbursed later</value></data>
 </root>

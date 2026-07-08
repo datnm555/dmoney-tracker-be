@@ -10,4 +10,5 @@ public sealed record TransactionResponse(
     string? Category,
     string PaymentMethod,
     string? CardType,
-    string? Bank);
+    string? Bank,
+    bool IsAdvance);

@@ -43,7 +43,7 @@ internal sealed class UpdateTransactionCommandHandler(
         Result updated = transaction.Update(
             command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.Category,
-            command.PaymentMethod, command.CardType, command.Bank);
+            command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance);
         if (updated.IsFailure)
         {
             return updated;
