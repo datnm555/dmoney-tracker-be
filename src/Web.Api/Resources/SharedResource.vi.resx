@@ -146,4 +146,5 @@
   <data name="form.saved" xml:space="preserve"><value>Đã lưu giao dịch</value></data>
   <data name="form.isAdvance" xml:space="preserve"><value>Ứng trước</value></data>
   <data name="form.isAdvanceHint" xml:space="preserve"><value>Khoản chi hộ, sẽ được hoàn lại sau</value></data>
+  <data name="transactions.net" xml:space="preserve"><value>Net</value></data>
 </root>
