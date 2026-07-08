@@ -63,7 +63,8 @@
   <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Invalid month (expected format YYYY or YYYY-MM).</value></data>
   <data name="Money.NegativeAmount" xml:space="preserve"><value>Amount must not be negative.</value></data>
   <data name="Money.UnsupportedCurrency" xml:space="preserve"><value>This currency is not supported.</value></data>
-  <data name="category.food" xml:space="preserve"><value>Food &amp; Drink</value></data>
+  <data name="category.food" xml:space="preserve"><value>Eating out</value></data>
+  <data name="category.living" xml:space="preserve"><value>Living</value></data>
   <data name="category.transport" xml:space="preserve"><value>Transport</value></data>
   <data name="category.bills" xml:space="preserve"><value>Bills</value></data>
   <data name="category.shopping" xml:space="preserve"><value>Shopping</value></data>

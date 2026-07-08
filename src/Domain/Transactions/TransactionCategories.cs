@@ -6,9 +6,11 @@ public static class TransactionCategories
 
     public const int MaxLength = 30;
 
+    // "transport" and "entertainment" are legacy-only: still valid so existing rows
+    // keep working, but the frontend no longer offers them for new transactions.
     public static readonly IReadOnlyList<string> All =
     [
-        "food", "transport", "bills", "shopping", "entertainment", "salary", "education", Other
+        "living", "salary", "education", "food", "shopping", "bills", "transport", "entertainment", Other
     ];
 
     public static bool IsValid(string category) =>

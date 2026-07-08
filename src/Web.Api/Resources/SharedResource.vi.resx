@@ -63,7 +63,8 @@
   <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Tháng không hợp lệ (định dạng YYYY hoặc YYYY-MM).</value></data>
   <data name="Money.NegativeAmount" xml:space="preserve"><value>Số tiền không được âm.</value></data>
   <data name="Money.UnsupportedCurrency" xml:space="preserve"><value>Loại tiền tệ chưa được hỗ trợ.</value></data>
-  <data name="category.food" xml:space="preserve"><value>Ăn uống</value></data>
+  <data name="category.food" xml:space="preserve"><value>Ăn hàng</value></data>
+  <data name="category.living" xml:space="preserve"><value>Sinh hoạt</value></data>
   <data name="category.transport" xml:space="preserve"><value>Di chuyển</value></data>
   <data name="category.bills" xml:space="preserve"><value>Hóa đơn</value></data>
   <data name="category.shopping" xml:space="preserve"><value>Mua sắm</value></data>
