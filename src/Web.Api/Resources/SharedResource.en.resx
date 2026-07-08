@@ -135,4 +135,8 @@
   <data name="filters.optional" xml:space="preserve"><value>(optional)</value></data>
   <data name="filters.reset" xml:space="preserve"><value>Reset</value></data>
   <data name="filters.allYear" xml:space="preserve"><value>Whole year</value></data>
+  <data name="dashboard.cashflowSub" xml:space="preserve"><value>Cash flow</value></data>
+  <data name="dashboard.legendIn" xml:space="preserve"><value>In</value></data>
+  <data name="dashboard.legendOut" xml:space="preserve"><value>Out</value></data>
+  <data name="common.to" xml:space="preserve"><value>to</value></data>
 </root>

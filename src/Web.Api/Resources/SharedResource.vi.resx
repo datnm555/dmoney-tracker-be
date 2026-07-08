@@ -135,4 +135,8 @@
   <data name="filters.optional" xml:space="preserve"><value>(tùy chọn)</value></data>
   <data name="filters.reset" xml:space="preserve"><value>Xóa lọc</value></data>
   <data name="filters.allYear" xml:space="preserve"><value>Cả năm</value></data>
+  <data name="dashboard.cashflowSub" xml:space="preserve"><value>Cash flow</value></data>
+  <data name="dashboard.legendIn" xml:space="preserve"><value>Thu</value></data>
+  <data name="dashboard.legendOut" xml:space="preserve"><value>Chi</value></data>
+  <data name="common.to" xml:space="preserve"><value>đến</value></data>
 </root>
