@@ -4,7 +4,7 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <data name="app.title" xml:space="preserve"><value>DMoney Tracker</value></data>
+  <data name="app.title" xml:space="preserve"><value>MoneyTrack</value></data>
   <data name="menu.dashboard" xml:space="preserve"><value>Tổng quan</value></data>
   <data name="menu.summary" xml:space="preserve"><value>Tổng hợp</value></data>
   <data name="auth.login" xml:space="preserve"><value>Đăng nhập</value></data>
@@ -79,4 +79,40 @@
   <data name="form.category" xml:space="preserve"><value>Danh mục</value></data>
   <data name="summary.colCategory" xml:space="preserve"><value>Danh mục</value></data>
   <data name="Transactions.InvalidCategory" xml:space="preserve"><value>Danh mục không hợp lệ.</value></data>
+  <data name="payment.method" xml:space="preserve"><value>Hình thức thanh toán</value></data>
+  <data name="payment.transfer" xml:space="preserve"><value>Chuyển khoản</value></data>
+  <data name="payment.cash" xml:space="preserve"><value>Tiền mặt</value></data>
+  <data name="payment.card" xml:space="preserve"><value>Thẻ</value></data>
+  <data name="payment.cardType" xml:space="preserve"><value>Loại thẻ</value></data>
+  <data name="payment.cardType.visa" xml:space="preserve"><value>VISA</value></data>
+  <data name="payment.cardType.credit" xml:space="preserve"><value>Credit</value></data>
+  <data name="payment.bank" xml:space="preserve"><value>Ngân hàng</value></data>
+  <data name="payment.bank.other" xml:space="preserve"><value>Khác</value></data>
+  <data name="Transactions.InvalidPaymentMethod" xml:space="preserve"><value>Hình thức thanh toán không hợp lệ.</value></data>
+  <data name="Transactions.CardTypeRequired" xml:space="preserve"><value>Vui lòng chọn loại thẻ khi thanh toán bằng thẻ.</value></data>
+  <data name="Transactions.InvalidCardType" xml:space="preserve"><value>Loại thẻ không hợp lệ.</value></data>
+  <data name="Transactions.CardDetailsNotAllowed" xml:space="preserve"><value>Thông tin thẻ chỉ áp dụng cho hình thức Thẻ.</value></data>
+  <data name="Transactions.BankTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
+  <data name="menu.transactions" xml:space="preserve"><value>Giao dịch</value></data>
+  <data name="menu.reports" xml:space="preserve"><value>Báo cáo</value></data>
+  <data name="menu.settings" xml:space="preserve"><value>Cài đặt</value></data>
+  <data name="breadcrumb.home" xml:space="preserve"><value>Trang chủ</value></data>
+  <data name="dashboard.totalBalance" xml:space="preserve"><value>Số dư tổng</value></data>
+  <data name="dashboard.vsLastMonth" xml:space="preserve"><value>so với tháng trước</value></data>
+  <data name="dashboard.txThisMonth" xml:space="preserve"><value>giao dịch trong tháng</value></data>
+  <data name="dashboard.cashflow" xml:space="preserve"><value>Thu / Chi 6 tháng</value></data>
+  <data name="dashboard.recent" xml:space="preserve"><value>Giao dịch gần đây</value></data>
+  <data name="dashboard.viewAll" xml:space="preserve"><value>Xem tất cả</value></data>
+  <data name="transactions.filterAll" xml:space="preserve"><value>Tất cả</value></data>
+  <data name="transactions.creditThisMonth" xml:space="preserve"><value>Ghi có tháng này</value></data>
+  <data name="transactions.debitThisMonth" xml:space="preserve"><value>Ghi nợ tháng này</value></data>
+  <data name="transactions.today" xml:space="preserve"><value>Hôm nay</value></data>
+  <data name="transactions.count" xml:space="preserve"><value>giao dịch</value></data>
+  <data name="form.moneyIn" xml:space="preserve"><value>Ghi có</value></data>
+  <data name="form.moneyOut" xml:space="preserve"><value>Ghi nợ</value></data>
+  <data name="form.amount" xml:space="preserve"><value>Số tiền</value></data>
+  <data name="form.currency" xml:space="preserve"><value>Tiền tệ</value></data>
+  <data name="form.cardTypeRequired" xml:space="preserve"><value>Vui lòng chọn loại thẻ</value></data>
+  <data name="auth.loginHint" xml:space="preserve"><value>Nhập email và mật khẩu của bạn</value></data>
+  <data name="auth.forgotPassword" xml:space="preserve"><value>Quên mật khẩu?</value></data>
 </root>

@@ -1,4 +1,5 @@
 using Domain.Transactions;
+using SharedKernel;
 using Shouldly;
 
 namespace Application.UnitTests.Transactions;
@@ -164,5 +165,110 @@ public class TransactionTests
 
         result.IsSuccess.ShouldBeTrue();
         transaction.Category.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Create_WithoutPaymentMethod_DefaultsToTransfer()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Lunch",
+            Money.Zero(), Vnd(50_000m), null);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.PaymentMethod.ShouldBe(PaymentMethods.Transfer);
+        result.Value.CardType.ShouldBeNull();
+        result.Value.Bank.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Create_CardWithTypeAndBank_Succeeds()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Netflix",
+            Money.Zero(), Vnd(260_000m), null,
+            "entertainment", PaymentMethods.Card, CardTypes.Visa, "Techcombank");
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.PaymentMethod.ShouldBe(PaymentMethods.Card);
+        result.Value.CardType.ShouldBe(CardTypes.Visa);
+        result.Value.Bank.ShouldBe("Techcombank");
+    }
+
+    [Fact]
+    public void Create_CardWithoutCardType_Fails()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Netflix",
+            Money.Zero(), Vnd(260_000m), null,
+            null, PaymentMethods.Card);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.CardTypeRequired);
+    }
+
+    [Fact]
+    public void Create_UnknownPaymentMethod_Fails()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Lunch",
+            Money.Zero(), Vnd(50_000m), null,
+            null, "crypto");
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.InvalidPaymentMethod);
+    }
+
+    [Fact]
+    public void Create_CardDetailsOnNonCardMethod_Fails()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Lunch",
+            Money.Zero(), Vnd(50_000m), null,
+            null, PaymentMethods.Cash, CardTypes.Visa);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.CardDetailsNotAllowed);
+    }
+
+    [Fact]
+    public void Create_UnknownCardType_Fails()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Netflix",
+            Money.Zero(), Vnd(260_000m), null,
+            null, PaymentMethods.Card, "amex");
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.InvalidCardType);
+    }
+
+    [Fact]
+    public void Create_CardWithBankTooLong_Fails()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Netflix",
+            Money.Zero(), Vnd(260_000m), null,
+            null, PaymentMethods.Card, CardTypes.Visa, new string('x', 101));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.BankTooLong);
+    }
+
+    [Fact]
+    public void Update_CanChangePaymentMethod()
+    {
+        Transaction transaction = Transaction.Create(
+            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Lunch",
+            Money.Zero(), Vnd(50_000m), null).Value;
+
+        Result result = transaction.Update(
+            transaction.Date, transaction.Content, Money.Zero(),
+            Vnd(50_000m), null,
+            null, PaymentMethods.Card, CardTypes.Credit, "VPBank");
+
+        result.IsSuccess.ShouldBeTrue();
+        transaction.PaymentMethod.ShouldBe(PaymentMethods.Card);
+        transaction.CardType.ShouldBe(CardTypes.Credit);
+        transaction.Bank.ShouldBe("VPBank");
     }
 }

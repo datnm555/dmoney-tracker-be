@@ -4,6 +4,7 @@ using Application.Transactions;
 using Domain.Transactions;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using SharedKernel;
 using Shouldly;
 
 namespace Application.UnitTests.Transactions;
@@ -89,5 +90,26 @@ public class CreateTransactionCommandHandlerTests
 
         result.IsSuccess.ShouldBeTrue();
         _dbContext.Transactions.Received(1).Add(Arg.Is<Transaction>(t => t.Category == "food"));
+    }
+
+    [Fact]
+    public async Task Handle_PassesPaymentFieldsToTransaction()
+    {
+        var handler = CreateHandler(UserId);
+        Transaction? captured = null;
+        _dbContext.Transactions.When(x => x.Add(Arg.Any<Transaction>()))
+            .Do(x => captured = x.Arg<Transaction>());
+
+        var command = new CreateTransactionCommand(
+            new DateOnly(2026, 7, 7), "Netflix", 0m, 260_000m, null,
+            "entertainment", "card", "visa", "Techcombank");
+
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        captured.ShouldNotBeNull();
+        captured.PaymentMethod.ShouldBe(PaymentMethods.Card);
+        captured.CardType.ShouldBe(CardTypes.Visa);
+        captured.Bank.ShouldBe("Techcombank");
     }
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -134,9 +135,123 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         delete.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
+    [Fact]
+    public async Task CreateWithCardPayment_RoundTripsThroughGet()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("cardpayment@example.com", "cardpayment");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var response = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Netflix Premium",
+            creditAmount = 0m,
+            debitAmount = 260000m,
+            note = (string?)null,
+            category = "entertainment",
+            paymentMethod = "card",
+            cardType = "visa",
+            bank = "Techcombank"
+        });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        ItemBody item = summary!.Items.Single(i => i.Content == "Netflix Premium");
+        item.PaymentMethod.ShouldBe("card");
+        item.CardType.ShouldBe("visa");
+        item.Bank.ShouldBe("Techcombank");
+    }
+
+    [Fact]
+    public async Task CreateCardWithoutCardType_Returns400()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("cardnotype@example.com", "cardnotype");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var response = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Netflix Premium",
+            creditAmount = 0m,
+            debitAmount = 260000m,
+            note = (string?)null,
+            category = (string?)null,
+            paymentMethod = "card"
+        });
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        string body = await response.Content.ReadAsStringAsync();
+        body.ShouldContain("Transactions.CardTypeRequired");
+    }
+
+    [Fact]
+    public async Task UpdateWithCardPayment_RoundTripsThroughGet()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("cardupdate@example.com", "cardupdate");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var createResponse = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Netflix Premium",
+            creditAmount = 0m,
+            debitAmount = 260000m,
+            note = (string?)null,
+            category = "entertainment",
+            paymentMethod = "card",
+            cardType = "visa",
+            bank = "Techcombank"
+        });
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
+        CreatedBody? created = await createResponse.Content.ReadFromJsonAsync<CreatedBody>();
+
+        var updateResponse = await client.PutAsJsonAsync($"/transactions/{created!.Id}", new
+        {
+            date = today,
+            content = "Netflix Premium 4K",
+            creditAmount = 0m,
+            debitAmount = 320000m,
+            note = (string?)null,
+            category = "entertainment",
+            paymentMethod = "card",
+            cardType = "credit",
+            bank = "VPBank"
+        });
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        ItemBody item = summary!.Items.Single(i => i.Content == "Netflix Premium 4K");
+        item.PaymentMethod.ShouldBe("card");
+        item.CardType.ShouldBe("credit");
+        item.Bank.ShouldBe("VPBank");
+    }
+
+    [Fact]
+    public async Task CreateWithoutPaymentMethod_DefaultsToTransfer()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("notransfer@example.com", "notransfer");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var response = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Lunch",
+            creditAmount = 0m,
+            debitAmount = 50000m,
+            note = (string?)null,
+            category = (string?)null
+        });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        summary!.Items.Single(i => i.Content == "Lunch").PaymentMethod.ShouldBe("transfer");
+    }
+
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record MoneyBody(decimal Amount, string Currency);
-    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, string? Category);
+    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, string? Category, string PaymentMethod, string? CardType, string? Bank);
     internal sealed record SummaryBody(List<ItemBody> Items, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
 }

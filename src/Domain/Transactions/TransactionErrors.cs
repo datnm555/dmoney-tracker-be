@@ -31,4 +31,24 @@ public static class TransactionErrors
     public static readonly Error InvalidMonth = Error.Validation(
         "Transactions.InvalidMonth",
         "Invalid month (expected format YYYY-MM).");
+
+    public static readonly Error InvalidPaymentMethod = Error.Validation(
+        "Transactions.InvalidPaymentMethod",
+        "Invalid payment method.");
+
+    public static readonly Error CardTypeRequired = Error.Validation(
+        "Transactions.CardTypeRequired",
+        "Please select a card type for card payments.");
+
+    public static readonly Error InvalidCardType = Error.Validation(
+        "Transactions.InvalidCardType",
+        "Invalid card type.");
+
+    public static readonly Error CardDetailsNotAllowed = Error.Validation(
+        "Transactions.CardDetailsNotAllowed",
+        "Card details are only allowed for card payments.");
+
+    public static readonly Error BankTooLong = Error.Validation(
+        "Transactions.BankTooLong",
+        $"Bank name must be at most {TransactionConstants.BankMaxLength} characters.");
 }

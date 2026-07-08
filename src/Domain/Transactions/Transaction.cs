@@ -20,6 +20,12 @@ public sealed class Transaction : AuditedEntity
 
     public string? Category { get; private set; }
 
+    public string PaymentMethod { get; private set; } = PaymentMethods.Transfer;
+
+    public string? CardType { get; private set; }
+
+    public string? Bank { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         DateOnly date,
@@ -27,10 +33,19 @@ public sealed class Transaction : AuditedEntity
         Money credit,
         Money debit,
         string? note,
-        string? category = null)
+        string? category = null,
+        string? paymentMethod = null,
+        string? cardType = null,
+        string? bank = null)
     {
         string? normalizedCategory = Normalize(category);
-        Result validation = Validate(content, credit, debit, note, normalizedCategory);
+        string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
+        string? normalizedCardType = Normalize(cardType);
+        string? normalizedBank = Normalize(bank);
+
+        Result validation = Validate(
+            content, credit, debit, note, normalizedCategory,
+            normalizedPaymentMethod, normalizedCardType, normalizedBank);
         if (validation.IsFailure)
         {
             return Result.Failure<Transaction>(validation.Error);
@@ -45,7 +60,10 @@ public sealed class Transaction : AuditedEntity
             Credit = credit,
             Debit = debit,
             Note = Normalize(note),
-            Category = normalizedCategory
+            Category = normalizedCategory,
+            PaymentMethod = normalizedPaymentMethod,
+            CardType = normalizedCardType,
+            Bank = normalizedBank
         };
 
         return transaction;
@@ -57,10 +75,19 @@ public sealed class Transaction : AuditedEntity
         Money credit,
         Money debit,
         string? note,
-        string? category = null)
+        string? category = null,
+        string? paymentMethod = null,
+        string? cardType = null,
+        string? bank = null)
     {
         string? normalizedCategory = Normalize(category);
-        Result validation = Validate(content, credit, debit, note, normalizedCategory);
+        string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
+        string? normalizedCardType = Normalize(cardType);
+        string? normalizedBank = Normalize(bank);
+
+        Result validation = Validate(
+            content, credit, debit, note, normalizedCategory,
+            normalizedPaymentMethod, normalizedCardType, normalizedBank);
         if (validation.IsFailure)
         {
             return validation;
@@ -72,6 +99,9 @@ public sealed class Transaction : AuditedEntity
         Debit = debit;
         Note = Normalize(note);
         Category = normalizedCategory;
+        PaymentMethod = normalizedPaymentMethod;
+        CardType = normalizedCardType;
+        Bank = normalizedBank;
 
         return Result.Success();
     }
@@ -81,7 +111,10 @@ public sealed class Transaction : AuditedEntity
         Money credit,
         Money debit,
         string? note,
-        string? normalizedCategory)
+        string? normalizedCategory,
+        string paymentMethod,
+        string? cardType,
+        string? bank)
     {
         if (string.IsNullOrWhiteSpace(content))
         {
@@ -106,6 +139,33 @@ public sealed class Transaction : AuditedEntity
         if (normalizedCategory is not null && !TransactionCategories.IsValid(normalizedCategory))
         {
             return Result.Failure(TransactionErrors.InvalidCategory);
+        }
+
+        if (!PaymentMethods.IsValid(paymentMethod))
+        {
+            return Result.Failure(TransactionErrors.InvalidPaymentMethod);
+        }
+
+        if (paymentMethod == PaymentMethods.Card)
+        {
+            if (cardType is null)
+            {
+                return Result.Failure(TransactionErrors.CardTypeRequired);
+            }
+
+            if (!CardTypes.IsValid(cardType))
+            {
+                return Result.Failure(TransactionErrors.InvalidCardType);
+            }
+        }
+        else if (cardType is not null || bank is not null)
+        {
+            return Result.Failure(TransactionErrors.CardDetailsNotAllowed);
+        }
+
+        if ((bank?.Length ?? 0) > TransactionConstants.BankMaxLength)
+        {
+            return Result.Failure(TransactionErrors.BankTooLong);
         }
 
         return Result.Success();

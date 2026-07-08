@@ -38,6 +38,9 @@ Chụp từ container `dmoney-postgres` (postgres:17-alpine), database `dmoney`,
 | `CreatedAt` | timestamptz | not null | AuditingInterceptor |
 | `ModifiedAt` | timestamptz | not null | AuditingInterceptor |
 | `Category` | varchar(30) | null | 1 trong 7 mã cố định hoặc null (phase 2) |
+| `PaymentMethod` | varchar(20) | not null | default `'transfer'`; mã: `transfer`, `cash`, `card` |
+| `CardType` | varchar(20) | null | chỉ khi `PaymentMethod = 'card'`; mã: `visa`, `credit` |
+| `Bank` | varchar(100) | null | tên ngân hàng tự do (tối đa 100 ký tự) |
 
 Index: `IX_transactions_UserId_Date` btree (`UserId`, `Date`) — phục vụ query theo tháng.
 
