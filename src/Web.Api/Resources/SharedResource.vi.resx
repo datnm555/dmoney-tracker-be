@@ -71,6 +71,7 @@
   <data name="category.entertainment" xml:space="preserve"><value>Giải trí</value></data>
   <data name="category.salary" xml:space="preserve"><value>Lương</value></data>
   <data name="category.education" xml:space="preserve"><value>Tiền học</value></data>
+  <data name="category.savings" xml:space="preserve"><value>Tích luỹ</value></data>
   <data name="category.other" xml:space="preserve"><value>Khác</value></data>
   <data name="dashboard.title" xml:space="preserve"><value>Tổng quan thu chi</value></data>
   <data name="dashboard.monthlyChart" xml:space="preserve"><value>Thu chi 12 tháng gần nhất</value></data>

@@ -10,7 +10,7 @@ public static class TransactionCategories
     // keep working, but the frontend no longer offers them for new transactions.
     public static readonly IReadOnlyList<string> All =
     [
-        "living", "salary", "education", "food", "shopping", "bills", "transport", "entertainment", Other
+        "living", "salary", "education", "food", "shopping", "bills", "savings", "transport", "entertainment", Other
     ];
 
     public static bool IsValid(string category) =>
