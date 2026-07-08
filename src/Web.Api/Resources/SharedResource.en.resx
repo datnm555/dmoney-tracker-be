@@ -139,6 +139,6 @@
   <data name="dashboard.legendIn" xml:space="preserve"><value>In</value></data>
   <data name="dashboard.legendOut" xml:space="preserve"><value>Out</value></data>
   <data name="common.to" xml:space="preserve"><value>to</value></data>
-  <data name="form.saveAndContinue" xml:space="preserve"><value>Save & Continue</value></data>
+  <data name="form.saveAndContinue" xml:space="preserve"><value>Save &amp; Continue</value></data>
   <data name="form.saved" xml:space="preserve"><value>Transaction saved</value></data>
 </root>
