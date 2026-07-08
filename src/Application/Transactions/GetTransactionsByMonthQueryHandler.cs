@@ -24,20 +24,33 @@ internal sealed class GetTransactionsByMonthQueryHandler(
             return Result.Failure<MonthlySummaryResponse>(UserErrors.Unauthenticated);
         }
 
-        if (!DateOnly.TryParseExact(
+        DateOnly rangeStart;
+        DateOnly rangeEnd;
+        if (query.Month.Length == 4
+            && int.TryParse(query.Month, NumberStyles.None, CultureInfo.InvariantCulture, out int year)
+            && year is >= 1 and <= 9999)
+        {
+            // A bare year selects January through December of that year.
+            rangeStart = new DateOnly(year, 1, 1);
+            rangeEnd = rangeStart.AddYears(1);
+        }
+        else if (DateOnly.TryParseExact(
                 query.Month + "-01",
                 "yyyy-MM-dd",
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
                 out DateOnly monthStart))
         {
+            rangeStart = monthStart;
+            rangeEnd = monthStart.AddMonths(1);
+        }
+        else
+        {
             return Result.Failure<MonthlySummaryResponse>(TransactionErrors.InvalidMonth);
         }
 
-        DateOnly nextMonthStart = monthStart.AddMonths(1);
-
         IQueryable<Transaction> monthScope = dbContext.Transactions
-            .Where(t => t.UserId == userId && t.Date >= monthStart && t.Date < nextMonthStart);
+            .Where(t => t.UserId == userId && t.Date >= rangeStart && t.Date < rangeEnd);
 
         List<TransactionResponse> items = await monthScope
             .OrderByDescending(t => t.Date)

@@ -107,4 +107,33 @@ public class GetTransactionsByMonthQueryHandlerTests
         result.Value.Items[0].CardType.ShouldBe(CardTypes.Visa);
         result.Value.Items[0].Bank.ShouldBe("Techcombank");
     }
+
+    [Fact]
+    public async Task Handle_WithYearOnly_ReturnsWholeYearWithTotals()
+    {
+        var handler = CreateHandler(
+            Tx(UserId, new DateOnly(2026, 1, 5), 10_000_000m, 0m),
+            Tx(UserId, new DateOnly(2026, 7, 15), 0m, 4_000_000m),
+            Tx(UserId, new DateOnly(2025, 12, 31), 999m, 0m),         // previous year
+            Tx(OtherUserId, new DateOnly(2026, 3, 1), 555m, 0m));    // other user
+
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026"), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Items.Count.ShouldBe(2);
+        result.Value.TotalCredit.Amount.ShouldBe(10_000_000m);
+        result.Value.TotalDebit.Amount.ShouldBe(4_000_000m);
+        result.Value.Balance.Amount.ShouldBe(6_000_000m);
+    }
+
+    [Fact]
+    public async Task Handle_WithMalformedYear_Fails()
+    {
+        var handler = CreateHandler();
+
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("202A"), CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.InvalidMonth);
+    }
 }

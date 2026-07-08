@@ -30,7 +30,7 @@ public static class TransactionErrors
 
     public static readonly Error InvalidMonth = Error.Validation(
         "Transactions.InvalidMonth",
-        "Invalid month (expected format YYYY-MM).");
+        "Invalid month (expected format YYYY or YYYY-MM).");
 
     public static readonly Error InvalidPaymentMethod = Error.Validation(
         "Transactions.InvalidPaymentMethod",

@@ -60,7 +60,7 @@
   <data name="Transactions.ContentTooLong" xml:space="preserve"><value>Content must be at most 500 characters.</value></data>
   <data name="Transactions.NoteTooLong" xml:space="preserve"><value>Note must be at most 1000 characters.</value></data>
   <data name="Transactions.EmptyAmount" xml:space="preserve"><value>At least one amount must be greater than 0.</value></data>
-  <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Invalid month (expected format YYYY-MM).</value></data>
+  <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Invalid month (expected format YYYY or YYYY-MM).</value></data>
   <data name="Money.NegativeAmount" xml:space="preserve"><value>Amount must not be negative.</value></data>
   <data name="Money.UnsupportedCurrency" xml:space="preserve"><value>This currency is not supported.</value></data>
   <data name="category.food" xml:space="preserve"><value>Food &amp; Drink</value></data>
@@ -134,4 +134,5 @@
   <data name="filters.month" xml:space="preserve"><value>Month</value></data>
   <data name="filters.optional" xml:space="preserve"><value>(optional)</value></data>
   <data name="filters.reset" xml:space="preserve"><value>Reset</value></data>
+  <data name="filters.allYear" xml:space="preserve"><value>Whole year</value></data>
 </root>
