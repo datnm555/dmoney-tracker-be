@@ -69,6 +69,7 @@
   <data name="category.shopping" xml:space="preserve"><value>Shopping</value></data>
   <data name="category.entertainment" xml:space="preserve"><value>Entertainment</value></data>
   <data name="category.salary" xml:space="preserve"><value>Salary</value></data>
+  <data name="category.education" xml:space="preserve"><value>Education</value></data>
   <data name="category.other" xml:space="preserve"><value>Other</value></data>
   <data name="dashboard.title" xml:space="preserve"><value>Overview</value></data>
   <data name="dashboard.monthlyChart" xml:space="preserve"><value>Income vs spending (last 12 months)</value></data>
