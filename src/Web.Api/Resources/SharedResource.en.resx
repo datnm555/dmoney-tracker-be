@@ -115,4 +115,18 @@
   <data name="form.cardTypeRequired" xml:space="preserve"><value>Please select a card type</value></data>
   <data name="auth.loginHint" xml:space="preserve"><value>Enter your email and password</value></data>
   <data name="auth.forgotPassword" xml:space="preserve"><value>Forgot password?</value></data>
+  <data name="Transactions.ImportEmpty" xml:space="preserve"><value>The import contains no rows.</value></data>
+  <data name="Transactions.ImportTooManyRows" xml:space="preserve"><value>An import may contain at most 1000 rows.</value></data>
+  <data name="import.title" xml:space="preserve"><value>Import transactions</value></data>
+  <data name="import.button" xml:space="preserve"><value>Import file</value></data>
+  <data name="import.hint" xml:space="preserve"><value>Choose a CSV or XLSX file with columns: Date, Content, Amount (negative = money out, positive = money in), Note. Category will be set to Other.</value></data>
+  <data name="import.chooseFile" xml:space="preserve"><value>Choose file</value></data>
+  <data name="import.rowsValid" xml:space="preserve"><value>valid rows</value></data>
+  <data name="import.rowsInvalid" xml:space="preserve"><value>invalid rows</value></data>
+  <data name="import.save" xml:space="preserve"><value>Import</value></data>
+  <data name="import.success" xml:space="preserve"><value>Imported</value></data>
+  <data name="import.skipped" xml:space="preserve"><value>skipped</value></data>
+  <data name="import.errInvalidDate" xml:space="preserve"><value>Invalid date</value></data>
+  <data name="import.errInvalidAmount" xml:space="preserve"><value>Invalid amount</value></data>
+  <data name="import.errEmptyContent" xml:space="preserve"><value>Missing content</value></data>
 </root>

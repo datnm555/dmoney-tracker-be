@@ -51,4 +51,12 @@ public static class TransactionErrors
     public static readonly Error BankTooLong = Error.Validation(
         "Transactions.BankTooLong",
         $"Bank name must be at most {TransactionConstants.BankMaxLength} characters.");
+
+    public static readonly Error ImportEmpty = Error.Validation(
+        "Transactions.ImportEmpty",
+        "The import contains no rows.");
+
+    public static readonly Error ImportTooManyRows = Error.Validation(
+        "Transactions.ImportTooManyRows",
+        $"An import may contain at most {TransactionConstants.ImportMaxRows} rows.");
 }
