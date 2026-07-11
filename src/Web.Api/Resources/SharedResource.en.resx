@@ -166,4 +166,6 @@
   <data name="Transactions.PrepaidRangeInvalid" xml:space="preserve"><value>The prepaid period is invalid.</value></data>
   <data name="Transactions.PrepaidLinkInvalid" xml:space="preserve"><value>Only a money-out transaction can be linked to a prepaid credit.</value></data>
   <data name="Transactions.PrepaidNotFound" xml:space="preserve"><value>Prepaid transaction not found.</value></data>
+  <data name="form.prepaidMonths" xml:space="preserve"><value>Number of months</value></data>
+  <data name="common.months" xml:space="preserve"><value>month(s)</value></data>
 </root>
