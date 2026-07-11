@@ -57,11 +57,23 @@ internal sealed class UpdateTransactionCommandHandler(
             }
         }
 
+        if (command.PrepaidTransactionId is { } prepaidId)
+        {
+            bool prepaidExists = await dbContext.Transactions.AnyAsync(
+                t => t.Id == prepaidId && t.UserId == userId && t.IsPrepaid, cancellationToken);
+            if (!prepaidExists)
+            {
+                return Result.Failure(TransactionErrors.PrepaidNotFound);
+            }
+        }
+
         Result updated = transaction.Update(
             command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.Category,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
-            command.AdvanceTransactionId);
+            command.AdvanceTransactionId,
+            command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
+            command.PrepaidTransactionId);
         if (updated.IsFailure)
         {
             return updated;

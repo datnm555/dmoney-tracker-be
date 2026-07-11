@@ -396,10 +396,65 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
 
     internal sealed record AdvanceBody(Guid Id, string Date, string Content, MoneyBody Debit);
 
+    [Fact]
+    public async Task PrepaidCredit_CoversMultipleZeroAmountDebits()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("prepaid@example.com", "prepaid1");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var createPrepaid = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Sinh hoạt 5 tháng",
+            creditAmount = 25_000_000m,
+            debitAmount = 0m,
+            note = (string?)null,
+            category = (string?)null,
+            isPrepaid = true,
+            prepaidFrom = "2026-01-01",
+            prepaidTo = "2026-05-31"
+        });
+        createPrepaid.StatusCode.ShouldBe(HttpStatusCode.Created);
+        CreatedBody? prepaid = await createPrepaid.Content.ReadFromJsonAsync<CreatedBody>();
+
+        List<PrepaidBody> credits =
+            (await client.GetFromJsonAsync<List<PrepaidBody>>("/transactions/prepaid"))!;
+        credits.Single().Id.ShouldBe(prepaid!.Id);
+        credits[0].PrepaidFrom.ShouldBe("2026-01-01");
+
+        // Two months consume the same prepaid credit — both without an amount.
+        foreach (string content in new[] { "Sinh hoạt tháng 2", "Sinh hoạt tháng 3" })
+        {
+            var linked = await client.PostAsJsonAsync("/transactions", new
+            {
+                date = today,
+                content,
+                creditAmount = 0m,
+                debitAmount = 0m,
+                note = (string?)null,
+                category = (string?)null,
+                prepaidTransactionId = prepaid.Id
+            });
+            linked.StatusCode.ShouldBe(HttpStatusCode.Created);
+        }
+
+        // The prepaid credit stays available for the remaining months.
+        credits = (await client.GetFromJsonAsync<List<PrepaidBody>>("/transactions/prepaid"))!;
+        credits.Count.ShouldBe(1);
+
+        string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        summary!.Items.Count(i => i.PrepaidTransactionId == prepaid.Id).ShouldBe(2);
+        summary.Items.Single(i => i.Content == "Sinh hoạt 5 tháng").IsPrepaid.ShouldBeTrue();
+    }
+
+    internal sealed record PrepaidBody(Guid Id, string Date, string Content, MoneyBody Credit, string? PrepaidFrom, string? PrepaidTo);
+
+
     internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record MoneyBody(decimal Amount, string Currency);
-    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, string? Category, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance, Guid? AdvanceTransactionId);
+    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, string? Category, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance, Guid? AdvanceTransactionId, bool IsPrepaid, string? PrepaidFrom, string? PrepaidTo, Guid? PrepaidTransactionId);
     internal sealed record SummaryBody(List<ItemBody> Items, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
 }

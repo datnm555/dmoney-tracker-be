@@ -153,4 +153,17 @@
   <data name="Transactions.AdvanceLinkInvalid" xml:space="preserve"><value>Only a non-advance money-in transaction can be linked to an advance.</value></data>
   <data name="Transactions.AdvanceNotFound" xml:space="preserve"><value>Advance transaction not found.</value></data>
   <data name="Transactions.AdvanceAlreadySettled" xml:space="preserve"><value>This advance has already been reimbursed.</value></data>
+  <data name="form.isPrepaid" xml:space="preserve"><value>Prepaid</value></data>
+  <data name="form.isPrepaidHint" xml:space="preserve"><value>Received upfront covering a period</value></data>
+  <data name="form.prepaidFrom" xml:space="preserve"><value>From</value></data>
+  <data name="form.prepaidTo" xml:space="preserve"><value>To</value></data>
+  <data name="form.alreadyPrepaid" xml:space="preserve"><value>Already prepaid</value></data>
+  <data name="form.alreadyPrepaidHint" xml:space="preserve"><value>Covered by a prepaid credit — amount optional</value></data>
+  <data name="form.selectPrepaid" xml:space="preserve"><value>Select the prepaid credit</value></data>
+  <data name="form.prepaidRequired" xml:space="preserve"><value>Please select a prepaid credit</value></data>
+  <data name="Transactions.PrepaidOnlyOnCredit" xml:space="preserve"><value>Prepaid only applies to money-in transactions.</value></data>
+  <data name="Transactions.PrepaidRangeRequired" xml:space="preserve"><value>Please choose the prepaid period.</value></data>
+  <data name="Transactions.PrepaidRangeInvalid" xml:space="preserve"><value>The prepaid period is invalid.</value></data>
+  <data name="Transactions.PrepaidLinkInvalid" xml:space="preserve"><value>Only a money-out transaction can be linked to a prepaid credit.</value></data>
+  <data name="Transactions.PrepaidNotFound" xml:space="preserve"><value>Prepaid transaction not found.</value></data>
 </root>

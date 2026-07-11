@@ -208,4 +208,115 @@ public class CreateTransactionCommandHandlerTests
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.AdvanceLinkInvalid");
     }
+
+    private static Transaction PrepaidCredit(Guid userId) =>
+        Transaction.Create(
+            userId, new DateOnly(2026, 1, 5), "Sinh hoạt 5 tháng",
+            Money.Create(25_000_000m).Value, Money.Zero(), null,
+            null, null, null, null, false, null,
+            true, new DateOnly(2026, 1, 1), new DateOnly(2026, 5, 31)).Value;
+
+    [Fact]
+    public async Task Handle_PrepaidCredit_StoresRange()
+    {
+        var handler = CreateHandler(UserId);
+        Transaction? captured = null;
+        _dbContext.Transactions.When(x => x.Add(Arg.Any<Transaction>()))
+            .Do(x => captured = x.Arg<Transaction>());
+
+        var command = new CreateTransactionCommand(
+            new DateOnly(2026, 1, 5), "Sinh hoạt 5 tháng", 25_000_000m, 0m, null,
+            null, null, null, null, false, null,
+            true, new DateOnly(2026, 1, 1), new DateOnly(2026, 5, 31));
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        captured.ShouldNotBeNull();
+        captured.IsPrepaid.ShouldBeTrue();
+        captured.PrepaidFrom.ShouldBe(new DateOnly(2026, 1, 1));
+        captured.PrepaidTo.ShouldBe(new DateOnly(2026, 5, 31));
+    }
+
+    [Fact]
+    public async Task Handle_PrepaidWithoutRange_Fails()
+    {
+        var handler = CreateHandler(UserId);
+        var command = new CreateTransactionCommand(
+            new DateOnly(2026, 1, 5), "Sinh hoạt", 25_000_000m, 0m, null,
+            null, null, null, null, false, null, true);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("Transactions.PrepaidRangeRequired");
+    }
+
+    [Fact]
+    public async Task Handle_PrepaidRangeBackwards_Fails()
+    {
+        var handler = CreateHandler(UserId);
+        var command = new CreateTransactionCommand(
+            new DateOnly(2026, 1, 5), "Sinh hoạt", 25_000_000m, 0m, null,
+            null, null, null, null, false, null,
+            true, new DateOnly(2026, 5, 31), new DateOnly(2026, 1, 1));
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("Transactions.PrepaidRangeInvalid");
+    }
+
+    [Fact]
+    public async Task Handle_PrepaidOnMoneyOut_Fails()
+    {
+        var handler = CreateHandler(UserId);
+        var command = new CreateTransactionCommand(
+            new DateOnly(2026, 1, 5), "Sai chiều", 0m, 1_000_000m, null,
+            null, null, null, null, false, null,
+            true, new DateOnly(2026, 1, 1), new DateOnly(2026, 5, 31));
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("Transactions.PrepaidOnlyOnCredit");
+    }
+
+    [Fact]
+    public async Task Handle_LinkedDebitWithNoAmount_Succeeds()
+    {
+        Transaction prepaid = PrepaidCredit(UserId);
+        var handler = CreateHandler(UserId, prepaid);
+        Transaction? captured = null;
+        _dbContext.Transactions.When(x => x.Add(Arg.Any<Transaction>()))
+            .Do(x => captured = x.Arg<Transaction>());
+
+        var command = new CreateTransactionCommand(
+            new DateOnly(2026, 2, 1), "Sinh hoạt tháng 2", 0m, 0m, null,
+            null, null, null, null, false, null,
+            false, null, null, prepaid.Id);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        captured.ShouldNotBeNull();
+        captured.PrepaidTransactionId.ShouldBe(prepaid.Id);
+        captured.Credit.Amount.ShouldBe(0m);
+        captured.Debit.Amount.ShouldBe(0m);
+    }
+
+    [Fact]
+    public async Task Handle_PrepaidLinkNotFound_Fails()
+    {
+        var handler = CreateHandler(UserId);
+        var command = new CreateTransactionCommand(
+            new DateOnly(2026, 2, 1), "Sinh hoạt tháng 2", 0m, 0m, null,
+            null, null, null, null, false, null,
+            false, null, null, Guid.NewGuid());
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("Transactions.PrepaidNotFound");
+    }
 }

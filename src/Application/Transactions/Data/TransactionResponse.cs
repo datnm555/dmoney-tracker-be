@@ -12,4 +12,8 @@ public sealed record TransactionResponse(
     string? CardType,
     string? Bank,
     bool IsAdvance,
-    Guid? AdvanceTransactionId);
+    Guid? AdvanceTransactionId,
+    bool IsPrepaid,
+    DateOnly? PrepaidFrom,
+    DateOnly? PrepaidTo,
+    Guid? PrepaidTransactionId);

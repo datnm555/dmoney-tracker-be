@@ -52,6 +52,26 @@ public static class TransactionErrors
         "Transactions.BankTooLong",
         $"Bank name must be at most {TransactionConstants.BankMaxLength} characters.");
 
+    public static readonly Error PrepaidOnlyOnCredit = Error.Validation(
+        "Transactions.PrepaidOnlyOnCredit",
+        "Prepaid only applies to money-in transactions.");
+
+    public static readonly Error PrepaidRangeRequired = Error.Validation(
+        "Transactions.PrepaidRangeRequired",
+        "Please choose the prepaid period.");
+
+    public static readonly Error PrepaidRangeInvalid = Error.Validation(
+        "Transactions.PrepaidRangeInvalid",
+        "The prepaid period is invalid.");
+
+    public static readonly Error PrepaidLinkInvalid = Error.Validation(
+        "Transactions.PrepaidLinkInvalid",
+        "Only a money-out transaction can be linked to a prepaid credit.");
+
+    public static readonly Error PrepaidNotFound = Error.NotFound(
+        "Transactions.PrepaidNotFound",
+        "Prepaid transaction not found.");
+
     public static readonly Error ImportEmpty = Error.Validation(
         "Transactions.ImportEmpty",
         "The import contains no rows.");

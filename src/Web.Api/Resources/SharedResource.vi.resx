@@ -153,4 +153,17 @@
   <data name="Transactions.AdvanceLinkInvalid" xml:space="preserve"><value>Chỉ giao dịch ghi có (không phải ứng trước) mới liên kết được với khoản ứng trước.</value></data>
   <data name="Transactions.AdvanceNotFound" xml:space="preserve"><value>Không tìm thấy khoản ứng trước.</value></data>
   <data name="Transactions.AdvanceAlreadySettled" xml:space="preserve"><value>Khoản ứng trước này đã được ghi có.</value></data>
+  <data name="form.isPrepaid" xml:space="preserve"><value>Trả trước</value></data>
+  <data name="form.isPrepaidHint" xml:space="preserve"><value>Khoản thu trả trước cho một khoảng thời gian</value></data>
+  <data name="form.prepaidFrom" xml:space="preserve"><value>Từ ngày</value></data>
+  <data name="form.prepaidTo" xml:space="preserve"><value>Đến ngày</value></data>
+  <data name="form.alreadyPrepaid" xml:space="preserve"><value>Đã trả trước</value></data>
+  <data name="form.alreadyPrepaidHint" xml:space="preserve"><value>Khoản chi đã được trả trước — không cần nhập số tiền</value></data>
+  <data name="form.selectPrepaid" xml:space="preserve"><value>Chọn khoản trả trước</value></data>
+  <data name="form.prepaidRequired" xml:space="preserve"><value>Vui lòng chọn khoản trả trước</value></data>
+  <data name="Transactions.PrepaidOnlyOnCredit" xml:space="preserve"><value>Trả trước chỉ áp dụng cho giao dịch ghi có.</value></data>
+  <data name="Transactions.PrepaidRangeRequired" xml:space="preserve"><value>Vui lòng chọn khoảng thời gian trả trước.</value></data>
+  <data name="Transactions.PrepaidRangeInvalid" xml:space="preserve"><value>Khoảng thời gian trả trước không hợp lệ.</value></data>
+  <data name="Transactions.PrepaidLinkInvalid" xml:space="preserve"><value>Chỉ giao dịch ghi nợ mới liên kết được với khoản trả trước.</value></data>
+  <data name="Transactions.PrepaidNotFound" xml:space="preserve"><value>Không tìm thấy khoản trả trước.</value></data>
 </root>

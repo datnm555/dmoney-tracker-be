@@ -13,4 +13,8 @@ public sealed record CreateTransactionCommand(
     string? CardType = null,
     string? Bank = null,
     bool IsAdvance = false,
-    Guid? AdvanceTransactionId = null) : ICommand<Guid>;
+    Guid? AdvanceTransactionId = null,
+    bool IsPrepaid = false,
+    DateOnly? PrepaidFrom = null,
+    DateOnly? PrepaidTo = null,
+    Guid? PrepaidTransactionId = null) : ICommand<Guid>;

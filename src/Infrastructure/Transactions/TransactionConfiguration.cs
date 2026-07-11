@@ -72,5 +72,13 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .WithMany()
             .HasForeignKey(t => t.AdvanceTransactionId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.Property(t => t.IsPrepaid)
+            .HasDefaultValue(false);
+
+        builder.HasOne<Transaction>()
+            .WithMany()
+            .HasForeignKey(t => t.PrepaidTransactionId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
