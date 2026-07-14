@@ -213,4 +213,5 @@
   <data name="form.reimbursedBy" xml:space="preserve"><value>Reimbursed by</value></data>
   <data name="form.reimbursedByNone" xml:space="preserve"><value>Not reimbursed yet</value></data>
   <data name="subcat.edit" xml:space="preserve"><value>Edit sub-category</value></data>
+  <data name="cat.edit" xml:space="preserve"><value>Edit category</value></data>
 </root>

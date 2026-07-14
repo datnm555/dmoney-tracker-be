@@ -145,4 +145,42 @@ public class CategoryHandlersTests
         _dbContext.Categories.Received(1).Remove(category);
         await _dbContext.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task Update_ChangesNameIconAndStampsUpdatedBy()
+    {
+        Category category = Category.Create("Du lịch", "plane", "someone").Value;
+        var (_, _, _) = CreateHandlers([category]);
+        var update = new UpdateCategoryCommandHandler(_dbContext, UserContextFor(UserId));
+
+        var result = await update.Handle(
+            new UpdateCategoryCommand(category.Id, "Du lịch xa", "gift"), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        category.Name.ShouldBe("Du lịch xa");
+        category.Icon.ShouldBe("gift");
+        category.UpdatedBy.ShouldBe("tester");
+    }
+
+    [Fact]
+    public async Task Update_DuplicateName_Fails()
+    {
+        Category existing = Category.Create("Thú cưng", "paw", "tester").Value;
+        Category category = Category.Create("Du lịch", "plane", "tester").Value;
+        var (_, _, _) = CreateHandlers([existing, category]);
+        var update = new UpdateCategoryCommandHandler(_dbContext, UserContextFor(UserId));
+
+        var result = await update.Handle(
+            new UpdateCategoryCommand(category.Id, "Thú cưng", "plane"), CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CategoryErrors.Duplicate);
+    }
+
+    private static IUserContext UserContextFor(Guid id)
+    {
+        var userContext = Substitute.For<IUserContext>();
+        userContext.UserId.Returns(id);
+        return userContext;
+    }
 }

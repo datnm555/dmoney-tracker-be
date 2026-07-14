@@ -213,4 +213,5 @@
   <data name="form.reimbursedBy" xml:space="preserve"><value>Đã được hoàn bởi</value></data>
   <data name="form.reimbursedByNone" xml:space="preserve"><value>Chưa được hoàn</value></data>
   <data name="subcat.edit" xml:space="preserve"><value>Sửa danh mục con</value></data>
+  <data name="cat.edit" xml:space="preserve"><value>Sửa danh mục</value></data>
 </root>
