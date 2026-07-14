@@ -1,4 +1,6 @@
 using Application.Abstractions.Data;
+using Domain.Categories;
+using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,10 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<User> Users => Set<User>();
 
     public DbSet<Transaction> Transactions => Set<Transaction>();
+
+    public DbSet<SubCategory> SubCategories => Set<SubCategory>();
+
+    public DbSet<Category> Categories => Set<Category>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

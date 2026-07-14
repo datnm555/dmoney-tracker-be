@@ -1,0 +1,65 @@
+using Domain.Transactions;
+using SharedKernel;
+
+namespace Domain.SubCategories;
+
+public sealed class SubCategory : AuditedEntity
+{
+    private SubCategory() { }
+
+    public Guid UserId { get; private set; }
+
+    /// <summary>Parent category code from <see cref="TransactionCategories"/>.</summary>
+    public string Category { get; private set; } = string.Empty;
+
+    public string Name { get; private set; } = string.Empty;
+
+    /// <summary>Auto-picked in the transaction dialog when its parent category is chosen.</summary>
+    public bool IsDefault { get; private set; }
+
+    /// <summary>Icon key from the frontend's built-in icon set (later a CDN url).</summary>
+    public string? Icon { get; private set; }
+
+    public static Result<SubCategory> Create(
+        Guid userId,
+        string category,
+        string name,
+        bool isDefault = false,
+        string? icon = null)
+    {
+        string trimmedName = name?.Trim() ?? string.Empty;
+        if (trimmedName.Length == 0)
+        {
+            return Result.Failure<SubCategory>(SubCategoryErrors.NameRequired);
+        }
+
+        if (trimmedName.Length > SubCategoryConstants.NameMaxLength)
+        {
+            return Result.Failure<SubCategory>(SubCategoryErrors.NameTooLong);
+        }
+
+        string trimmedCategory = category?.Trim() ?? string.Empty;
+        if (!TransactionCategories.IsValidOrCustom(trimmedCategory))
+        {
+            return Result.Failure<SubCategory>(SubCategoryErrors.InvalidCategory);
+        }
+
+        string? trimmedIcon = string.IsNullOrWhiteSpace(icon) ? null : icon.Trim();
+        if (trimmedIcon is { Length: > SubCategoryConstants.IconMaxLength })
+        {
+            return Result.Failure<SubCategory>(SubCategoryErrors.InvalidIcon);
+        }
+
+        return new SubCategory
+        {
+            Id = Guid.CreateVersion7(),
+            UserId = userId,
+            Category = trimmedCategory,
+            Name = trimmedName,
+            IsDefault = isDefault,
+            Icon = trimmedIcon
+        };
+    }
+
+    public void SetDefault(bool isDefault) => IsDefault = isDefault;
+}

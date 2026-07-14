@@ -64,5 +64,26 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
 
         builder.Property(t => t.Bank)
             .HasMaxLength(TransactionConstants.BankMaxLength);
+
+        builder.Property(t => t.IsAdvance)
+            .HasDefaultValue(false);
+
+        builder.HasOne<Transaction>()
+            .WithMany()
+            .HasForeignKey(t => t.ReimbursedByTransactionId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.Property(t => t.IsPrepaid)
+            .HasDefaultValue(false);
+
+        builder.HasOne<Transaction>()
+            .WithMany()
+            .HasForeignKey(t => t.PrepaidTransactionId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne<Domain.SubCategories.SubCategory>()
+            .WithMany()
+            .HasForeignKey(t => t.SubCategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

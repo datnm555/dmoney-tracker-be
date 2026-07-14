@@ -26,6 +26,24 @@ public sealed class Transaction : AuditedEntity
 
     public string? Bank { get; private set; }
 
+    /// <summary>Paid in advance on someone else's behalf; expected to be reimbursed later.</summary>
+    public bool IsAdvance { get; private set; }
+
+    /// <summary>For an advance row: the money-in transaction that reimbursed it.</summary>
+    public Guid? ReimbursedByTransactionId { get; private set; }
+
+    /// <summary>Money received upfront covering a period (PrepaidFrom..PrepaidTo).</summary>
+    public bool IsPrepaid { get; private set; }
+
+    public DateOnly? PrepaidFrom { get; private set; }
+
+    public DateOnly? PrepaidTo { get; private set; }
+
+    /// <summary>For a money-out row: the prepaid credit that already covers this expense.</summary>
+    public Guid? PrepaidTransactionId { get; private set; }
+
+    public Guid? SubCategoryId { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         DateOnly date,
@@ -36,8 +54,21 @@ public sealed class Transaction : AuditedEntity
         string? category = null,
         string? paymentMethod = null,
         string? cardType = null,
-        string? bank = null)
+        string? bank = null,
+        bool isAdvance = false,
+        bool isPrepaid = false,
+        DateOnly? prepaidFrom = null,
+        DateOnly? prepaidTo = null,
+        Guid? prepaidTransactionId = null,
+        Guid? subCategoryId = null)
     {
+        Result prepaidValidation = ValidatePrepaid(
+            credit, isPrepaid, prepaidFrom, prepaidTo, prepaidTransactionId);
+        if (prepaidValidation.IsFailure)
+        {
+            return Result.Failure<Transaction>(prepaidValidation.Error);
+        }
+
         string? normalizedCategory = Normalize(category);
         string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
         string? normalizedCardType = Normalize(cardType);
@@ -45,7 +76,8 @@ public sealed class Transaction : AuditedEntity
 
         Result validation = Validate(
             content, credit, debit, note, normalizedCategory,
-            normalizedPaymentMethod, normalizedCardType, normalizedBank);
+            normalizedPaymentMethod, normalizedCardType, normalizedBank,
+            prepaidTransactionId is not null);
         if (validation.IsFailure)
         {
             return Result.Failure<Transaction>(validation.Error);
@@ -63,7 +95,13 @@ public sealed class Transaction : AuditedEntity
             Category = normalizedCategory,
             PaymentMethod = normalizedPaymentMethod,
             CardType = normalizedCardType,
-            Bank = normalizedBank
+            Bank = normalizedBank,
+            IsAdvance = isAdvance,
+            IsPrepaid = isPrepaid,
+            PrepaidFrom = isPrepaid ? prepaidFrom : null,
+            PrepaidTo = isPrepaid ? prepaidTo : null,
+            PrepaidTransactionId = prepaidTransactionId,
+            SubCategoryId = subCategoryId
         };
 
         return transaction;
@@ -78,8 +116,21 @@ public sealed class Transaction : AuditedEntity
         string? category = null,
         string? paymentMethod = null,
         string? cardType = null,
-        string? bank = null)
+        string? bank = null,
+        bool isAdvance = false,
+        bool isPrepaid = false,
+        DateOnly? prepaidFrom = null,
+        DateOnly? prepaidTo = null,
+        Guid? prepaidTransactionId = null,
+        Guid? subCategoryId = null)
     {
+        Result prepaidValidation = ValidatePrepaid(
+            credit, isPrepaid, prepaidFrom, prepaidTo, prepaidTransactionId);
+        if (prepaidValidation.IsFailure)
+        {
+            return prepaidValidation;
+        }
+
         string? normalizedCategory = Normalize(category);
         string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
         string? normalizedCardType = Normalize(cardType);
@@ -87,7 +138,8 @@ public sealed class Transaction : AuditedEntity
 
         Result validation = Validate(
             content, credit, debit, note, normalizedCategory,
-            normalizedPaymentMethod, normalizedCardType, normalizedBank);
+            normalizedPaymentMethod, normalizedCardType, normalizedBank,
+            prepaidTransactionId is not null);
         if (validation.IsFailure)
         {
             return validation;
@@ -102,6 +154,12 @@ public sealed class Transaction : AuditedEntity
         PaymentMethod = normalizedPaymentMethod;
         CardType = normalizedCardType;
         Bank = normalizedBank;
+        IsAdvance = isAdvance;
+        IsPrepaid = isPrepaid;
+        PrepaidFrom = isPrepaid ? prepaidFrom : null;
+        PrepaidTo = isPrepaid ? prepaidTo : null;
+        PrepaidTransactionId = prepaidTransactionId;
+        SubCategoryId = subCategoryId;
 
         return Result.Success();
     }
@@ -114,7 +172,8 @@ public sealed class Transaction : AuditedEntity
         string? normalizedCategory,
         string paymentMethod,
         string? cardType,
-        string? bank)
+        string? bank,
+        bool coveredByPrepaid = false)
     {
         if (string.IsNullOrWhiteSpace(content))
         {
@@ -131,12 +190,12 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure(TransactionErrors.NoteTooLong);
         }
 
-        if (credit.Amount == 0m && debit.Amount == 0m)
+        if (credit.Amount == 0m && debit.Amount == 0m && !coveredByPrepaid)
         {
             return Result.Failure(TransactionErrors.EmptyAmount);
         }
 
-        if (normalizedCategory is not null && !TransactionCategories.IsValid(normalizedCategory))
+        if (normalizedCategory is not null && !TransactionCategories.IsValidOrCustom(normalizedCategory))
         {
             return Result.Failure(TransactionErrors.InvalidCategory);
         }
@@ -166,6 +225,43 @@ public sealed class Transaction : AuditedEntity
         if ((bank?.Length ?? 0) > TransactionConstants.BankMaxLength)
         {
             return Result.Failure(TransactionErrors.BankTooLong);
+        }
+
+        return Result.Success();
+    }
+
+    public void MarkReimbursedBy(Guid creditTransactionId) => ReimbursedByTransactionId = creditTransactionId;
+
+    public void ClearReimbursement() => ReimbursedByTransactionId = null;
+
+    private static Result ValidatePrepaid(
+        Money credit,
+        bool isPrepaid,
+        DateOnly? prepaidFrom,
+        DateOnly? prepaidTo,
+        Guid? prepaidTransactionId)
+    {
+        if (isPrepaid)
+        {
+            if (credit.Amount <= 0m)
+            {
+                return Result.Failure(TransactionErrors.PrepaidOnlyOnCredit);
+            }
+
+            if (prepaidFrom is null || prepaidTo is null)
+            {
+                return Result.Failure(TransactionErrors.PrepaidRangeRequired);
+            }
+
+            if (prepaidFrom > prepaidTo)
+            {
+                return Result.Failure(TransactionErrors.PrepaidRangeInvalid);
+            }
+        }
+
+        if (prepaidTransactionId is not null && (credit.Amount > 0m || isPrepaid))
+        {
+            return Result.Failure(TransactionErrors.PrepaidLinkInvalid);
         }
 
         return Result.Success();

@@ -60,15 +60,18 @@
   <data name="Transactions.ContentTooLong" xml:space="preserve"><value>Content must be at most 500 characters.</value></data>
   <data name="Transactions.NoteTooLong" xml:space="preserve"><value>Note must be at most 1000 characters.</value></data>
   <data name="Transactions.EmptyAmount" xml:space="preserve"><value>At least one amount must be greater than 0.</value></data>
-  <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Invalid month (expected format YYYY-MM).</value></data>
+  <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Invalid month (expected format YYYY or YYYY-MM).</value></data>
   <data name="Money.NegativeAmount" xml:space="preserve"><value>Amount must not be negative.</value></data>
   <data name="Money.UnsupportedCurrency" xml:space="preserve"><value>This currency is not supported.</value></data>
-  <data name="category.food" xml:space="preserve"><value>Food &amp; Drink</value></data>
+  <data name="category.food" xml:space="preserve"><value>Eating out</value></data>
+  <data name="category.living" xml:space="preserve"><value>Living</value></data>
   <data name="category.transport" xml:space="preserve"><value>Transport</value></data>
   <data name="category.bills" xml:space="preserve"><value>Bills</value></data>
   <data name="category.shopping" xml:space="preserve"><value>Shopping</value></data>
   <data name="category.entertainment" xml:space="preserve"><value>Entertainment</value></data>
   <data name="category.salary" xml:space="preserve"><value>Salary</value></data>
+  <data name="category.education" xml:space="preserve"><value>Education</value></data>
+  <data name="category.savings" xml:space="preserve"><value>Savings</value></data>
   <data name="category.other" xml:space="preserve"><value>Other</value></data>
   <data name="dashboard.title" xml:space="preserve"><value>Overview</value></data>
   <data name="dashboard.monthlyChart" xml:space="preserve"><value>Income vs spending (last 12 months)</value></data>
@@ -115,4 +118,96 @@
   <data name="form.cardTypeRequired" xml:space="preserve"><value>Please select a card type</value></data>
   <data name="auth.loginHint" xml:space="preserve"><value>Enter your email and password</value></data>
   <data name="auth.forgotPassword" xml:space="preserve"><value>Forgot password?</value></data>
+  <data name="Transactions.ImportEmpty" xml:space="preserve"><value>The import contains no rows.</value></data>
+  <data name="Transactions.ImportTooManyRows" xml:space="preserve"><value>An import may contain at most 1000 rows.</value></data>
+  <data name="import.title" xml:space="preserve"><value>Import transactions</value></data>
+  <data name="import.button" xml:space="preserve"><value>Import file</value></data>
+  <data name="import.hint" xml:space="preserve"><value>Choose a CSV or XLSX file with columns: Date, Content, Amount (negative = money out, positive = money in), Note. Category will be set to Other.</value></data>
+  <data name="import.chooseFile" xml:space="preserve"><value>Choose file</value></data>
+  <data name="import.rowsValid" xml:space="preserve"><value>valid rows</value></data>
+  <data name="import.rowsInvalid" xml:space="preserve"><value>invalid rows</value></data>
+  <data name="import.save" xml:space="preserve"><value>Import</value></data>
+  <data name="import.success" xml:space="preserve"><value>Imported</value></data>
+  <data name="import.skipped" xml:space="preserve"><value>skipped</value></data>
+  <data name="import.errInvalidDate" xml:space="preserve"><value>Invalid date</value></data>
+  <data name="import.errInvalidAmount" xml:space="preserve"><value>Invalid amount</value></data>
+  <data name="import.errEmptyContent" xml:space="preserve"><value>Missing content</value></data>
+  <data name="filters.title" xml:space="preserve"><value>Filters</value></data>
+  <data name="filters.type" xml:space="preserve"><value>Transaction type</value></data>
+  <data name="filters.month" xml:space="preserve"><value>Month</value></data>
+  <data name="filters.optional" xml:space="preserve"><value>(optional)</value></data>
+  <data name="filters.reset" xml:space="preserve"><value>Reset</value></data>
+  <data name="filters.allYear" xml:space="preserve"><value>Whole year</value></data>
+  <data name="dashboard.cashflowSub" xml:space="preserve"><value>Cash flow</value></data>
+  <data name="dashboard.legendIn" xml:space="preserve"><value>In</value></data>
+  <data name="dashboard.legendOut" xml:space="preserve"><value>Out</value></data>
+  <data name="common.to" xml:space="preserve"><value>to</value></data>
+  <data name="form.saveAndContinue" xml:space="preserve"><value>Save &amp; Continue</value></data>
+  <data name="form.saved" xml:space="preserve"><value>Transaction saved</value></data>
+  <data name="form.isAdvance" xml:space="preserve"><value>Advance payment</value></data>
+  <data name="form.isAdvanceHint" xml:space="preserve"><value>Paid on someone's behalf, to be reimbursed later</value></data>
+  <data name="transactions.net" xml:space="preserve"><value>Net</value></data>
+  <data name="form.reimburseAdvance" xml:space="preserve"><value>Reimburses an advance</value></data>
+  <data name="form.selectAdvance" xml:space="preserve"><value>Select the advance</value></data>
+  <data name="form.advanceRequired" xml:space="preserve"><value>Please select an advance</value></data>
+  <data name="Transactions.AdvanceLinkInvalid" xml:space="preserve"><value>Only a non-advance money-in transaction can be linked to an advance.</value></data>
+  <data name="Transactions.AdvanceNotFound" xml:space="preserve"><value>Advance transaction not found.</value></data>
+  <data name="Transactions.AdvanceAlreadySettled" xml:space="preserve"><value>This advance has already been reimbursed.</value></data>
+  <data name="form.isPrepaid" xml:space="preserve"><value>Prepaid</value></data>
+  <data name="form.isPrepaidHint" xml:space="preserve"><value>Received upfront covering a period</value></data>
+  <data name="form.prepaidFrom" xml:space="preserve"><value>From</value></data>
+  <data name="form.prepaidTo" xml:space="preserve"><value>To</value></data>
+  <data name="form.alreadyPrepaid" xml:space="preserve"><value>Already prepaid</value></data>
+  <data name="form.alreadyPrepaidHint" xml:space="preserve"><value>Covered by a prepaid credit — amount optional</value></data>
+  <data name="form.selectPrepaid" xml:space="preserve"><value>Select the prepaid credit</value></data>
+  <data name="form.prepaidRequired" xml:space="preserve"><value>Please select a prepaid credit</value></data>
+  <data name="Transactions.PrepaidOnlyOnCredit" xml:space="preserve"><value>Prepaid only applies to money-in transactions.</value></data>
+  <data name="Transactions.PrepaidRangeRequired" xml:space="preserve"><value>Please choose the prepaid period.</value></data>
+  <data name="Transactions.PrepaidRangeInvalid" xml:space="preserve"><value>The prepaid period is invalid.</value></data>
+  <data name="Transactions.PrepaidLinkInvalid" xml:space="preserve"><value>Only a money-out transaction can be linked to a prepaid credit.</value></data>
+  <data name="Transactions.PrepaidNotFound" xml:space="preserve"><value>Prepaid transaction not found.</value></data>
+  <data name="form.prepaidMonths" xml:space="preserve"><value>Number of months</value></data>
+  <data name="common.months" xml:space="preserve"><value>month(s)</value></data>
+  <data name="dashboard.txThisYear" xml:space="preserve"><value>transactions this year</value></data>
+  <data name="settings.title" xml:space="preserve"><value>Settings</value></data>
+  <data name="settings.subcategories" xml:space="preserve"><value>Sub-categories</value></data>
+  <data name="subcat.hint" xml:space="preserve"><value>Create sub-categories under each category — e.g. Bills → Fuel. They appear in the transaction dialog when the parent category is picked.</value></data>
+  <data name="subcat.name" xml:space="preserve"><value>Sub-category name</value></data>
+  <data name="subcat.add" xml:space="preserve"><value>Add</value></data>
+  <data name="subcat.empty" xml:space="preserve"><value>No sub-categories yet</value></data>
+  <data name="subcat.deleteConfirm" xml:space="preserve"><value>Delete this sub-category?</value></data>
+  <data name="form.subCategory" xml:space="preserve"><value>Sub-category</value></data>
+  <data name="SubCategories.NameRequired" xml:space="preserve"><value>Please enter a sub-category name.</value></data>
+  <data name="SubCategories.NameTooLong" xml:space="preserve"><value>Sub-category name must be at most 50 characters.</value></data>
+  <data name="SubCategories.InvalidCategory" xml:space="preserve"><value>Invalid parent category.</value></data>
+  <data name="SubCategories.Duplicate" xml:space="preserve"><value>This sub-category already exists.</value></data>
+  <data name="SubCategories.NotFound" xml:space="preserve"><value>Sub-category not found.</value></data>
+  <data name="SubCategories.CategoryMismatch" xml:space="preserve"><value>The sub-category does not belong to the selected category.</value></data>
+  <data name="subcat.default" xml:space="preserve"><value>Default</value></data>
+  <data name="filters.amountFrom" xml:space="preserve"><value>From</value></data>
+  <data name="filters.amountTo" xml:space="preserve"><value>To</value></data>
+  <data name="links.reimburses" xml:space="preserve"><value>Reimburses</value></data>
+  <data name="links.reimbursedBy" xml:space="preserve"><value>Reimbursed by</value></data>
+  <data name="links.covers" xml:space="preserve"><value>Covers</value></data>
+  <data name="links.coveredBy" xml:space="preserve"><value>Covered by</value></data>
+  <data name="export.button" xml:space="preserve"><value>Export Excel</value></data>
+  <data name="dashboard.byCategory" xml:space="preserve"><value>Spending by category</value></data>
+  <data name="dashboard.noSubCategory" xml:space="preserve"><value>Uncategorised</value></data>
+  <data name="Categories.NameRequired" xml:space="preserve"><value>Please enter a category name.</value></data>
+  <data name="Categories.NameTooLong" xml:space="preserve"><value>Category name must be at most 50 characters.</value></data>
+  <data name="Categories.IconRequired" xml:space="preserve"><value>Please pick an icon for the category.</value></data>
+  <data name="Categories.Duplicate" xml:space="preserve"><value>This category already exists.</value></data>
+  <data name="Categories.NotFound" xml:space="preserve"><value>Category not found.</value></data>
+  <data name="Categories.InUse" xml:space="preserve"><value>This category is used by transactions or sub-categories and cannot be deleted.</value></data>
+  <data name="SubCategories.InvalidIcon" xml:space="preserve"><value>Invalid sub-category icon.</value></data>
+  <data name="menu.categories" xml:space="preserve"><value>Parent categories</value></data>
+  <data name="menu.subcategories" xml:space="preserve"><value>Sub-categories</value></data>
+  <data name="cat.title" xml:space="preserve"><value>Parent categories</value></data>
+  <data name="cat.hint" xml:space="preserve"><value>Built-in system categories plus the ones you create.</value></data>
+  <data name="cat.create" xml:space="preserve"><value>New category</value></data>
+  <data name="cat.name" xml:space="preserve"><value>Category name</value></data>
+  <data name="cat.icon" xml:space="preserve"><value>Icon</value></data>
+  <data name="cat.system" xml:space="preserve"><value>System</value></data>
+  <data name="cat.deleteConfirm" xml:space="preserve"><value>Delete this category?</value></data>
+  <data name="subcat.create" xml:space="preserve"><value>New sub-category</value></data>
 </root>

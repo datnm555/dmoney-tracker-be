@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Transactions;
+using Application.Transactions.Data;
 using Domain.Transactions;
 using MockQueryable.NSubstitute;
 using NSubstitute;
@@ -24,6 +25,8 @@ public class GetTransactionsByMonthQueryHandlerTests
         _userContext.UserId.Returns(UserId);
         var transactionsDbSet = transactions.ToList().BuildMockDbSet();
         _dbContext.Transactions.Returns(transactionsDbSet);
+        var subCategoriesDbSet = new List<Domain.SubCategories.SubCategory>().BuildMockDbSet();
+        _dbContext.SubCategories.Returns(subCategoriesDbSet);
         return new GetTransactionsByMonthQueryHandler(_dbContext, _userContext);
     }
 
@@ -106,5 +109,75 @@ public class GetTransactionsByMonthQueryHandlerTests
         result.Value.Items[0].PaymentMethod.ShouldBe(PaymentMethods.Card);
         result.Value.Items[0].CardType.ShouldBe(CardTypes.Visa);
         result.Value.Items[0].Bank.ShouldBe("Techcombank");
+    }
+
+    [Fact]
+    public async Task Handle_WithYearOnly_ReturnsWholeYearWithTotals()
+    {
+        var handler = CreateHandler(
+            Tx(UserId, new DateOnly(2026, 1, 5), 10_000_000m, 0m),
+            Tx(UserId, new DateOnly(2026, 7, 15), 0m, 4_000_000m),
+            Tx(UserId, new DateOnly(2025, 12, 31), 999m, 0m),         // previous year
+            Tx(OtherUserId, new DateOnly(2026, 3, 1), 555m, 0m));    // other user
+
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026"), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Items.Count.ShouldBe(2);
+        result.Value.TotalCredit.Amount.ShouldBe(10_000_000m);
+        result.Value.TotalDebit.Amount.ShouldBe(4_000_000m);
+        result.Value.Balance.Amount.ShouldBe(6_000_000m);
+    }
+
+    [Fact]
+    public async Task Handle_WithMalformedYear_Fails()
+    {
+        var handler = CreateHandler();
+
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("202A"), CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.InvalidMonth);
+    }
+
+    [Fact]
+    public async Task Handle_AttachesAdvanceAndPrepaidLinks()
+    {
+        Transaction advance = Transaction.Create(
+            UserId, new DateOnly(2026, 6, 1), "Ứng tiền dầu",
+            Money.Zero(), Money.Create(4_900_000m).Value, null,
+            null, null, null, null, true).Value;
+        Transaction credit = Transaction.Create(
+            UserId, new DateOnly(2026, 7, 10), "Anh Huy hoàn",
+            Money.Create(4_900_000m).Value, Money.Zero(), null).Value;
+        advance.MarkReimbursedBy(credit.Id);
+
+        Transaction prepaid = Transaction.Create(
+            UserId, new DateOnly(2026, 7, 1), "Sinh hoạt 5 tháng",
+            Money.Create(25_000_000m).Value, Money.Zero(), null,
+            null, null, null, null, false, true,
+            new DateOnly(2026, 7, 1), new DateOnly(2026, 11, 30)).Value;
+        Transaction consumer = Transaction.Create(
+            UserId, new DateOnly(2026, 7, 15), "Sinh hoạt tháng 7",
+            Money.Zero(), Money.Zero(), null,
+            null, null, null, null, false, false, null, null, prepaid.Id).Value;
+
+        var handler = CreateHandler(advance, credit, prepaid, consumer);
+
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07"), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        TransactionResponse creditItem = result.Value.Items.Single(i => i.Content == "Anh Huy hoàn");
+        creditItem.Links.ShouldNotBeNull();
+        creditItem.Links.Single().Relation.ShouldBe("reimburses");
+        creditItem.Links.Single().Content.ShouldBe("Ứng tiền dầu");
+
+        TransactionResponse prepaidItem = result.Value.Items.Single(i => i.Content == "Sinh hoạt 5 tháng");
+        prepaidItem.Links.ShouldNotBeNull();
+        prepaidItem.Links.Single().Relation.ShouldBe("covers");
+
+        TransactionResponse consumerItem = result.Value.Items.Single(i => i.Content == "Sinh hoạt tháng 7");
+        consumerItem.Links.ShouldNotBeNull();
+        consumerItem.Links.Single().Relation.ShouldBe("coveredBy");
     }
 }

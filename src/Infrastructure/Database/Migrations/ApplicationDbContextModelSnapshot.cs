@@ -22,6 +22,83 @@ namespace Infrastructure.Database.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Categories.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("categories", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.SubCategories.SubCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<bool>("IsDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Category");
+
+                    b.ToTable("sub_categories", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Transactions.Transaction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -37,8 +114,8 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("character varying(20)");
 
                     b.Property<string>("Category")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -50,6 +127,16 @@ namespace Infrastructure.Database.Migrations
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
+
+                    b.Property<bool>("IsAdvance")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsPrepaid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");
@@ -65,10 +152,31 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("character varying(20)")
                         .HasDefaultValue("transfer");
 
+                    b.Property<DateOnly?>("PrepaidFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("PrepaidTo")
+                        .HasColumnType("date");
+
+                    b.Property<Guid?>("PrepaidTransactionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ReimbursedByTransactionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("SubCategoryId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PrepaidTransactionId");
+
+                    b.HasIndex("ReimbursedByTransactionId");
+
+                    b.HasIndex("SubCategoryId");
 
                     b.HasIndex("UserId", "Date");
 
@@ -112,8 +220,41 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Categories.Category", b =>
+                {
+                    b.HasOne("Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.SubCategories.SubCategory", b =>
+                {
+                    b.HasOne("Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Transactions.Transaction", b =>
                 {
+                    b.HasOne("Domain.Transactions.Transaction", null)
+                        .WithMany()
+                        .HasForeignKey("PrepaidTransactionId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Domain.Transactions.Transaction", null)
+                        .WithMany()
+                        .HasForeignKey("ReimbursedByTransactionId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Domain.SubCategories.SubCategory", null)
+                        .WithMany()
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Domain.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")

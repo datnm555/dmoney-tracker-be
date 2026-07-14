@@ -60,15 +60,18 @@
   <data name="Transactions.ContentTooLong" xml:space="preserve"><value>Nội dung tối đa 500 ký tự.</value></data>
   <data name="Transactions.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 1000 ký tự.</value></data>
   <data name="Transactions.EmptyAmount" xml:space="preserve"><value>Cần ít nhất một số tiền lớn hơn 0.</value></data>
-  <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Tháng không hợp lệ (định dạng YYYY-MM).</value></data>
+  <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Tháng không hợp lệ (định dạng YYYY hoặc YYYY-MM).</value></data>
   <data name="Money.NegativeAmount" xml:space="preserve"><value>Số tiền không được âm.</value></data>
   <data name="Money.UnsupportedCurrency" xml:space="preserve"><value>Loại tiền tệ chưa được hỗ trợ.</value></data>
-  <data name="category.food" xml:space="preserve"><value>Ăn uống</value></data>
+  <data name="category.food" xml:space="preserve"><value>Ăn hàng</value></data>
+  <data name="category.living" xml:space="preserve"><value>Sinh hoạt</value></data>
   <data name="category.transport" xml:space="preserve"><value>Di chuyển</value></data>
   <data name="category.bills" xml:space="preserve"><value>Hóa đơn</value></data>
   <data name="category.shopping" xml:space="preserve"><value>Mua sắm</value></data>
   <data name="category.entertainment" xml:space="preserve"><value>Giải trí</value></data>
   <data name="category.salary" xml:space="preserve"><value>Lương</value></data>
+  <data name="category.education" xml:space="preserve"><value>Tiền học</value></data>
+  <data name="category.savings" xml:space="preserve"><value>Tích luỹ</value></data>
   <data name="category.other" xml:space="preserve"><value>Khác</value></data>
   <data name="dashboard.title" xml:space="preserve"><value>Tổng quan thu chi</value></data>
   <data name="dashboard.monthlyChart" xml:space="preserve"><value>Thu chi 12 tháng gần nhất</value></data>
@@ -115,4 +118,96 @@
   <data name="form.cardTypeRequired" xml:space="preserve"><value>Vui lòng chọn loại thẻ</value></data>
   <data name="auth.loginHint" xml:space="preserve"><value>Nhập email và mật khẩu của bạn</value></data>
   <data name="auth.forgotPassword" xml:space="preserve"><value>Quên mật khẩu?</value></data>
+  <data name="Transactions.ImportEmpty" xml:space="preserve"><value>File không có dòng nào để nhập.</value></data>
+  <data name="Transactions.ImportTooManyRows" xml:space="preserve"><value>Mỗi lần nhập tối đa 1000 dòng.</value></data>
+  <data name="import.title" xml:space="preserve"><value>Nhập giao dịch</value></data>
+  <data name="import.button" xml:space="preserve"><value>Nhập file</value></data>
+  <data name="import.hint" xml:space="preserve"><value>Chọn file CSV hoặc XLSX với các cột: Ngày, Nội dung, Số tiền (âm = ghi nợ, dương = ghi có), Ghi chú. Danh mục sẽ được đặt là Khác.</value></data>
+  <data name="import.chooseFile" xml:space="preserve"><value>Chọn file</value></data>
+  <data name="import.rowsValid" xml:space="preserve"><value>dòng hợp lệ</value></data>
+  <data name="import.rowsInvalid" xml:space="preserve"><value>dòng lỗi</value></data>
+  <data name="import.save" xml:space="preserve"><value>Nhập</value></data>
+  <data name="import.success" xml:space="preserve"><value>Đã nhập</value></data>
+  <data name="import.skipped" xml:space="preserve"><value>bỏ qua</value></data>
+  <data name="import.errInvalidDate" xml:space="preserve"><value>Ngày không hợp lệ</value></data>
+  <data name="import.errInvalidAmount" xml:space="preserve"><value>Số tiền không hợp lệ</value></data>
+  <data name="import.errEmptyContent" xml:space="preserve"><value>Thiếu nội dung</value></data>
+  <data name="filters.title" xml:space="preserve"><value>Bộ lọc</value></data>
+  <data name="filters.type" xml:space="preserve"><value>Loại giao dịch</value></data>
+  <data name="filters.month" xml:space="preserve"><value>Tháng</value></data>
+  <data name="filters.optional" xml:space="preserve"><value>(tùy chọn)</value></data>
+  <data name="filters.reset" xml:space="preserve"><value>Xóa lọc</value></data>
+  <data name="filters.allYear" xml:space="preserve"><value>Cả năm</value></data>
+  <data name="dashboard.cashflowSub" xml:space="preserve"><value>Cash flow</value></data>
+  <data name="dashboard.legendIn" xml:space="preserve"><value>Thu</value></data>
+  <data name="dashboard.legendOut" xml:space="preserve"><value>Chi</value></data>
+  <data name="common.to" xml:space="preserve"><value>đến</value></data>
+  <data name="form.saveAndContinue" xml:space="preserve"><value>Lưu &amp; Tiếp tục</value></data>
+  <data name="form.saved" xml:space="preserve"><value>Đã lưu giao dịch</value></data>
+  <data name="form.isAdvance" xml:space="preserve"><value>Ứng trước</value></data>
+  <data name="form.isAdvanceHint" xml:space="preserve"><value>Khoản chi hộ, sẽ được hoàn lại sau</value></data>
+  <data name="transactions.net" xml:space="preserve"><value>Net</value></data>
+  <data name="form.reimburseAdvance" xml:space="preserve"><value>Ghi có cho khoản ứng trước</value></data>
+  <data name="form.selectAdvance" xml:space="preserve"><value>Chọn khoản ứng trước</value></data>
+  <data name="form.advanceRequired" xml:space="preserve"><value>Vui lòng chọn khoản ứng trước</value></data>
+  <data name="Transactions.AdvanceLinkInvalid" xml:space="preserve"><value>Chỉ giao dịch ghi có (không phải ứng trước) mới liên kết được với khoản ứng trước.</value></data>
+  <data name="Transactions.AdvanceNotFound" xml:space="preserve"><value>Không tìm thấy khoản ứng trước.</value></data>
+  <data name="Transactions.AdvanceAlreadySettled" xml:space="preserve"><value>Khoản ứng trước này đã được ghi có.</value></data>
+  <data name="form.isPrepaid" xml:space="preserve"><value>Trả trước</value></data>
+  <data name="form.isPrepaidHint" xml:space="preserve"><value>Khoản thu trả trước cho một khoảng thời gian</value></data>
+  <data name="form.prepaidFrom" xml:space="preserve"><value>Từ ngày</value></data>
+  <data name="form.prepaidTo" xml:space="preserve"><value>Đến ngày</value></data>
+  <data name="form.alreadyPrepaid" xml:space="preserve"><value>Đã trả trước</value></data>
+  <data name="form.alreadyPrepaidHint" xml:space="preserve"><value>Khoản chi đã được trả trước — không cần nhập số tiền</value></data>
+  <data name="form.selectPrepaid" xml:space="preserve"><value>Chọn khoản trả trước</value></data>
+  <data name="form.prepaidRequired" xml:space="preserve"><value>Vui lòng chọn khoản trả trước</value></data>
+  <data name="Transactions.PrepaidOnlyOnCredit" xml:space="preserve"><value>Trả trước chỉ áp dụng cho giao dịch ghi có.</value></data>
+  <data name="Transactions.PrepaidRangeRequired" xml:space="preserve"><value>Vui lòng chọn khoảng thời gian trả trước.</value></data>
+  <data name="Transactions.PrepaidRangeInvalid" xml:space="preserve"><value>Khoảng thời gian trả trước không hợp lệ.</value></data>
+  <data name="Transactions.PrepaidLinkInvalid" xml:space="preserve"><value>Chỉ giao dịch ghi nợ mới liên kết được với khoản trả trước.</value></data>
+  <data name="Transactions.PrepaidNotFound" xml:space="preserve"><value>Không tìm thấy khoản trả trước.</value></data>
+  <data name="form.prepaidMonths" xml:space="preserve"><value>Số tháng</value></data>
+  <data name="common.months" xml:space="preserve"><value>tháng</value></data>
+  <data name="dashboard.txThisYear" xml:space="preserve"><value>giao dịch trong năm</value></data>
+  <data name="settings.title" xml:space="preserve"><value>Cài đặt</value></data>
+  <data name="settings.subcategories" xml:space="preserve"><value>Danh mục con</value></data>
+  <data name="subcat.hint" xml:space="preserve"><value>Tạo danh mục con cho từng danh mục — ví dụ Hóa đơn → Xăng, Dầu. Khi tạo giao dịch, chọn danh mục sẽ hiện thêm các danh mục con này.</value></data>
+  <data name="subcat.name" xml:space="preserve"><value>Tên danh mục con</value></data>
+  <data name="subcat.add" xml:space="preserve"><value>Thêm</value></data>
+  <data name="subcat.empty" xml:space="preserve"><value>Chưa có danh mục con nào</value></data>
+  <data name="subcat.deleteConfirm" xml:space="preserve"><value>Xóa danh mục con này?</value></data>
+  <data name="form.subCategory" xml:space="preserve"><value>Danh mục con</value></data>
+  <data name="SubCategories.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên danh mục con.</value></data>
+  <data name="SubCategories.NameTooLong" xml:space="preserve"><value>Tên danh mục con tối đa 50 ký tự.</value></data>
+  <data name="SubCategories.InvalidCategory" xml:space="preserve"><value>Danh mục cha không hợp lệ.</value></data>
+  <data name="SubCategories.Duplicate" xml:space="preserve"><value>Danh mục con này đã tồn tại.</value></data>
+  <data name="SubCategories.NotFound" xml:space="preserve"><value>Không tìm thấy danh mục con.</value></data>
+  <data name="SubCategories.CategoryMismatch" xml:space="preserve"><value>Danh mục con không thuộc danh mục đã chọn.</value></data>
+  <data name="subcat.default" xml:space="preserve"><value>Mặc định</value></data>
+  <data name="filters.amountFrom" xml:space="preserve"><value>Từ</value></data>
+  <data name="filters.amountTo" xml:space="preserve"><value>Đến</value></data>
+  <data name="links.reimburses" xml:space="preserve"><value>Hoàn ứng cho</value></data>
+  <data name="links.reimbursedBy" xml:space="preserve"><value>Đã được hoàn bởi</value></data>
+  <data name="links.covers" xml:space="preserve"><value>Đã chi từ khoản này</value></data>
+  <data name="links.coveredBy" xml:space="preserve"><value>Trả trước bởi</value></data>
+  <data name="export.button" xml:space="preserve"><value>Xuất Excel</value></data>
+  <data name="dashboard.byCategory" xml:space="preserve"><value>Chi tiêu theo danh mục</value></data>
+  <data name="dashboard.noSubCategory" xml:space="preserve"><value>Chưa phân loại</value></data>
+  <data name="Categories.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên danh mục.</value></data>
+  <data name="Categories.NameTooLong" xml:space="preserve"><value>Tên danh mục tối đa 50 ký tự.</value></data>
+  <data name="Categories.IconRequired" xml:space="preserve"><value>Vui lòng chọn biểu tượng cho danh mục.</value></data>
+  <data name="Categories.Duplicate" xml:space="preserve"><value>Danh mục này đã tồn tại.</value></data>
+  <data name="Categories.NotFound" xml:space="preserve"><value>Không tìm thấy danh mục.</value></data>
+  <data name="Categories.InUse" xml:space="preserve"><value>Danh mục đang được dùng bởi giao dịch hoặc danh mục con, không thể xóa.</value></data>
+  <data name="SubCategories.InvalidIcon" xml:space="preserve"><value>Biểu tượng danh mục con không hợp lệ.</value></data>
+  <data name="menu.categories" xml:space="preserve"><value>Danh mục cha</value></data>
+  <data name="menu.subcategories" xml:space="preserve"><value>Danh mục con</value></data>
+  <data name="cat.title" xml:space="preserve"><value>Danh mục cha</value></data>
+  <data name="cat.hint" xml:space="preserve"><value>Danh mục hệ thống có sẵn và các danh mục bạn tự tạo.</value></data>
+  <data name="cat.create" xml:space="preserve"><value>Tạo danh mục</value></data>
+  <data name="cat.name" xml:space="preserve"><value>Tên danh mục</value></data>
+  <data name="cat.icon" xml:space="preserve"><value>Biểu tượng</value></data>
+  <data name="cat.system" xml:space="preserve"><value>Hệ thống</value></data>
+  <data name="cat.deleteConfirm" xml:space="preserve"><value>Xóa danh mục này?</value></data>
+  <data name="subcat.create" xml:space="preserve"><value>Tạo danh mục con</value></data>
 </root>
