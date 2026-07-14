@@ -220,4 +220,6 @@
   <data name="table.actions" xml:space="preserve"><value>Thao tác</value></data>
   <data name="category.uncategorized" xml:space="preserve"><value>Chưa phân loại</value></data>
   <data name="form.categoryRequired" xml:space="preserve"><value>Vui lòng chọn danh mục.</value></data>
+  <data name="Transactions.DateRequired" xml:space="preserve"><value>Vui lòng chọn ngày.</value></data>
+  <data name="Transactions.CategoryRequired" xml:space="preserve"><value>Vui lòng chọn danh mục.</value></data>
 </root>

@@ -40,6 +40,9 @@ public class CategoryHandlersTests
             new DeleteCategoryCommandHandler(_dbContext, userContext));
     }
 
+    private static void SetCreatedAt(Category category, DateTime createdAt) =>
+        typeof(Category).GetProperty(nameof(Category.CreatedAt))!.SetValue(category, createdAt);
+
     private static User UserWithId(Guid id)
     {
         User user = User.Create("t@example.com", "tester", "Tester", "hash").Value;
@@ -91,9 +94,10 @@ public class CategoryHandlersTests
     [Fact]
     public async Task Get_ReturnsSharedCategories_InCreationOrder()
     {
-        // Same CreatedAt in-memory, so the time-ordered v7 ids break the tie.
         Category first = Category.Create("Du lịch", "plane", "tester").Value;
         Category second = Category.Create("Hóa đơn", "zap", "tester", "bills").Value;
+        SetCreatedAt(first, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        SetCreatedAt(second, new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc));
         var (_, get, _) = CreateHandlers([second, first]);
 
         var result = await get.Handle(new GetCategoriesQuery(), CancellationToken.None);

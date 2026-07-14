@@ -63,6 +63,11 @@ public sealed class Transaction : AuditedEntity
         Guid? prepaidTransactionId = null,
         Guid? subCategoryId = null)
     {
+        if (date == default)
+        {
+            return Result.Failure<Transaction>(TransactionErrors.DateRequired);
+        }
+
         Result prepaidValidation = ValidatePrepaid(
             credit, isPrepaid, prepaidFrom, prepaidTo, prepaidTransactionId);
         if (prepaidValidation.IsFailure)
@@ -124,6 +129,11 @@ public sealed class Transaction : AuditedEntity
         Guid? prepaidTransactionId = null,
         Guid? subCategoryId = null)
     {
+        if (date == default)
+        {
+            return Result.Failure(TransactionErrors.DateRequired);
+        }
+
         Result prepaidValidation = ValidatePrepaid(
             credit, isPrepaid, prepaidFrom, prepaidTo, prepaidTransactionId);
         if (prepaidValidation.IsFailure)

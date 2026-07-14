@@ -4,6 +4,14 @@ namespace Domain.Transactions;
 
 public static class TransactionErrors
 {
+    public static readonly Error DateRequired = Error.Validation(
+        "Transactions.DateRequired",
+        "Please pick a date.");
+
+    public static readonly Error CategoryRequired = Error.Validation(
+        "Transactions.CategoryRequired",
+        "Please choose a category.");
+
     public static readonly Error NotFound = Error.NotFound(
         "Transactions.NotFound",
         "Record not found.");

@@ -77,7 +77,7 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
         (await client.PostAsJsonAsync("/transactions",
             Payload($"{ThisMonth}-10", 0m, 200_000m, foodId))).StatusCode.ShouldBe(HttpStatusCode.Created);
         (await client.PostAsJsonAsync("/transactions",
-            Payload($"{ThisMonth}-10", 0m, 50_000m, null))).StatusCode.ShouldBe(HttpStatusCode.Created);
+            Payload($"{ThisMonth}-10", 0m, 50_000m, salaryId))).StatusCode.ShouldBe(HttpStatusCode.Created);
 
         var response = await client.GetAsync($"/transactions/stats?month={ThisMonth}");
 
@@ -98,7 +98,7 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
 
         stats.ByCategory.Count.ShouldBe(2);
         stats.ByCategory[0].CategoryId.ShouldBe(foodId);
-        stats.ByCategory[1].CategoryId.ShouldBeNull();
+        stats.ByCategory[1].CategoryId.ShouldBe(salaryId);
         stats.ByCategory[1].Debit.Amount.ShouldBe(50_000m);
     }
 

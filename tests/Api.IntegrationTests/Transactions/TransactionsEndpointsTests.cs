@@ -83,7 +83,8 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             content = "Lương + thưởng",
             creditAmount = 16_000_000m,
             debitAmount = 0m,
-            note = "đã sửa"
+            note = "đã sửa",
+            categoryId = salaryId
         });
         update.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
@@ -104,13 +105,15 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     {
         HttpClient client = await CreateAuthenticatedClientAsync("zero@example.com", "zerouser");
 
+        Guid categoryId = await CreateCategoryAsync(client, "Khác zero", "tag");
         var response = await client.PostAsJsonAsync("/transactions", new
         {
             date = "2026-07-05",
             content = "x",
             creditAmount = 0m,
             debitAmount = 0m,
-            note = (string?)null
+            note = (string?)null,
+            categoryId
         });
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -133,7 +136,8 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         HttpClient owner = await CreateAuthenticatedClientAsync("owner@example.com", "owneruser");
         HttpClient intruder = await CreateAuthenticatedClientAsync("intruder@example.com", "intruder1");
 
-        var create = await owner.PostAsJsonAsync("/transactions", ValidPayload());
+        Guid ownerCategory = await CreateCategoryAsync(owner, "Lương owner", "wallet");
+        var create = await owner.PostAsJsonAsync("/transactions", ValidPayload(categoryId: ownerCategory));
         var created = await create.Content.ReadFromJsonAsync<CreatedBody>();
 
         var update = await intruder.PutAsJsonAsync($"/transactions/{created!.Id}", ValidPayload("hack"));
@@ -147,6 +151,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     public async Task CreateWithCardPayment_RoundTripsThroughGet()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("cardpayment@example.com", "cardpayment");
+        Guid categoryId = await CreateCategoryAsync(client, "Cat cardpay", "tag");
 
         string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         var response = await client.PostAsJsonAsync("/transactions", new
@@ -156,7 +161,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 260000m,
             note = (string?)null,
-            categoryId = (Guid?)null,
+            categoryId,
             paymentMethod = "card",
             cardType = "visa",
             bank = "Techcombank"
@@ -175,6 +180,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     public async Task CreateCardWithoutCardType_Returns400()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("cardnotype@example.com", "cardnotype");
+        Guid categoryId = await CreateCategoryAsync(client, "Cat cardnotype", "tag");
 
         string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         var response = await client.PostAsJsonAsync("/transactions", new
@@ -184,7 +190,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 260000m,
             note = (string?)null,
-            categoryId = (Guid?)null,
+            categoryId,
             paymentMethod = "card"
         });
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -196,6 +202,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     public async Task UpdateWithCardPayment_RoundTripsThroughGet()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("cardupdate@example.com", "cardupdate");
+        Guid categoryId = await CreateCategoryAsync(client, "Cat cardupdate", "tag");
 
         string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         var createResponse = await client.PostAsJsonAsync("/transactions", new
@@ -205,7 +212,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 260000m,
             note = (string?)null,
-            categoryId = (Guid?)null,
+            categoryId,
             paymentMethod = "card",
             cardType = "visa",
             bank = "Techcombank"
@@ -220,7 +227,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 320000m,
             note = (string?)null,
-            categoryId = (Guid?)null,
+            categoryId,
             paymentMethod = "card",
             cardType = "credit",
             bank = "VPBank"
@@ -239,6 +246,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     public async Task CreateWithoutPaymentMethod_DefaultsToTransfer()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("notransfer@example.com", "notransfer");
+        Guid categoryId = await CreateCategoryAsync(client, "Cat notransfer", "tag");
 
         string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         var response = await client.PostAsJsonAsync("/transactions", new
@@ -248,7 +256,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 50000m,
             note = (string?)null,
-            categoryId = (Guid?)null
+            categoryId
         });
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
@@ -306,6 +314,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     public async Task AdvanceFlag_RoundTripsThroughCreateAndUpdate()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("advance@example.com", "advance1");
+        Guid categoryId = await CreateCategoryAsync(client, "Cat advance1", "tag");
 
         string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         var create = await client.PostAsJsonAsync("/transactions", new
@@ -315,7 +324,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 2_000_000m,
             note = (string?)null,
-            categoryId = (Guid?)null,
+            categoryId,
             isAdvance = true
         });
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -332,7 +341,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 2_000_000m,
             note = (string?)null,
-            categoryId = (Guid?)null,
+            categoryId,
             isAdvance = false
         });
         update.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -346,6 +355,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     public async Task AdvanceReimbursement_LinksMultipleAndClosesThem()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("reimburse@example.com", "reimburse");
+        Guid categoryId = await CreateCategoryAsync(client, "Cat reimburse", "tag");
 
         string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         var advanceIds = new List<Guid>();
@@ -358,7 +368,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
                 creditAmount = 0m,
                 debitAmount = amount,
                 note = (string?)null,
-                categoryId = (Guid?)null,
+                categoryId,
                 isAdvance = true
             });
             createAdvance.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -376,7 +386,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 14_900_000m,
             debitAmount = 0m,
             note = (string?)null,
-            categoryId = (Guid?)null,
+            categoryId,
             advanceTransactionIds = advanceIds
         });
         createReimb.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -397,7 +407,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 2_000_000m,
             debitAmount = 0m,
             note = (string?)null,
-            categoryId = (Guid?)null,
+            categoryId,
             advanceTransactionIds = new[] { advanceIds[0] }
         });
         second.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -417,6 +427,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     public async Task PrepaidCredit_CoversMultipleZeroAmountDebits()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("prepaid@example.com", "prepaid1");
+        Guid categoryId = await CreateCategoryAsync(client, "Cat prepaid1", "tag");
 
         string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         var createPrepaid = await client.PostAsJsonAsync("/transactions", new
@@ -426,7 +437,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 25_000_000m,
             debitAmount = 0m,
             note = (string?)null,
-            categoryId = (Guid?)null,
+            categoryId,
             isPrepaid = true,
             prepaidFrom = "2026-01-01",
             prepaidTo = "2026-05-31"
@@ -449,7 +460,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
                 creditAmount = 0m,
                 debitAmount = 0m,
                 note = (string?)null,
-                categoryId = (Guid?)null,
+                categoryId,
                 prepaidTransactionId = prepaid.Id
             });
             linked.StatusCode.ShouldBe(HttpStatusCode.Created);

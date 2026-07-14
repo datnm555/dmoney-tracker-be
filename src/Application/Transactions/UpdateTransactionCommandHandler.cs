@@ -53,14 +53,16 @@ internal sealed class UpdateTransactionCommandHandler(
             }
         }
 
-        if (command.CategoryId is { } categoryId)
+        if (command.CategoryId is not { } categoryId)
         {
-            bool categoryExists = await dbContext.Categories.AnyAsync(
-                c => c.Id == categoryId, cancellationToken);
-            if (!categoryExists)
-            {
-                return Result.Failure(CategoryErrors.NotFound);
-            }
+            return Result.Failure(TransactionErrors.CategoryRequired);
+        }
+
+        bool categoryExists = await dbContext.Categories.AnyAsync(
+            c => c.Id == categoryId, cancellationToken);
+        if (!categoryExists)
+        {
+            return Result.Failure(CategoryErrors.NotFound);
         }
 
         if (command.SubCategoryId is { } subCategoryId)
