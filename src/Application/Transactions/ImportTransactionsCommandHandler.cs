@@ -2,6 +2,7 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Transactions;
+using Microsoft.EntityFrameworkCore;
 using Domain.Users;
 using SharedKernel;
 
@@ -31,6 +32,15 @@ internal sealed class ImportTransactionsCommandHandler(
             return Result.Failure<int>(TransactionErrors.ImportTooManyRows);
         }
 
+        // Imported rows land in the user's seeded "other" category when present.
+        Guid otherCategoryId = await dbContext.Categories
+            .Where(c => c.UserId == userId && c.Code == TransactionCategories.Other)
+            .Select(c => c.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+        string otherCategory = otherCategoryId == Guid.Empty
+            ? TransactionCategories.Other
+            : otherCategoryId.ToString();
+
         var transactions = new List<Transaction>(command.Rows.Count);
         foreach (ImportTransactionRow row in command.Rows)
         {
@@ -49,7 +59,7 @@ internal sealed class ImportTransactionsCommandHandler(
 
             Result<Transaction> transaction = Transaction.Create(
                 userId, row.Date, row.Content, credit.Value, debit.Value, row.Note,
-                TransactionCategories.Other);
+                otherCategory);
             if (transaction.IsFailure)
             {
                 return Result.Failure<int>(transaction.Error);

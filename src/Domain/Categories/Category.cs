@@ -18,7 +18,13 @@ public sealed class Category : AuditedEntity
     /// <summary>Icon key from the frontend's built-in icon set (later a CDN url).</summary>
     public string Icon { get; private set; } = string.Empty;
 
-    public static Result<Category> Create(Guid userId, string name, string icon)
+    /// <summary>
+    /// Built-in code for seeded system categories (keeps i18n label and icon
+    /// linkage across languages); null for user-created categories.
+    /// </summary>
+    public string? Code { get; private set; }
+
+    public static Result<Category> Create(Guid userId, string name, string icon, string? code = null)
     {
         string trimmedName = name?.Trim() ?? string.Empty;
         if (trimmedName.Length == 0)
@@ -47,7 +53,8 @@ public sealed class Category : AuditedEntity
             Id = Guid.CreateVersion7(),
             UserId = userId,
             Name = trimmedName,
-            Icon = trimmedIcon
+            Icon = trimmedIcon,
+            Code = string.IsNullOrWhiteSpace(code) ? null : code.Trim()
         };
     }
 }

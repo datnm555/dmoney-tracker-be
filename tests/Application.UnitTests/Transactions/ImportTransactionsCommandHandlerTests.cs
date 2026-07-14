@@ -24,6 +24,8 @@ public class ImportTransactionsCommandHandlerTests
         _userContext.UserId.Returns(userId);
         var transactionsDbSet = new List<Transaction>().BuildMockDbSet();
         _dbContext.Transactions.Returns(transactionsDbSet);
+        var categoriesDbSet = new List<Domain.Categories.Category>().BuildMockDbSet();
+        _dbContext.Categories.Returns(categoriesDbSet);
 
         return new ImportTransactionsCommandHandler(_dbContext, _userContext);
     }

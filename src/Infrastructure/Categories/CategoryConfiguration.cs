@@ -21,6 +21,9 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasMaxLength(CategoryConstants.IconMaxLength)
             .IsRequired();
 
+        builder.Property(c => c.Code)
+            .HasMaxLength(CategoryConstants.CodeMaxLength);
+
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(c => c.UserId)

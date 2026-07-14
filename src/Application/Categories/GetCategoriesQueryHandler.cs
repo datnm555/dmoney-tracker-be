@@ -25,8 +25,9 @@ internal sealed class GetCategoriesQueryHandler(
 
         List<CategoryResponse> categories = await dbContext.Categories
             .Where(c => c.UserId == userId)
-            .OrderBy(c => c.Name)
-            .Select(c => new CategoryResponse(c.Id, c.Name, c.Icon))
+            .OrderBy(c => c.Code == null)
+            .ThenBy(c => c.CreatedAt)
+            .Select(c => new CategoryResponse(c.Id, c.Name, c.Icon, c.Code))
             .ToListAsync(cancellationToken);
 
         return categories;
