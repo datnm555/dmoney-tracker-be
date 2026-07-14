@@ -184,4 +184,6 @@
   <data name="SubCategories.NotFound" xml:space="preserve"><value>Sub-category not found.</value></data>
   <data name="SubCategories.CategoryMismatch" xml:space="preserve"><value>The sub-category does not belong to the selected category.</value></data>
   <data name="subcat.default" xml:space="preserve"><value>Default</value></data>
+  <data name="filters.amountFrom" xml:space="preserve"><value>From</value></data>
+  <data name="filters.amountTo" xml:space="preserve"><value>To</value></data>
 </root>
