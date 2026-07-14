@@ -53,10 +53,10 @@ internal sealed class UpdateTransactionCommandHandler(
             }
         }
 
-        if (TransactionCategories.CustomId(command.Category) is { } customCategoryId)
+        if (command.CategoryId is { } categoryId)
         {
             bool categoryExists = await dbContext.Categories.AnyAsync(
-                c => c.Id == customCategoryId && c.UserId == userId, cancellationToken);
+                c => c.Id == categoryId, cancellationToken);
             if (!categoryExists)
             {
                 return Result.Failure(CategoryErrors.NotFound);
@@ -66,13 +66,13 @@ internal sealed class UpdateTransactionCommandHandler(
         if (command.SubCategoryId is { } subCategoryId)
         {
             SubCategory? subCategory = await dbContext.SubCategories
-                .FirstOrDefaultAsync(s => s.Id == subCategoryId && s.UserId == userId, cancellationToken);
+                .FirstOrDefaultAsync(s => s.Id == subCategoryId, cancellationToken);
             if (subCategory is null)
             {
                 return Result.Failure(SubCategoryErrors.NotFound);
             }
 
-            if (subCategory.Category != command.Category?.Trim())
+            if (subCategory.CategoryId != command.CategoryId)
             {
                 return Result.Failure(SubCategoryErrors.CategoryMismatch);
             }
@@ -80,7 +80,7 @@ internal sealed class UpdateTransactionCommandHandler(
 
         Result updated = transaction.Update(
             command.Date, command.Content, credit.Value, debit.Value,
-            command.Note, command.Category,
+            command.Note, command.CategoryId,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
             command.PrepaidTransactionId, command.SubCategoryId);

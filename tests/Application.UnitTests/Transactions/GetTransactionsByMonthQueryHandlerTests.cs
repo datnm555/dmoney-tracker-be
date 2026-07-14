@@ -99,7 +99,7 @@ public class GetTransactionsByMonthQueryHandlerTests
         Transaction tx = Transaction.Create(
             UserId, new DateOnly(2026, 7, 5), "Netflix",
             Money.Zero(), Money.Create(260_000m).Value, null,
-            "entertainment", PaymentMethods.Card, CardTypes.Visa, "Techcombank").Value;
+            Guid.NewGuid(), PaymentMethods.Card, CardTypes.Visa, "Techcombank").Value;
         var handler = CreateHandler(tx);
 
         var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07"), CancellationToken.None);

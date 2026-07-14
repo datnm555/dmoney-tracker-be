@@ -18,13 +18,12 @@ internal sealed class GetCategoriesQueryHandler(
         GetCategoriesQuery query,
         CancellationToken cancellationToken)
     {
-        if (userContext.UserId is not { } userId)
+        if (userContext.UserId is null)
         {
             return Result.Failure<List<CategoryResponse>>(UserErrors.Unauthenticated);
         }
 
         List<CategoryResponse> categories = await dbContext.Categories
-            .Where(c => c.UserId == userId)
             .OrderBy(c => c.Code == null)
             .ThenBy(c => c.CreatedAt)
             .Select(c => new CategoryResponse(c.Id, c.Name, c.Icon, c.Code))

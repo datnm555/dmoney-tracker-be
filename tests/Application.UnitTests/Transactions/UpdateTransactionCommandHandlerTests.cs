@@ -11,6 +11,8 @@ namespace Application.UnitTests.Transactions;
 public class UpdateTransactionCommandHandlerTests
 {
     private static readonly Guid UserId = Guid.NewGuid();
+    private static readonly Domain.Categories.Category Bills =
+        Domain.Categories.Category.Create("Hóa đơn", "zap", "tester", "bills").Value;
     private static readonly Guid OtherUserId = Guid.NewGuid();
 
     private IApplicationDbContext _dbContext = null!;
@@ -24,6 +26,8 @@ public class UpdateTransactionCommandHandlerTests
         _userContext.UserId.Returns(UserId);
         var transactionsDbSet = transactions.ToList().BuildMockDbSet();
         _dbContext.Transactions.Returns(transactionsDbSet);
+        var categoriesDbSet = new List<Domain.Categories.Category> { Bills }.BuildMockDbSet();
+        _dbContext.Categories.Returns(categoriesDbSet);
 
         return new UpdateTransactionCommandHandler(_dbContext, _userContext);
     }
@@ -98,12 +102,12 @@ public class UpdateTransactionCommandHandlerTests
         Transaction tx = OwnTx();
         var handler = CreateHandler(tx);
         var command = new UpdateTransactionCommand(
-            tx.Id, new DateOnly(2026, 7, 10), "mới", 1m, 0m, null, "bills");
+            tx.Id, new DateOnly(2026, 7, 10), "mới", 1m, 0m, null, Bills.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
-        tx.Category.ShouldBe("bills");
+        tx.CategoryId.ShouldBe(Bills.Id);
     }
 
     [Fact]
@@ -113,7 +117,7 @@ public class UpdateTransactionCommandHandlerTests
         var handler = CreateHandler(tx);
         var command = new UpdateTransactionCommand(
             tx.Id, new DateOnly(2026, 7, 10), "Netflix", 0m, 260_000m, null,
-            "entertainment", "card", "visa", "Techcombank");
+            null, "card", "visa", "Techcombank");
 
         var result = await handler.Handle(command, CancellationToken.None);
 

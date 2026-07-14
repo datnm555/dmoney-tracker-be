@@ -35,9 +35,9 @@ public class GetDashboardStatsQueryHandlerTests
     }
 
     private static Transaction Tx(
-        Guid userId, DateOnly date, decimal credit, decimal debit, string? category = null) =>
+        Guid userId, DateOnly date, decimal credit, decimal debit, Guid? categoryId = null) =>
         Transaction.Create(
-            userId, date, "tx", Money.Create(credit).Value, Money.Create(debit).Value, null, category).Value;
+            userId, date, "tx", Money.Create(credit).Value, Money.Create(debit).Value, null, categoryId).Value;
 
     [Fact]
     public async Task Handle_Monthly_Returns12ZeroFilledMonths_OldestFirst()
@@ -80,29 +80,31 @@ public class GetDashboardStatsQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ByCategory_MergesNullIntoOther_SortsByAmountDesc()
+    public async Task Handle_ByCategory_GroupsByCategoryId_SortsByAmountDesc()
     {
+        var foodId = Guid.NewGuid();
+        var salaryId = Guid.NewGuid();
         var handler = CreateHandler(
-            Tx(UserId, new DateOnly(2026, 7, 1), 0m, 200_000m, "food"),
-            Tx(UserId, new DateOnly(2026, 7, 2), 0m, 50_000m),           // null → other
-            Tx(UserId, new DateOnly(2026, 7, 3), 0m, 30_000m, "other"),  // merges with null bucket
-            Tx(UserId, new DateOnly(2026, 7, 4), 5_000_000m, 0m, "salary")); // credit-only: excluded
+            Tx(UserId, new DateOnly(2026, 7, 1), 0m, 200_000m, foodId),
+            Tx(UserId, new DateOnly(2026, 7, 5), 0m, 90_000m, foodId),
+            Tx(UserId, new DateOnly(2026, 7, 2), 0m, 50_000m),               // uncategorised bucket
+            Tx(UserId, new DateOnly(2026, 7, 4), 5_000_000m, 0m, salaryId)); // credit-only: excluded
 
         var result = await handler.Handle(new GetDashboardStatsQuery("2026-07"), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.ByCategory.Count.ShouldBe(2);
-        result.Value.ByCategory[0].Category.ShouldBe("food");
-        result.Value.ByCategory[0].Debit.Amount.ShouldBe(200_000m);
-        result.Value.ByCategory[1].Category.ShouldBe("other");
-        result.Value.ByCategory[1].Debit.Amount.ShouldBe(80_000m);
+        result.Value.ByCategory[0].CategoryId.ShouldBe(foodId);
+        result.Value.ByCategory[0].Debit.Amount.ShouldBe(290_000m);
+        result.Value.ByCategory[1].CategoryId.ShouldBeNull();
+        result.Value.ByCategory[1].Debit.Amount.ShouldBe(50_000m);
     }
 
     [Fact]
     public async Task Handle_ExcludesOtherUsersRecords()
     {
         var handler = CreateHandler(
-            Tx(OtherUserId, new DateOnly(2026, 7, 5), 1_000_000m, 500_000m, "food"));
+            Tx(OtherUserId, new DateOnly(2026, 7, 5), 1_000_000m, 500_000m, Guid.NewGuid()));
 
         var result = await handler.Handle(new GetDashboardStatsQuery("2026-07"), CancellationToken.None);
 

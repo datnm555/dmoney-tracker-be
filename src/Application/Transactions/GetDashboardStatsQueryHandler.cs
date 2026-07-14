@@ -104,15 +104,14 @@ internal sealed class GetDashboardStatsQueryHandler(
                         && t.Date >= monthStart
                         && t.Date < nextMonthStart
                         && t.Debit.Amount > 0m)
-            .GroupBy(t => t.Category)
-            .Select(g => new { Category = g.Key, Debit = g.Sum(t => t.Debit.Amount) })
+            .GroupBy(t => t.CategoryId)
+            .Select(g => new { CategoryId = g.Key, Debit = g.Sum(t => t.Debit.Amount) })
             .ToListAsync(cancellationToken);
 
         return rows
-            .GroupBy(r => r.Category ?? TransactionCategories.Other, StringComparer.Ordinal)
-            .Select(g => new CategoryStatResponse(
-                g.Key,
-                new MoneyResponse(g.Sum(r => r.Debit), Money.DefaultCurrency)))
+            .Select(r => new CategoryStatResponse(
+                r.CategoryId,
+                new MoneyResponse(r.Debit, Money.DefaultCurrency)))
             .OrderByDescending(c => c.Debit.Amount)
             .ToList();
     }

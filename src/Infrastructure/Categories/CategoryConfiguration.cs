@@ -1,5 +1,4 @@
 using Domain.Categories;
-using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,12 +23,12 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(c => c.Code)
             .HasMaxLength(CategoryConstants.CodeMaxLength);
 
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(c => c.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(c => c.CreatedBy)
+            .HasMaxLength(CategoryConstants.AuditNameMaxLength)
+            .IsRequired();
 
-        builder.HasIndex(c => c.UserId);
+        builder.Property(c => c.UpdatedBy)
+            .HasMaxLength(CategoryConstants.AuditNameMaxLength);
 
         builder.Ignore(c => c.DomainEvents);
     }

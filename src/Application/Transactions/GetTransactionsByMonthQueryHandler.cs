@@ -62,7 +62,7 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                 new MoneyResponse(t.Credit.Amount, t.Credit.Currency),
                 new MoneyResponse(t.Debit.Amount, t.Debit.Currency),
                 t.Note,
-                t.Category,
+                t.CategoryId,
                 t.PaymentMethod,
                 t.CardType,
                 t.Bank,

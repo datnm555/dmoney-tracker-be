@@ -15,13 +15,13 @@ internal sealed class DeleteSubCategoryCommandHandler(
 {
     public async Task<Result> Handle(DeleteSubCategoryCommand command, CancellationToken cancellationToken)
     {
-        if (userContext.UserId is not { } userId)
+        if (userContext.UserId is null)
         {
             return Result.Failure(UserErrors.Unauthenticated);
         }
 
         SubCategory? subCategory = await dbContext.SubCategories
-            .FirstOrDefaultAsync(s => s.Id == command.Id && s.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(s => s.Id == command.Id, cancellationToken);
 
         if (subCategory is null)
         {

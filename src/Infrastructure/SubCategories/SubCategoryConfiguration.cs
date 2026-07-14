@@ -1,5 +1,4 @@
 using Domain.SubCategories;
-using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,10 +12,6 @@ internal sealed class SubCategoryConfiguration : IEntityTypeConfiguration<SubCat
 
         builder.HasKey(s => s.Id);
 
-        builder.Property(s => s.Category)
-            .HasMaxLength(Domain.Transactions.TransactionCategories.MaxLength)
-            .IsRequired();
-
         builder.Property(s => s.Name)
             .HasMaxLength(SubCategoryConstants.NameMaxLength)
             .IsRequired();
@@ -27,12 +22,19 @@ internal sealed class SubCategoryConfiguration : IEntityTypeConfiguration<SubCat
         builder.Property(s => s.Icon)
             .HasMaxLength(SubCategoryConstants.IconMaxLength);
 
-        builder.HasOne<User>()
+        builder.Property(s => s.CreatedBy)
+            .HasMaxLength(Domain.Categories.CategoryConstants.AuditNameMaxLength)
+            .IsRequired();
+
+        builder.Property(s => s.UpdatedBy)
+            .HasMaxLength(Domain.Categories.CategoryConstants.AuditNameMaxLength);
+
+        builder.HasOne<Domain.Categories.Category>()
             .WithMany()
-            .HasForeignKey(s => s.UserId)
+            .HasForeignKey(s => s.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(s => new { s.UserId, s.Category });
+        builder.HasIndex(s => s.CategoryId);
 
         builder.Ignore(s => s.DomainEvents);
     }

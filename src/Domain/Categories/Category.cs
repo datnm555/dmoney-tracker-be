@@ -3,15 +3,12 @@ using SharedKernel;
 namespace Domain.Categories;
 
 /// <summary>
-/// User-defined parent category. Built-in categories stay in
-/// <see cref="Transactions.TransactionCategories"/>; transactions reference a custom
-/// category by its Id (as a string) in their Category field.
+/// Shared parent category (no per-user ownership; admin management comes
+/// later). Transactions and sub-categories reference it by CategoryId.
 /// </summary>
 public sealed class Category : AuditedEntity
 {
     private Category() { }
-
-    public Guid UserId { get; private set; }
 
     public string Name { get; private set; } = string.Empty;
 
@@ -24,7 +21,13 @@ public sealed class Category : AuditedEntity
     /// </summary>
     public string? Code { get; private set; }
 
-    public static Result<Category> Create(Guid userId, string name, string icon, string? code = null)
+    /// <summary>Username of whoever created the category.</summary>
+    public string CreatedBy { get; private set; } = string.Empty;
+
+    /// <summary>Username of whoever last changed the category.</summary>
+    public string? UpdatedBy { get; private set; }
+
+    public static Result<Category> Create(string name, string icon, string createdBy, string? code = null)
     {
         string trimmedName = name?.Trim() ?? string.Empty;
         if (trimmedName.Length == 0)
@@ -38,23 +41,21 @@ public sealed class Category : AuditedEntity
         }
 
         string trimmedIcon = icon?.Trim() ?? string.Empty;
-        if (trimmedIcon.Length == 0)
+        if (trimmedIcon.Length is 0 or > CategoryConstants.IconMaxLength)
         {
             return Result.Failure<Category>(CategoryErrors.IconRequired);
         }
 
-        if (trimmedIcon.Length > CategoryConstants.IconMaxLength)
-        {
-            return Result.Failure<Category>(CategoryErrors.IconRequired);
-        }
+        string trimmedCreatedBy = createdBy?.Trim() ?? string.Empty;
 
         return new Category
         {
             Id = Guid.CreateVersion7(),
-            UserId = userId,
             Name = trimmedName,
             Icon = trimmedIcon,
-            Code = string.IsNullOrWhiteSpace(code) ? null : code.Trim()
+            Code = string.IsNullOrWhiteSpace(code) ? null : code.Trim(),
+            CreatedBy = trimmedCreatedBy,
+            UpdatedBy = trimmedCreatedBy
         };
     }
 }

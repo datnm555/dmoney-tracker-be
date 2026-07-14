@@ -51,8 +51,10 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
 
         builder.Ignore(t => t.DomainEvents);
 
-        builder.Property(t => t.Category)
-            .HasMaxLength(TransactionCategories.MaxLength);
+        builder.HasOne<Domain.Categories.Category>()
+            .WithMany()
+            .HasForeignKey(t => t.CategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.Property(t => t.PaymentMethod)
             .HasMaxLength(PaymentMethods.MaxLength)

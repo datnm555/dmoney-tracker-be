@@ -2,7 +2,6 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.SubCategories;
-using Domain.Transactions;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -23,27 +22,31 @@ internal sealed class CreateSubCategoryCommandHandler(
             return Result.Failure<Guid>(UserErrors.Unauthenticated);
         }
 
+        string? username = await dbContext.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.Username)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (username is null)
+        {
+            return Result.Failure<Guid>(UserErrors.Unauthenticated);
+        }
+
         Result<SubCategory> subCategory = SubCategory.Create(
-            userId, command.Category, command.Name, command.IsDefault, command.Icon);
+            command.CategoryId, command.Name, username, command.IsDefault, command.Icon);
         if (subCategory.IsFailure)
         {
             return Result.Failure<Guid>(subCategory.Error);
         }
 
-        if (TransactionCategories.CustomId(subCategory.Value.Category) is { } customCategoryId)
+        bool categoryExists = await dbContext.Categories.AnyAsync(
+            c => c.Id == command.CategoryId, cancellationToken);
+        if (!categoryExists)
         {
-            bool categoryExists = await dbContext.Categories.AnyAsync(
-                c => c.Id == customCategoryId && c.UserId == userId, cancellationToken);
-            if (!categoryExists)
-            {
-                return Result.Failure<Guid>(SubCategoryErrors.InvalidCategory);
-            }
+            return Result.Failure<Guid>(SubCategoryErrors.InvalidCategory);
         }
 
         bool duplicate = await dbContext.SubCategories.AnyAsync(
-            s => s.UserId == userId
-                 && s.Category == subCategory.Value.Category
-                 && s.Name == subCategory.Value.Name,
+            s => s.CategoryId == subCategory.Value.CategoryId && s.Name == subCategory.Value.Name,
             cancellationToken);
         if (duplicate)
         {
@@ -53,9 +56,7 @@ internal sealed class CreateSubCategoryCommandHandler(
         if (command.IsDefault)
         {
             List<SubCategory> currentDefaults = await dbContext.SubCategories
-                .Where(s => s.UserId == userId
-                            && s.Category == subCategory.Value.Category
-                            && s.IsDefault)
+                .Where(s => s.CategoryId == subCategory.Value.CategoryId && s.IsDefault)
                 .ToListAsync(cancellationToken);
             foreach (SubCategory current in currentDefaults)
             {

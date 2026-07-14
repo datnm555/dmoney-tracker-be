@@ -52,7 +52,8 @@ public class ImportTransactionsCommandHandlerTests
         captured[0].Debit.Amount.ShouldBe(0m);
         captured[1].Credit.Amount.ShouldBe(0m);
         captured[1].Debit.Amount.ShouldBe(1_200_000m);
-        captured.ShouldAllBe(t => t.Category == TransactionCategories.Other);
+        // No shared "other" category in the mock db, so imports stay uncategorised.
+        captured.ShouldAllBe(t => t.CategoryId == null);
         captured.ShouldAllBe(t => t.UserId == UserId);
         captured.ShouldAllBe(t => t.PaymentMethod == PaymentMethods.Transfer);
         await _dbContext.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());

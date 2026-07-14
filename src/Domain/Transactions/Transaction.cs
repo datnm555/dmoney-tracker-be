@@ -18,7 +18,8 @@ public sealed class Transaction : AuditedEntity
 
     public string? Note { get; private set; }
 
-    public string? Category { get; private set; }
+    /// <summary>Shared parent category (categories table).</summary>
+    public Guid? CategoryId { get; private set; }
 
     public string PaymentMethod { get; private set; } = PaymentMethods.Transfer;
 
@@ -51,7 +52,7 @@ public sealed class Transaction : AuditedEntity
         Money credit,
         Money debit,
         string? note,
-        string? category = null,
+        Guid? categoryId = null,
         string? paymentMethod = null,
         string? cardType = null,
         string? bank = null,
@@ -69,13 +70,12 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure<Transaction>(prepaidValidation.Error);
         }
 
-        string? normalizedCategory = Normalize(category);
         string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
         string? normalizedCardType = Normalize(cardType);
         string? normalizedBank = Normalize(bank);
 
         Result validation = Validate(
-            content, credit, debit, note, normalizedCategory,
+            content, credit, debit, note,
             normalizedPaymentMethod, normalizedCardType, normalizedBank,
             prepaidTransactionId is not null);
         if (validation.IsFailure)
@@ -92,7 +92,7 @@ public sealed class Transaction : AuditedEntity
             Credit = credit,
             Debit = debit,
             Note = Normalize(note),
-            Category = normalizedCategory,
+            CategoryId = categoryId,
             PaymentMethod = normalizedPaymentMethod,
             CardType = normalizedCardType,
             Bank = normalizedBank,
@@ -113,7 +113,7 @@ public sealed class Transaction : AuditedEntity
         Money credit,
         Money debit,
         string? note,
-        string? category = null,
+        Guid? categoryId = null,
         string? paymentMethod = null,
         string? cardType = null,
         string? bank = null,
@@ -131,13 +131,12 @@ public sealed class Transaction : AuditedEntity
             return prepaidValidation;
         }
 
-        string? normalizedCategory = Normalize(category);
         string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
         string? normalizedCardType = Normalize(cardType);
         string? normalizedBank = Normalize(bank);
 
         Result validation = Validate(
-            content, credit, debit, note, normalizedCategory,
+            content, credit, debit, note,
             normalizedPaymentMethod, normalizedCardType, normalizedBank,
             prepaidTransactionId is not null);
         if (validation.IsFailure)
@@ -150,7 +149,7 @@ public sealed class Transaction : AuditedEntity
         Credit = credit;
         Debit = debit;
         Note = Normalize(note);
-        Category = normalizedCategory;
+        CategoryId = categoryId;
         PaymentMethod = normalizedPaymentMethod;
         CardType = normalizedCardType;
         Bank = normalizedBank;
@@ -169,7 +168,6 @@ public sealed class Transaction : AuditedEntity
         Money credit,
         Money debit,
         string? note,
-        string? normalizedCategory,
         string paymentMethod,
         string? cardType,
         string? bank,
@@ -193,11 +191,6 @@ public sealed class Transaction : AuditedEntity
         if (credit.Amount == 0m && debit.Amount == 0m && !coveredByPrepaid)
         {
             return Result.Failure(TransactionErrors.EmptyAmount);
-        }
-
-        if (normalizedCategory is not null && !TransactionCategories.IsValidOrCustom(normalizedCategory))
-        {
-            return Result.Failure(TransactionErrors.InvalidCategory);
         }
 
         if (!PaymentMethods.IsValid(paymentMethod))

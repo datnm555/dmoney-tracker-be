@@ -9,7 +9,7 @@ public sealed record UpdateTransactionCommand(
     decimal CreditAmount,
     decimal DebitAmount,
     string? Note,
-    string? Category,
+    Guid? CategoryId,
     string? PaymentMethod = null,
     string? CardType = null,
     string? Bank = null,

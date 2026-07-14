@@ -17,24 +17,22 @@ internal sealed class DeleteCategoryCommandHandler(
         DeleteCategoryCommand command,
         CancellationToken cancellationToken)
     {
-        if (userContext.UserId is not { } userId)
+        if (userContext.UserId is null)
         {
             return Result.Failure(UserErrors.Unauthenticated);
         }
 
         Category? category = await dbContext.Categories
-            .FirstOrDefaultAsync(c => c.Id == command.Id && c.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(c => c.Id == command.Id, cancellationToken);
         if (category is null)
         {
             return Result.Failure(CategoryErrors.NotFound);
         }
 
-        // Transactions and sub-categories reference a custom category by its Id string.
-        string code = command.Id.ToString();
         bool inUse = await dbContext.Transactions.AnyAsync(
-                         t => t.UserId == userId && t.Category == code, cancellationToken)
+                         t => t.CategoryId == command.Id, cancellationToken)
                      || await dbContext.SubCategories.AnyAsync(
-                         s => s.UserId == userId && s.Category == code, cancellationToken);
+                         s => s.CategoryId == command.Id, cancellationToken);
         if (inUse)
         {
             return Result.Failure(CategoryErrors.InUse);

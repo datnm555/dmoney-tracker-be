@@ -1,3 +1,3 @@
 namespace Application.Transactions.Data;
 
-public sealed record CategoryStatResponse(string Category, MoneyResponse Debit);
+public sealed record CategoryStatResponse(Guid? CategoryId, MoneyResponse Debit);

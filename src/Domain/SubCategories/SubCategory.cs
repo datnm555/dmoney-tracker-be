@@ -1,16 +1,17 @@
-using Domain.Transactions;
 using SharedKernel;
 
 namespace Domain.SubCategories;
 
+/// <summary>
+/// Shared sub-category: belongs to a parent category only (no per-user
+/// ownership; admin management comes later).
+/// </summary>
 public sealed class SubCategory : AuditedEntity
 {
     private SubCategory() { }
 
-    public Guid UserId { get; private set; }
-
-    /// <summary>Parent category code from <see cref="TransactionCategories"/>.</summary>
-    public string Category { get; private set; } = string.Empty;
+    /// <summary>Parent category (categories table).</summary>
+    public Guid CategoryId { get; private set; }
 
     public string Name { get; private set; } = string.Empty;
 
@@ -20,10 +21,16 @@ public sealed class SubCategory : AuditedEntity
     /// <summary>Icon key from the frontend's built-in icon set (later a CDN url).</summary>
     public string? Icon { get; private set; }
 
+    /// <summary>Username of whoever created the sub-category.</summary>
+    public string CreatedBy { get; private set; } = string.Empty;
+
+    /// <summary>Username of whoever last changed the sub-category.</summary>
+    public string? UpdatedBy { get; private set; }
+
     public static Result<SubCategory> Create(
-        Guid userId,
-        string category,
+        Guid categoryId,
         string name,
+        string createdBy,
         bool isDefault = false,
         string? icon = null)
     {
@@ -38,8 +45,7 @@ public sealed class SubCategory : AuditedEntity
             return Result.Failure<SubCategory>(SubCategoryErrors.NameTooLong);
         }
 
-        string trimmedCategory = category?.Trim() ?? string.Empty;
-        if (!TransactionCategories.IsValidOrCustom(trimmedCategory))
+        if (categoryId == Guid.Empty)
         {
             return Result.Failure<SubCategory>(SubCategoryErrors.InvalidCategory);
         }
@@ -50,14 +56,17 @@ public sealed class SubCategory : AuditedEntity
             return Result.Failure<SubCategory>(SubCategoryErrors.InvalidIcon);
         }
 
+        string trimmedCreatedBy = createdBy?.Trim() ?? string.Empty;
+
         return new SubCategory
         {
             Id = Guid.CreateVersion7(),
-            UserId = userId,
-            Category = trimmedCategory,
+            CategoryId = categoryId,
             Name = trimmedName,
             IsDefault = isDefault,
-            Icon = trimmedIcon
+            Icon = trimmedIcon,
+            CreatedBy = trimmedCreatedBy,
+            UpdatedBy = trimmedCreatedBy
         };
     }
 
