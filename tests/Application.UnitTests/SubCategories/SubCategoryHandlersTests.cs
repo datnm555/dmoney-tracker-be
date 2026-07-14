@@ -92,4 +92,22 @@ public class SubCategoryHandlersTests
         result.Value.Count.ShouldBe(1);
         result.Value[0].Name.ShouldBe("Xăng");
     }
+
+    [Fact]
+    public async Task Create_NewDefault_UnsetsThePreviousDefault()
+    {
+        SubCategory oldDefault = SubCategory.Create(UserId, "bills", "Xăng", true).Value;
+        var (create, _) = CreateHandlers(oldDefault);
+        SubCategory? captured = null;
+        _dbContext.SubCategories.When(x => x.Add(Arg.Any<SubCategory>()))
+            .Do(x => captured = x.Arg<SubCategory>());
+
+        var result = await create.Handle(
+            new CreateSubCategoryCommand("bills", "Dầu", true), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        captured.ShouldNotBeNull();
+        captured.IsDefault.ShouldBeTrue();
+        oldDefault.IsDefault.ShouldBeFalse();
+    }
 }

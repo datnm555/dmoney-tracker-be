@@ -22,7 +22,7 @@ internal sealed class CreateSubCategoryCommandHandler(
             return Result.Failure<Guid>(UserErrors.Unauthenticated);
         }
 
-        Result<SubCategory> subCategory = SubCategory.Create(userId, command.Category, command.Name);
+        Result<SubCategory> subCategory = SubCategory.Create(userId, command.Category, command.Name, command.IsDefault);
         if (subCategory.IsFailure)
         {
             return Result.Failure<Guid>(subCategory.Error);
@@ -36,6 +36,19 @@ internal sealed class CreateSubCategoryCommandHandler(
         if (duplicate)
         {
             return Result.Failure<Guid>(SubCategoryErrors.Duplicate);
+        }
+
+        if (command.IsDefault)
+        {
+            List<SubCategory> currentDefaults = await dbContext.SubCategories
+                .Where(s => s.UserId == userId
+                            && s.Category == subCategory.Value.Category
+                            && s.IsDefault)
+                .ToListAsync(cancellationToken);
+            foreach (SubCategory current in currentDefaults)
+            {
+                current.SetDefault(false);
+            }
         }
 
         dbContext.SubCategories.Add(subCategory.Value);

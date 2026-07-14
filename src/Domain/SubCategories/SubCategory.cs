@@ -14,7 +14,10 @@ public sealed class SubCategory : AuditedEntity
 
     public string Name { get; private set; } = string.Empty;
 
-    public static Result<SubCategory> Create(Guid userId, string category, string name)
+    /// <summary>Auto-picked in the transaction dialog when its parent category is chosen.</summary>
+    public bool IsDefault { get; private set; }
+
+    public static Result<SubCategory> Create(Guid userId, string category, string name, bool isDefault = false)
     {
         string trimmedName = name?.Trim() ?? string.Empty;
         if (trimmedName.Length == 0)
@@ -38,7 +41,10 @@ public sealed class SubCategory : AuditedEntity
             Id = Guid.CreateVersion7(),
             UserId = userId,
             Category = trimmedCategory,
-            Name = trimmedName
+            Name = trimmedName,
+            IsDefault = isDefault
         };
     }
+
+    public void SetDefault(bool isDefault) => IsDefault = isDefault;
 }

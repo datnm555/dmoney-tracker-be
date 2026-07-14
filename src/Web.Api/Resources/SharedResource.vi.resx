@@ -183,4 +183,5 @@
   <data name="SubCategories.Duplicate" xml:space="preserve"><value>Danh mục con này đã tồn tại.</value></data>
   <data name="SubCategories.NotFound" xml:space="preserve"><value>Không tìm thấy danh mục con.</value></data>
   <data name="SubCategories.CategoryMismatch" xml:space="preserve"><value>Danh mục con không thuộc danh mục đã chọn.</value></data>
+  <data name="subcat.default" xml:space="preserve"><value>Mặc định</value></data>
 </root>
