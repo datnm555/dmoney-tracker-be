@@ -125,4 +125,58 @@ public class SubCategoryHandlersTests
         captured.IsDefault.ShouldBeTrue();
         oldDefault.IsDefault.ShouldBeFalse();
     }
+
+    [Fact]
+    public async Task Update_ChangesNameIconAndStampsUpdatedBy()
+    {
+        SubCategory sub = SubCategory.Create(Bills.Id, "Xăng", "someone").Value;
+        var (_, _) = CreateHandlers(sub);
+        var update = new UpdateSubCategoryCommandHandler(_dbContext, UserContextFor(UserId));
+
+        var result = await update.Handle(
+            new UpdateSubCategoryCommand(sub.Id, "Xăng xe", Icon: "fuel"), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        sub.Name.ShouldBe("Xăng xe");
+        sub.Icon.ShouldBe("fuel");
+        sub.UpdatedBy.ShouldBe("tester");
+    }
+
+    [Fact]
+    public async Task Update_DuplicateNameInSameCategory_Fails()
+    {
+        SubCategory existing = SubCategory.Create(Bills.Id, "Nước", "tester").Value;
+        SubCategory sub = SubCategory.Create(Bills.Id, "Xăng", "tester").Value;
+        var (_, _) = CreateHandlers(existing, sub);
+        var update = new UpdateSubCategoryCommandHandler(_dbContext, UserContextFor(UserId));
+
+        var result = await update.Handle(
+            new UpdateSubCategoryCommand(sub.Id, "Nước"), CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(SubCategoryErrors.Duplicate);
+    }
+
+    [Fact]
+    public async Task Update_MakingDefault_UnsetsThePreviousDefault()
+    {
+        SubCategory oldDefault = SubCategory.Create(Bills.Id, "Xăng", "tester", true).Value;
+        SubCategory sub = SubCategory.Create(Bills.Id, "Dầu", "tester").Value;
+        var (_, _) = CreateHandlers(oldDefault, sub);
+        var update = new UpdateSubCategoryCommandHandler(_dbContext, UserContextFor(UserId));
+
+        var result = await update.Handle(
+            new UpdateSubCategoryCommand(sub.Id, "Dầu", IsDefault: true), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        sub.IsDefault.ShouldBeTrue();
+        oldDefault.IsDefault.ShouldBeFalse();
+    }
+
+    private static IUserContext UserContextFor(Guid id)
+    {
+        var userContext = Substitute.For<IUserContext>();
+        userContext.UserId.Returns(id);
+        return userContext;
+    }
 }

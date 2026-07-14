@@ -212,4 +212,5 @@
   <data name="subcat.create" xml:space="preserve"><value>New sub-category</value></data>
   <data name="form.reimbursedBy" xml:space="preserve"><value>Reimbursed by</value></data>
   <data name="form.reimbursedByNone" xml:space="preserve"><value>Not reimbursed yet</value></data>
+  <data name="subcat.edit" xml:space="preserve"><value>Edit sub-category</value></data>
 </root>

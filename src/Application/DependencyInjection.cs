@@ -29,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<DeleteCategoryCommand>, DeleteCategoryCommandHandler>();
         services.AddScoped<IQueryHandler<GetCategoriesQuery, List<CategoryResponse>>, GetCategoriesQueryHandler>();
         services.AddScoped<ICommandHandler<CreateSubCategoryCommand, Guid>, CreateSubCategoryCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateSubCategoryCommand>, UpdateSubCategoryCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteSubCategoryCommand>, DeleteSubCategoryCommandHandler>();
         services.AddScoped<IQueryHandler<GetSubCategoriesQuery, List<SubCategoryResponse>>, GetSubCategoriesQueryHandler>();
         services.AddScoped<IQueryHandler<GetDashboardStatsQuery, DashboardStatsResponse>, GetDashboardStatsQueryHandler>();
