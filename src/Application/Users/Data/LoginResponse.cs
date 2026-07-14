@@ -5,4 +5,5 @@ public sealed record LoginResponse(
     Guid UserId,
     string Email,
     string Username,
-    string DisplayName);
+    string DisplayName,
+    string RefreshToken);

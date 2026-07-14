@@ -35,4 +35,8 @@ public static class UserErrors
     public static readonly Error Unauthenticated = Error.Unauthorized(
         "Users.Unauthenticated",
         "You must be signed in to perform this action.");
+
+    public static readonly Error InvalidRefreshToken = Error.Unauthorized(
+        "Users.InvalidRefreshToken",
+        "The session has expired. Please sign in again.");
 }

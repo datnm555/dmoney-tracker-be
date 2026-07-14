@@ -222,4 +222,5 @@
   <data name="form.categoryRequired" xml:space="preserve"><value>Vui lòng chọn danh mục.</value></data>
   <data name="Transactions.DateRequired" xml:space="preserve"><value>Vui lòng chọn ngày.</value></data>
   <data name="Transactions.CategoryRequired" xml:space="preserve"><value>Vui lòng chọn danh mục.</value></data>
+  <data name="Users.InvalidRefreshToken" xml:space="preserve"><value>Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</value></data>
 </root>

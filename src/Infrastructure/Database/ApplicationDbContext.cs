@@ -18,6 +18,8 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
 
     public DbSet<Category> Categories => Set<Category>();
 
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

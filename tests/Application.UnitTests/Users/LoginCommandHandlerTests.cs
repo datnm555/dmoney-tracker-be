@@ -4,6 +4,7 @@ using Application.Users;
 using Domain.Users;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using SharedKernel;
 using Shouldly;
 
 namespace Application.UnitTests.Users;
@@ -13,14 +14,18 @@ public class LoginCommandHandlerTests
     private readonly IApplicationDbContext _dbContext = Substitute.For<IApplicationDbContext>();
     private readonly IPasswordHasher _passwordHasher = Substitute.For<IPasswordHasher>();
     private readonly ITokenProvider _tokenProvider = Substitute.For<ITokenProvider>();
+    private readonly IDateTimeProvider _clock = Substitute.For<IDateTimeProvider>();
 
     private LoginCommandHandler CreateHandler(User? existingUser = null)
     {
         List<User> users = existingUser is null ? [] : [existingUser];
         var usersDbSet = users.BuildMockDbSet();
         _dbContext.Users.Returns(usersDbSet);
+        var refreshTokens = new List<RefreshToken>().BuildMockDbSet();
+        _dbContext.RefreshTokens.Returns(refreshTokens);
         _tokenProvider.Create(Arg.Is<User>(u => u != null)).ReturnsForAnyArgs("jwt-token");
-        return new LoginCommandHandler(_dbContext, _passwordHasher, _tokenProvider);
+        _clock.UtcNow.Returns(new DateTime(2026, 7, 15, 0, 0, 0, DateTimeKind.Utc));
+        return new LoginCommandHandler(_dbContext, _passwordHasher, _tokenProvider, _clock);
     }
 
     [Fact]
@@ -35,6 +40,8 @@ public class LoginCommandHandlerTests
         result.IsSuccess.ShouldBeTrue();
         result.Value.Token.ShouldBe("jwt-token");
         result.Value.Username.ShouldBe("user1");
+        result.Value.RefreshToken.ShouldNotBeNullOrEmpty();
+        _dbContext.RefreshTokens.Received(1).Add(Arg.Any<RefreshToken>());
     }
 
     [Fact]

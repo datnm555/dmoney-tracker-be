@@ -16,6 +16,8 @@ public interface IApplicationDbContext
 
     DbSet<Category> Categories { get; }
 
+    DbSet<RefreshToken> RefreshTokens { get; }
+
     DbSet<T> Set<T>() where T : class;
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
