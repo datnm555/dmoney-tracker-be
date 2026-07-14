@@ -29,20 +29,14 @@ public class GetOpenAdvancesQueryHandlerTests
             Money.Zero(), Money.Create(1_000_000m).Value, null,
             null, null, null, null, true).Value;
 
-    private static Transaction Reimbursement(Guid advanceId) =>
-        Transaction.Create(
-            UserId, new DateOnly(2026, 7, 5), "Hoàn ứng",
-            Money.Create(1_000_000m).Value, Money.Zero(), null,
-            null, null, null, null, false, advanceId).Value;
-
     [Fact]
     public async Task Handle_ReturnsOnlyOwnOpenAdvances()
     {
         Transaction open = Advance(UserId, "Còn mở");
         Transaction settledAdvance = Advance(UserId, "Đã hoàn");
-        Transaction reimbursement = Reimbursement(settledAdvance.Id);
+        settledAdvance.MarkReimbursedBy(Guid.NewGuid());
         Transaction foreign = Advance(OtherUserId, "Của người khác");
-        var handler = CreateHandler(open, settledAdvance, reimbursement, foreign);
+        var handler = CreateHandler(open, settledAdvance, foreign);
 
         var result = await handler.Handle(new GetOpenAdvancesQuery(null), CancellationToken.None);
 
@@ -55,12 +49,13 @@ public class GetOpenAdvancesQueryHandlerTests
     [Fact]
     public async Task Handle_ForTransaction_KeepsItsOwnLinkedAdvance()
     {
+        Guid reimbursementId = Guid.NewGuid();
         Transaction settledAdvance = Advance(UserId, "Đã hoàn bởi chính nó");
-        Transaction reimbursement = Reimbursement(settledAdvance.Id);
-        var handler = CreateHandler(settledAdvance, reimbursement);
+        settledAdvance.MarkReimbursedBy(reimbursementId);
+        var handler = CreateHandler(settledAdvance);
 
         var result = await handler.Handle(
-            new GetOpenAdvancesQuery(reimbursement.Id), CancellationToken.None);
+            new GetOpenAdvancesQuery(reimbursementId), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Count.ShouldBe(1);

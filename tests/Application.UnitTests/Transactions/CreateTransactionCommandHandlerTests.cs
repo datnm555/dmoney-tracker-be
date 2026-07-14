@@ -149,13 +149,13 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 9), "Hoàn ứng", 2_000_000m, 0m, null,
-            null, null, null, null, false, advance.Id);
+            null, null, null, null, false, [advance.Id]);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         captured.ShouldNotBeNull();
-        captured.AdvanceTransactionId.ShouldBe(advance.Id);
+        advance.ReimbursedByTransactionId.ShouldBe(captured.Id);
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 9), "Hoàn ứng", 2_000_000m, 0m, null,
-            null, null, null, null, false, Guid.NewGuid());
+            null, null, null, null, false, [Guid.NewGuid()]);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -177,20 +177,39 @@ public class CreateTransactionCommandHandlerTests
     public async Task Handle_AdvanceAlreadySettled_Fails()
     {
         Transaction advance = OpenAdvance(UserId);
-        Transaction settled = Transaction.Create(
-            UserId, new DateOnly(2026, 7, 5), "Đã hoàn trước đó",
-            Money.Create(2_000_000m).Value, Money.Zero(), null,
-            null, null, null, null, false, advance.Id).Value;
-        var handler = CreateHandler(UserId, advance, settled);
+        advance.MarkReimbursedBy(Guid.NewGuid());
+        var handler = CreateHandler(UserId, advance);
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 9), "Hoàn ứng lần 2", 2_000_000m, 0m, null,
-            null, null, null, null, false, advance.Id);
+            null, null, null, null, false, [advance.Id]);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.AdvanceAlreadySettled");
+    }
+
+    [Fact]
+    public async Task Handle_LinksMultipleAdvancesAtOnce()
+    {
+        Transaction first = OpenAdvance(UserId);
+        Transaction second = OpenAdvance(UserId, 5_000_000m);
+        var handler = CreateHandler(UserId, first, second);
+        Transaction? captured = null;
+        _dbContext.Transactions.When(x => x.Add(Arg.Any<Transaction>()))
+            .Do(x => captured = x.Arg<Transaction>());
+
+        var command = new CreateTransactionCommand(
+            new DateOnly(2026, 7, 14), "Anh Huy hoàn tổng", 7_000_000m, 0m, null,
+            null, null, null, null, false, [first.Id, second.Id]);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        captured.ShouldNotBeNull();
+        first.ReimbursedByTransactionId.ShouldBe(captured.Id);
+        second.ReimbursedByTransactionId.ShouldBe(captured.Id);
     }
 
     [Fact]
@@ -201,7 +220,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 9), "Sai chiều", 0m, 500_000m, null,
-            null, null, null, null, false, advance.Id);
+            null, null, null, null, false, [advance.Id]);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -213,7 +232,7 @@ public class CreateTransactionCommandHandlerTests
         Transaction.Create(
             userId, new DateOnly(2026, 1, 5), "Sinh hoạt 5 tháng",
             Money.Create(25_000_000m).Value, Money.Zero(), null,
-            null, null, null, null, false, null,
+            null, null, null, null, false,
             true, new DateOnly(2026, 1, 1), new DateOnly(2026, 5, 31)).Value;
 
     [Fact]

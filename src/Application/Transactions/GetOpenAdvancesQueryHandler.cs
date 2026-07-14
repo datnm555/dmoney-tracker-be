@@ -25,8 +25,8 @@ internal sealed class GetOpenAdvancesQueryHandler(
 
         List<AdvanceResponse> advances = await dbContext.Transactions
             .Where(t => t.UserId == userId && t.IsAdvance)
-            .Where(t => !dbContext.Transactions.Any(o =>
-                o.AdvanceTransactionId == t.Id && o.Id != query.ForTransactionId))
+            .Where(t => t.ReimbursedByTransactionId == null
+                        || t.ReimbursedByTransactionId == query.ForTransactionId)
             .OrderByDescending(t => t.Date)
             .ThenByDescending(t => t.CreatedAt)
             .Select(t => new AdvanceResponse(

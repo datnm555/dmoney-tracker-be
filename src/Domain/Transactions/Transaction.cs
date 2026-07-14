@@ -29,8 +29,8 @@ public sealed class Transaction : AuditedEntity
     /// <summary>Paid in advance on someone else's behalf; expected to be reimbursed later.</summary>
     public bool IsAdvance { get; private set; }
 
-    /// <summary>For a money-in row: the advance transaction this credit reimburses.</summary>
-    public Guid? AdvanceTransactionId { get; private set; }
+    /// <summary>For an advance row: the money-in transaction that reimbursed it.</summary>
+    public Guid? ReimbursedByTransactionId { get; private set; }
 
     /// <summary>Money received upfront covering a period (PrepaidFrom..PrepaidTo).</summary>
     public bool IsPrepaid { get; private set; }
@@ -56,18 +56,12 @@ public sealed class Transaction : AuditedEntity
         string? cardType = null,
         string? bank = null,
         bool isAdvance = false,
-        Guid? advanceTransactionId = null,
         bool isPrepaid = false,
         DateOnly? prepaidFrom = null,
         DateOnly? prepaidTo = null,
         Guid? prepaidTransactionId = null,
         Guid? subCategoryId = null)
     {
-        if (advanceTransactionId is not null && (credit.Amount <= 0m || isAdvance))
-        {
-            return Result.Failure<Transaction>(TransactionErrors.AdvanceLinkInvalid);
-        }
-
         Result prepaidValidation = ValidatePrepaid(
             credit, isPrepaid, prepaidFrom, prepaidTo, prepaidTransactionId);
         if (prepaidValidation.IsFailure)
@@ -103,7 +97,6 @@ public sealed class Transaction : AuditedEntity
             CardType = normalizedCardType,
             Bank = normalizedBank,
             IsAdvance = isAdvance,
-            AdvanceTransactionId = advanceTransactionId,
             IsPrepaid = isPrepaid,
             PrepaidFrom = isPrepaid ? prepaidFrom : null,
             PrepaidTo = isPrepaid ? prepaidTo : null,
@@ -125,18 +118,12 @@ public sealed class Transaction : AuditedEntity
         string? cardType = null,
         string? bank = null,
         bool isAdvance = false,
-        Guid? advanceTransactionId = null,
         bool isPrepaid = false,
         DateOnly? prepaidFrom = null,
         DateOnly? prepaidTo = null,
         Guid? prepaidTransactionId = null,
         Guid? subCategoryId = null)
     {
-        if (advanceTransactionId is not null && (credit.Amount <= 0m || isAdvance))
-        {
-            return Result.Failure(TransactionErrors.AdvanceLinkInvalid);
-        }
-
         Result prepaidValidation = ValidatePrepaid(
             credit, isPrepaid, prepaidFrom, prepaidTo, prepaidTransactionId);
         if (prepaidValidation.IsFailure)
@@ -168,7 +155,6 @@ public sealed class Transaction : AuditedEntity
         CardType = normalizedCardType;
         Bank = normalizedBank;
         IsAdvance = isAdvance;
-        AdvanceTransactionId = advanceTransactionId;
         IsPrepaid = isPrepaid;
         PrepaidFrom = isPrepaid ? prepaidFrom : null;
         PrepaidTo = isPrepaid ? prepaidTo : null;
@@ -243,6 +229,10 @@ public sealed class Transaction : AuditedEntity
 
         return Result.Success();
     }
+
+    public void MarkReimbursedBy(Guid creditTransactionId) => ReimbursedByTransactionId = creditTransactionId;
+
+    public void ClearReimbursement() => ReimbursedByTransactionId = null;
 
     private static Result ValidatePrepaid(
         Money credit,

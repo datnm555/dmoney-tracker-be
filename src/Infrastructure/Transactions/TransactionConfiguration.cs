@@ -70,7 +70,7 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
 
         builder.HasOne<Transaction>()
             .WithMany()
-            .HasForeignKey(t => t.AdvanceTransactionId)
+            .HasForeignKey(t => t.ReimbursedByTransactionId)
             .OnDelete(DeleteBehavior.SetNull);
 
         builder.Property(t => t.IsPrepaid)

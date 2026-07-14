@@ -12,7 +12,7 @@ public sealed record TransactionResponse(
     string? CardType,
     string? Bank,
     bool IsAdvance,
-    Guid? AdvanceTransactionId,
+    IReadOnlyList<Guid> AdvanceTransactionIds,
     bool IsPrepaid,
     DateOnly? PrepaidFrom,
     DateOnly? PrepaidTo,

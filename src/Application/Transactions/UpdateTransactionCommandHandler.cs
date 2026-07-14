@@ -41,22 +41,6 @@ internal sealed class UpdateTransactionCommandHandler(
             return Result.Failure(debit.Error);
         }
 
-        if (command.AdvanceTransactionId is { } advanceId)
-        {
-            bool advanceExists = await dbContext.Transactions.AnyAsync(
-                t => t.Id == advanceId && t.UserId == userId && t.IsAdvance, cancellationToken);
-            if (!advanceExists)
-            {
-                return Result.Failure(TransactionErrors.AdvanceNotFound);
-            }
-
-            bool alreadySettled = await dbContext.Transactions.AnyAsync(
-                t => t.AdvanceTransactionId == advanceId && t.Id != command.Id, cancellationToken);
-            if (alreadySettled)
-            {
-                return Result.Failure(TransactionErrors.AdvanceAlreadySettled);
-            }
-        }
 
         if (command.PrepaidTransactionId is { } prepaidId)
         {
@@ -87,12 +71,48 @@ internal sealed class UpdateTransactionCommandHandler(
             command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.Category,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
-            command.AdvanceTransactionId,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
             command.PrepaidTransactionId, command.SubCategoryId);
         if (updated.IsFailure)
         {
             return updated;
+        }
+
+        // Re-link the reimbursed advances to match the requested set.
+        List<Guid> requestedIds = (command.AdvanceTransactionIds ?? []).Distinct().ToList();
+        List<Transaction> currentlyLinked = await dbContext.Transactions
+            .Where(t => t.ReimbursedByTransactionId == command.Id)
+            .ToListAsync(cancellationToken);
+
+        foreach (Transaction advance in currentlyLinked.Where(a => !requestedIds.Contains(a.Id)))
+        {
+            advance.ClearReimbursement();
+        }
+
+        if (requestedIds.Count > 0)
+        {
+            if (transaction.Credit.Amount <= 0m || transaction.IsAdvance)
+            {
+                return Result.Failure(TransactionErrors.AdvanceLinkInvalid);
+            }
+
+            List<Transaction> advances = await dbContext.Transactions
+                .Where(t => requestedIds.Contains(t.Id) && t.UserId == userId && t.IsAdvance)
+                .ToListAsync(cancellationToken);
+            if (advances.Count != requestedIds.Count)
+            {
+                return Result.Failure(TransactionErrors.AdvanceNotFound);
+            }
+
+            if (advances.Any(a => a.ReimbursedByTransactionId is { } by && by != command.Id))
+            {
+                return Result.Failure(TransactionErrors.AdvanceAlreadySettled);
+            }
+
+            foreach (Transaction advance in advances)
+            {
+                advance.MarkReimbursedBy(transaction.Id);
+            }
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);

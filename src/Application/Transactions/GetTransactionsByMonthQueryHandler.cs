@@ -67,7 +67,10 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                 t.CardType,
                 t.Bank,
                 t.IsAdvance,
-                t.AdvanceTransactionId,
+                dbContext.Transactions
+                    .Where(a => a.ReimbursedByTransactionId == t.Id)
+                    .Select(a => a.Id)
+                    .ToList(),
                 t.IsPrepaid,
                 t.PrepaidFrom,
                 t.PrepaidTo,

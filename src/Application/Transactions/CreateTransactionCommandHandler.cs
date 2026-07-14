@@ -35,14 +35,6 @@ internal sealed class CreateTransactionCommandHandler(
             return Result.Failure<Guid>(debit.Error);
         }
 
-        if (command.AdvanceTransactionId is { } advanceId)
-        {
-            Result advanceCheck = await ValidateAdvanceLinkAsync(advanceId, userId, null, cancellationToken);
-            if (advanceCheck.IsFailure)
-            {
-                return Result.Failure<Guid>(advanceCheck.Error);
-            }
-        }
 
         if (command.PrepaidTransactionId is { } prepaidId)
         {
@@ -68,12 +60,26 @@ internal sealed class CreateTransactionCommandHandler(
             userId, command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.Category,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
-            command.AdvanceTransactionId,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
             command.PrepaidTransactionId, command.SubCategoryId);
         if (transaction.IsFailure)
         {
             return Result.Failure<Guid>(transaction.Error);
+        }
+
+        if (command.AdvanceTransactionIds is { Count: > 0 } advanceIds)
+        {
+            Result<List<Transaction>> advances = await LoadAdvancesForLinkingAsync(
+                advanceIds, userId, transaction.Value, null, cancellationToken);
+            if (advances.IsFailure)
+            {
+                return Result.Failure<Guid>(advances.Error);
+            }
+
+            foreach (Transaction advance in advances.Value)
+            {
+                advance.MarkReimbursedBy(transaction.Value.Id);
+            }
         }
 
         dbContext.Transactions.Add(transaction.Value);
@@ -97,18 +103,31 @@ internal sealed class CreateTransactionCommandHandler(
             : Result.Failure(SubCategoryErrors.CategoryMismatch);
     }
 
-    private async Task<Result> ValidateAdvanceLinkAsync(
-        Guid advanceId, Guid userId, Guid? excludeTransactionId, CancellationToken cancellationToken)
+    private async Task<Result<List<Transaction>>> LoadAdvancesForLinkingAsync(
+        IReadOnlyList<Guid> advanceIds,
+        Guid userId,
+        Transaction credit,
+        Guid? reimbursingTransactionId,
+        CancellationToken cancellationToken)
     {
-        bool advanceExists = await dbContext.Transactions.AnyAsync(
-            t => t.Id == advanceId && t.UserId == userId && t.IsAdvance, cancellationToken);
-        if (!advanceExists)
+        if (credit.Credit.Amount <= 0m || credit.IsAdvance)
         {
-            return Result.Failure(TransactionErrors.AdvanceNotFound);
+            return Result.Failure<List<Transaction>>(TransactionErrors.AdvanceLinkInvalid);
         }
 
-        bool alreadySettled = await dbContext.Transactions.AnyAsync(
-            t => t.AdvanceTransactionId == advanceId && t.Id != excludeTransactionId, cancellationToken);
-        return alreadySettled ? Result.Failure(TransactionErrors.AdvanceAlreadySettled) : Result.Success();
+        List<Guid> distinctIds = advanceIds.Distinct().ToList();
+        List<Transaction> advances = await dbContext.Transactions
+            .Where(t => distinctIds.Contains(t.Id) && t.UserId == userId && t.IsAdvance)
+            .ToListAsync(cancellationToken);
+        if (advances.Count != distinctIds.Count)
+        {
+            return Result.Failure<List<Transaction>>(TransactionErrors.AdvanceNotFound);
+        }
+
+        bool anySettledByOther = advances.Any(a =>
+            a.ReimbursedByTransactionId is { } by && by != reimbursingTransactionId);
+        return anySettledByOther
+            ? Result.Failure<List<Transaction>>(TransactionErrors.AdvanceAlreadySettled)
+            : advances;
     }
 }
