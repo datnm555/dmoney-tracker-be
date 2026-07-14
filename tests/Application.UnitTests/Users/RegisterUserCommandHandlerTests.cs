@@ -17,8 +17,6 @@ public class RegisterUserCommandHandlerTests
     {
         var usersDbSet = existingUsers.ToList().BuildMockDbSet();
         _dbContext.Users.Returns(usersDbSet);
-        var categoriesDbSet = new List<Domain.Categories.Category>().BuildMockDbSet();
-        _dbContext.Categories.Returns(categoriesDbSet);
         _passwordHasher.Hash(Arg.Any<string>()).Returns("hashed");
         return new RegisterUserCommandHandler(_dbContext, _passwordHasher);
     }
@@ -36,8 +34,6 @@ public class RegisterUserCommandHandlerTests
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBe(Guid.Empty);
-        // Registration also seeds the built-in categories for the new user.
-        _dbContext.Categories.Received(8).Add(Arg.Any<Domain.Categories.Category>());
         await _dbContext.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 

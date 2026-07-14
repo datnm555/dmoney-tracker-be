@@ -32,13 +32,13 @@ internal sealed class GetSubCategories : IEndpoint
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapGet("/subcategories", async (
-            string? category,
+            Guid? categoryId,
             IQueryHandler<GetSubCategoriesQuery, List<SubCategoryResponse>> handler,
             IStringLocalizer<SharedResource> localizer,
             CancellationToken cancellationToken) =>
         {
             Result<List<SubCategoryResponse>> result = await handler.Handle(
-                new GetSubCategoriesQuery(category), cancellationToken);
+                new GetSubCategoriesQuery(categoryId), cancellationToken);
 
             return result.ToHttpResult(localizer, Results.Ok);
         }).RequireAuthorization();

@@ -18,21 +18,21 @@ internal sealed class GetSubCategoriesQueryHandler(
         GetSubCategoriesQuery query,
         CancellationToken cancellationToken)
     {
-        if (userContext.UserId is not { } userId)
+        if (userContext.UserId is null)
         {
             return Result.Failure<List<SubCategoryResponse>>(UserErrors.Unauthenticated);
         }
 
-        IQueryable<SubCategory> scope = dbContext.SubCategories.Where(s => s.UserId == userId);
-        if (!string.IsNullOrWhiteSpace(query.Category))
+        IQueryable<SubCategory> scope = dbContext.SubCategories;
+        if (query.CategoryId is { } categoryId)
         {
-            scope = scope.Where(s => s.Category == query.Category);
+            scope = scope.Where(s => s.CategoryId == categoryId);
         }
 
         List<SubCategoryResponse> subCategories = await scope
-            .OrderBy(s => s.Category)
+            .OrderBy(s => s.CategoryId)
             .ThenBy(s => s.Name)
-            .Select(s => new SubCategoryResponse(s.Id, s.Category, s.Name, s.IsDefault, s.Icon))
+            .Select(s => new SubCategoryResponse(s.Id, s.CategoryId, s.Name, s.IsDefault, s.Icon))
             .ToListAsync(cancellationToken);
 
         return subCategories;

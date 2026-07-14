@@ -3,7 +3,7 @@ using Application.Abstractions.Messaging;
 namespace Application.SubCategories;
 
 public sealed record CreateSubCategoryCommand(
-    string Category,
+    Guid CategoryId,
     string Name,
     bool IsDefault = false,
     string? Icon = null) : ICommand<Guid>;

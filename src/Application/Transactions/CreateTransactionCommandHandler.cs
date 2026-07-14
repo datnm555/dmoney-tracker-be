@@ -47,10 +47,10 @@ internal sealed class CreateTransactionCommandHandler(
             }
         }
 
-        if (TransactionCategories.CustomId(command.Category) is { } customCategoryId)
+        if (command.CategoryId is { } categoryId)
         {
             bool categoryExists = await dbContext.Categories.AnyAsync(
-                c => c.Id == customCategoryId && c.UserId == userId, cancellationToken);
+                c => c.Id == categoryId, cancellationToken);
             if (!categoryExists)
             {
                 return Result.Failure<Guid>(CategoryErrors.NotFound);
@@ -60,7 +60,7 @@ internal sealed class CreateTransactionCommandHandler(
         if (command.SubCategoryId is { } subCategoryId)
         {
             Result subCheck = await ValidateSubCategoryAsync(
-                subCategoryId, userId, command.Category, cancellationToken);
+                subCategoryId, command.CategoryId, cancellationToken);
             if (subCheck.IsFailure)
             {
                 return Result.Failure<Guid>(subCheck.Error);
@@ -69,7 +69,7 @@ internal sealed class CreateTransactionCommandHandler(
 
         Result<Transaction> transaction = Transaction.Create(
             userId, command.Date, command.Content, credit.Value, debit.Value,
-            command.Note, command.Category,
+            command.Note, command.CategoryId,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
             command.PrepaidTransactionId, command.SubCategoryId);
@@ -100,16 +100,16 @@ internal sealed class CreateTransactionCommandHandler(
     }
 
     private async Task<Result> ValidateSubCategoryAsync(
-        Guid subCategoryId, Guid userId, string? category, CancellationToken cancellationToken)
+        Guid subCategoryId, Guid? categoryId, CancellationToken cancellationToken)
     {
         SubCategory? subCategory = await dbContext.SubCategories
-            .FirstOrDefaultAsync(s => s.Id == subCategoryId && s.UserId == userId, cancellationToken);
+            .FirstOrDefaultAsync(s => s.Id == subCategoryId, cancellationToken);
         if (subCategory is null)
         {
             return Result.Failure(SubCategoryErrors.NotFound);
         }
 
-        return subCategory.Category == category?.Trim()
+        return subCategory.CategoryId == categoryId
             ? Result.Success()
             : Result.Failure(SubCategoryErrors.CategoryMismatch);
     }

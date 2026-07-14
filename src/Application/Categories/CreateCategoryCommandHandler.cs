@@ -22,14 +22,23 @@ internal sealed class CreateCategoryCommandHandler(
             return Result.Failure<Guid>(UserErrors.Unauthenticated);
         }
 
-        Result<Category> category = Category.Create(userId, command.Name, command.Icon);
+        string? username = await dbContext.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.Username)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (username is null)
+        {
+            return Result.Failure<Guid>(UserErrors.Unauthenticated);
+        }
+
+        Result<Category> category = Category.Create(command.Name, command.Icon, username);
         if (category.IsFailure)
         {
             return Result.Failure<Guid>(category.Error);
         }
 
         bool duplicate = await dbContext.Categories.AnyAsync(
-            c => c.UserId == userId && c.Name == category.Value.Name,
+            c => c.Name == category.Value.Name,
             cancellationToken);
         if (duplicate)
         {

@@ -26,15 +26,24 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
         return client;
     }
 
-    private static object Payload(string date, decimal credit, decimal debit, string? category) => new
+    private static object Payload(string date, decimal credit, decimal debit, Guid? categoryId) => new
     {
         date,
         content = "stats tx",
         creditAmount = credit,
         debitAmount = debit,
         note = (string?)null,
-        category
+        categoryId
     };
+
+    private static async Task<Guid> CreateCategoryAsync(HttpClient client, string name, string icon)
+    {
+        var response = await client.PostAsJsonAsync("/categories", new { name, icon });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
+    internal sealed record CreatedBody(Guid Id);
 
     [Fact]
     public async Task Stats_WithoutToken_Returns401()
@@ -61,10 +70,12 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
     {
         HttpClient client = await CreateAuthenticatedClientAsync("stats@example.com", "statsuser");
 
+        Guid salaryId = await CreateCategoryAsync(client, "Lương stats", "wallet");
+        Guid foodId = await CreateCategoryAsync(client, "Ăn hàng stats", "utensils");
         (await client.PostAsJsonAsync("/transactions",
-            Payload($"{ThisMonth}-05", 15_000_000m, 0m, "salary"))).StatusCode.ShouldBe(HttpStatusCode.Created);
+            Payload($"{ThisMonth}-05", 15_000_000m, 0m, salaryId))).StatusCode.ShouldBe(HttpStatusCode.Created);
         (await client.PostAsJsonAsync("/transactions",
-            Payload($"{ThisMonth}-10", 0m, 200_000m, "food"))).StatusCode.ShouldBe(HttpStatusCode.Created);
+            Payload($"{ThisMonth}-10", 0m, 200_000m, foodId))).StatusCode.ShouldBe(HttpStatusCode.Created);
         (await client.PostAsJsonAsync("/transactions",
             Payload($"{ThisMonth}-10", 0m, 50_000m, null))).StatusCode.ShouldBe(HttpStatusCode.Created);
 
@@ -86,8 +97,8 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
         stats.Daily[0].Debit.Amount.ShouldBe(250_000m);
 
         stats.ByCategory.Count.ShouldBe(2);
-        stats.ByCategory[0].Category.ShouldBe("food");
-        stats.ByCategory[1].Category.ShouldBe("other");
+        stats.ByCategory[0].CategoryId.ShouldBe(foodId);
+        stats.ByCategory[1].CategoryId.ShouldBeNull();
         stats.ByCategory[1].Debit.Amount.ShouldBe(50_000m);
     }
 
@@ -101,6 +112,6 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
     {
         internal sealed record MonthlyItem(string Month, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
         internal sealed record DailyItem(int Day, MoneyBody Debit);
-        internal sealed record CategoryItem(string Category, MoneyBody Debit);
+        internal sealed record CategoryItem(Guid? CategoryId, MoneyBody Debit);
     }
 }

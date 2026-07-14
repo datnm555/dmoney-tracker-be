@@ -12,6 +12,8 @@ namespace Application.UnitTests.Transactions;
 public class CreateTransactionCommandHandlerTests
 {
     private static readonly Guid UserId = Guid.NewGuid();
+    private static readonly Domain.Categories.Category Food =
+        Domain.Categories.Category.Create("Ăn hàng", "utensils", "tester", "food").Value;
 
     private IApplicationDbContext _dbContext = null!;
     private IUserContext _userContext = null!;
@@ -24,6 +26,8 @@ public class CreateTransactionCommandHandlerTests
         _userContext.UserId.Returns(userId);
         var transactionsDbSet = existingTransactions.ToList().BuildMockDbSet();
         _dbContext.Transactions.Returns(transactionsDbSet);
+        var categoriesDbSet = new List<Domain.Categories.Category> { Food }.BuildMockDbSet();
+        _dbContext.Categories.Returns(categoriesDbSet);
 
         return new CreateTransactionCommandHandler(_dbContext, _userContext);
     }
@@ -84,12 +88,12 @@ public class CreateTransactionCommandHandlerTests
     public async Task Handle_WithCategory_PersistsIt()
     {
         var handler = CreateHandler(UserId);
-        var command = new CreateTransactionCommand(new DateOnly(2026, 7, 6), "Ăn trưa", 0m, 50_000m, null, "food");
+        var command = new CreateTransactionCommand(new DateOnly(2026, 7, 6), "Ăn trưa", 0m, 50_000m, null, Food.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
-        _dbContext.Transactions.Received(1).Add(Arg.Is<Transaction>(t => t.Category == "food"));
+        _dbContext.Transactions.Received(1).Add(Arg.Is<Transaction>(t => t.CategoryId == Food.Id));
     }
 
     [Fact]
@@ -102,7 +106,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 7), "Netflix", 0m, 260_000m, null,
-            "entertainment", "card", "visa", "Techcombank");
+            null, "card", "visa", "Techcombank");
 
         Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 

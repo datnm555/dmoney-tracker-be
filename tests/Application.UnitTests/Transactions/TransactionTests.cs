@@ -108,12 +108,14 @@ public class TransactionTests
     }
 
     [Fact]
-    public void Create_WithValidCategory_StoresIt()
+    public void Create_WithCategoryId_StoresIt()
     {
-        var result = Transaction.Create(UserId, Date, "Ăn trưa", Money.Zero(), Vnd(50_000m), null, "food");
+        var categoryId = Guid.NewGuid();
+
+        var result = Transaction.Create(UserId, Date, "Ăn trưa", Money.Zero(), Vnd(50_000m), null, categoryId);
 
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Category.ShouldBe("food");
+        result.Value.CategoryId.ShouldBe(categoryId);
     }
 
     [Fact]
@@ -122,49 +124,18 @@ public class TransactionTests
         var result = Transaction.Create(UserId, Date, "Lương", Vnd(1m), Money.Zero(), null);
 
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Category.ShouldBeNull();
-    }
-
-    [Fact]
-    public void Create_WithWhitespaceCategory_StoresNull()
-    {
-        var result = Transaction.Create(UserId, Date, "x", Vnd(1m), Money.Zero(), null, "   ");
-
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.Category.ShouldBeNull();
-    }
-
-    [Fact]
-    public void Create_WithUnknownCategory_Fails()
-    {
-        var result = Transaction.Create(UserId, Date, "x", Vnd(1m), Money.Zero(), null, "crypto");
-
-        result.IsFailure.ShouldBeTrue();
-        result.Error.Code.ShouldBe("Transactions.InvalidCategory");
-    }
-
-    [Fact]
-    public void Update_WithUnknownCategory_FailsAndKeepsOldValues()
-    {
-        Transaction transaction = Transaction.Create(UserId, Date, "cũ", Vnd(1_000m), Money.Zero(), null, "food").Value;
-
-        var result = transaction.Update(Date, "mới", Vnd(2_000m), Money.Zero(), null, "crypto");
-
-        result.IsFailure.ShouldBeTrue();
-        result.Error.Code.ShouldBe("Transactions.InvalidCategory");
-        transaction.Content.ShouldBe("cũ");
-        transaction.Category.ShouldBe("food");
+        result.Value.CategoryId.ShouldBeNull();
     }
 
     [Fact]
     public void Update_WithNullCategory_ClearsIt()
     {
-        Transaction transaction = Transaction.Create(UserId, Date, "x", Vnd(1m), Money.Zero(), null, "food").Value;
+        Transaction transaction = Transaction.Create(UserId, Date, "x", Vnd(1m), Money.Zero(), null, Guid.NewGuid()).Value;
 
         var result = transaction.Update(Date, "x", Vnd(1m), Money.Zero(), null, null);
 
         result.IsSuccess.ShouldBeTrue();
-        transaction.Category.ShouldBeNull();
+        transaction.CategoryId.ShouldBeNull();
     }
 
     [Fact]
@@ -186,7 +157,7 @@ public class TransactionTests
         var result = Transaction.Create(
             Guid.NewGuid(), new DateOnly(2026, 7, 7), "Netflix",
             Money.Zero(), Vnd(260_000m), null,
-            "entertainment", PaymentMethods.Card, CardTypes.Visa, "Techcombank");
+            null, PaymentMethods.Card, CardTypes.Visa, "Techcombank");
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.PaymentMethod.ShouldBe(PaymentMethods.Card);

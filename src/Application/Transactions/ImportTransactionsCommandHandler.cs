@@ -32,14 +32,12 @@ internal sealed class ImportTransactionsCommandHandler(
             return Result.Failure<int>(TransactionErrors.ImportTooManyRows);
         }
 
-        // Imported rows land in the user's seeded "other" category when present.
+        // Imported rows land in the shared "other" category when present.
         Guid otherCategoryId = await dbContext.Categories
-            .Where(c => c.UserId == userId && c.Code == TransactionCategories.Other)
+            .Where(c => c.Code == TransactionCategories.Other)
             .Select(c => c.Id)
             .FirstOrDefaultAsync(cancellationToken);
-        string otherCategory = otherCategoryId == Guid.Empty
-            ? TransactionCategories.Other
-            : otherCategoryId.ToString();
+        Guid? otherCategory = otherCategoryId == Guid.Empty ? null : otherCategoryId;
 
         var transactions = new List<Transaction>(command.Rows.Count);
         foreach (ImportTransactionRow row in command.Rows)

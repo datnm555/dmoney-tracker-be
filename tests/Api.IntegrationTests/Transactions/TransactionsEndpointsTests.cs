@@ -24,15 +24,22 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         return client;
     }
 
-    private static object ValidPayload(string content = "Lương tháng 7") => new
+    private static object ValidPayload(string content = "Lương tháng 7", Guid? categoryId = null) => new
     {
         date = "2026-07-05",
         content,
         creditAmount = 15_000_000m,
         debitAmount = 0m,
         note = (string?)null,
-        category = "salary"
+        categoryId
     };
+
+    private static async Task<Guid> CreateCategoryAsync(HttpClient client, string name, string icon)
+    {
+        var response = await client.PostAsJsonAsync("/categories", new { name, icon });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
 
     [Fact]
     public async Task Endpoints_WithoutToken_Return401()
@@ -49,8 +56,9 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     {
         HttpClient client = await CreateAuthenticatedClientAsync("crud@example.com", "cruduser");
 
-        // Create
-        var create = await client.PostAsJsonAsync("/transactions", ValidPayload());
+        // Create (with a shared category picked by id)
+        Guid salaryId = await CreateCategoryAsync(client, "Lương CRUD", "wallet");
+        var create = await client.PostAsJsonAsync("/transactions", ValidPayload(categoryId: salaryId));
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedBody>();
         created.ShouldNotBeNull();
@@ -63,7 +71,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         summary.ShouldNotBeNull();
         summary.Items.Count.ShouldBe(1);
         summary.Items[0].Content.ShouldBe("Lương tháng 7");
-        summary.Items[0].Category.ShouldBe("salary");
+        summary.Items[0].CategoryId.ShouldBe(salaryId);
         summary.TotalCredit.Amount.ShouldBe(15_000_000m);
         summary.Balance.Amount.ShouldBe(15_000_000m);
         summary.Balance.Currency.ShouldBe("VND");
@@ -148,7 +156,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 260000m,
             note = (string?)null,
-            category = "entertainment",
+            categoryId = (Guid?)null,
             paymentMethod = "card",
             cardType = "visa",
             bank = "Techcombank"
@@ -176,7 +184,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 260000m,
             note = (string?)null,
-            category = (string?)null,
+            categoryId = (Guid?)null,
             paymentMethod = "card"
         });
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -197,7 +205,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 260000m,
             note = (string?)null,
-            category = "entertainment",
+            categoryId = (Guid?)null,
             paymentMethod = "card",
             cardType = "visa",
             bank = "Techcombank"
@@ -212,7 +220,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 320000m,
             note = (string?)null,
-            category = "entertainment",
+            categoryId = (Guid?)null,
             paymentMethod = "card",
             cardType = "credit",
             bank = "VPBank"
@@ -240,7 +248,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 50000m,
             note = (string?)null,
-            category = (string?)null
+            categoryId = (Guid?)null
         });
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
@@ -272,11 +280,12 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         ItemBody salary = summary!.Items.Single(i => i.Content == "Lương import");
         salary.Credit.Amount.ShouldBe(28_000_000m);
         salary.Debit.Amount.ShouldBe(0m);
-        salary.Category.ShouldBe("other");
+        // No shared "other"-coded category exists in a fresh test db.
+        salary.CategoryId.ShouldBeNull();
         ItemBody bill = summary.Items.Single(i => i.Content == "Tiền điện import");
         bill.Credit.Amount.ShouldBe(0m);
         bill.Debit.Amount.ShouldBe(1_200_000m);
-        bill.Category.ShouldBe("other");
+        bill.CategoryId.ShouldBeNull();
         bill.Note.ShouldBe("kỳ 07/2026");
     }
 
@@ -306,7 +315,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 2_000_000m,
             note = (string?)null,
-            category = (string?)null,
+            categoryId = (Guid?)null,
             isAdvance = true
         });
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -323,7 +332,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 0m,
             debitAmount = 2_000_000m,
             note = (string?)null,
-            category = (string?)null,
+            categoryId = (Guid?)null,
             isAdvance = false
         });
         update.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -349,7 +358,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
                 creditAmount = 0m,
                 debitAmount = amount,
                 note = (string?)null,
-                category = (string?)null,
+                categoryId = (Guid?)null,
                 isAdvance = true
             });
             createAdvance.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -367,7 +376,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 14_900_000m,
             debitAmount = 0m,
             note = (string?)null,
-            category = (string?)null,
+            categoryId = (Guid?)null,
             advanceTransactionIds = advanceIds
         });
         createReimb.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -388,7 +397,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 2_000_000m,
             debitAmount = 0m,
             note = (string?)null,
-            category = (string?)null,
+            categoryId = (Guid?)null,
             advanceTransactionIds = new[] { advanceIds[0] }
         });
         second.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -417,7 +426,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             creditAmount = 25_000_000m,
             debitAmount = 0m,
             note = (string?)null,
-            category = (string?)null,
+            categoryId = (Guid?)null,
             isPrepaid = true,
             prepaidFrom = "2026-01-01",
             prepaidTo = "2026-05-31"
@@ -440,7 +449,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
                 creditAmount = 0m,
                 debitAmount = 0m,
                 note = (string?)null,
-                category = (string?)null,
+                categoryId = (Guid?)null,
                 prepaidTransactionId = prepaid.Id
             });
             linked.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -463,6 +472,6 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record MoneyBody(decimal Amount, string Currency);
-    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, string? Category, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance, List<Guid> AdvanceTransactionIds, bool IsPrepaid, string? PrepaidFrom, string? PrepaidTo, Guid? PrepaidTransactionId);
+    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, Guid? CategoryId, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance, List<Guid> AdvanceTransactionIds, bool IsPrepaid, string? PrepaidFrom, string? PrepaidTo, Guid? PrepaidTransactionId);
     internal sealed record SummaryBody(List<ItemBody> Items, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
 }

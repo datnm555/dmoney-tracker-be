@@ -210,4 +210,6 @@
   <data name="cat.system" xml:space="preserve"><value>System</value></data>
   <data name="cat.deleteConfirm" xml:space="preserve"><value>Delete this category?</value></data>
   <data name="subcat.create" xml:space="preserve"><value>New sub-category</value></data>
+  <data name="form.reimbursedBy" xml:space="preserve"><value>Reimbursed by</value></data>
+  <data name="form.reimbursedByNone" xml:space="preserve"><value>Not reimbursed yet</value></data>
 </root>

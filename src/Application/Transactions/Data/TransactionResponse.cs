@@ -7,7 +7,7 @@ public sealed record TransactionResponse(
     MoneyResponse Credit,
     MoneyResponse Debit,
     string? Note,
-    string? Category,
+    Guid? CategoryId,
     string PaymentMethod,
     string? CardType,
     string? Bank,

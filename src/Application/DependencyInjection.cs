@@ -24,6 +24,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetTransactionsByMonthQuery, MonthlySummaryResponse>, GetTransactionsByMonthQueryHandler>();
         services.AddScoped<IQueryHandler<GetOpenAdvancesQuery, List<AdvanceResponse>>, GetOpenAdvancesQueryHandler>();
         services.AddScoped<IQueryHandler<GetPrepaidCreditsQuery, List<PrepaidCreditResponse>>, GetPrepaidCreditsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetCreditsQuery, List<CreditResponse>>, GetCreditsQueryHandler>();
         services.AddScoped<ICommandHandler<CreateCategoryCommand, Guid>, CreateCategoryCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteCategoryCommand>, DeleteCategoryCommandHandler>();
         services.AddScoped<IQueryHandler<GetCategoriesQuery, List<CategoryResponse>>, GetCategoriesQueryHandler>();

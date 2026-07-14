@@ -1,7 +1,6 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
-using Domain.Categories;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -44,18 +43,6 @@ internal sealed class RegisterUserCommandHandler(
         }
 
         dbContext.Users.Add(userResult.Value);
-
-        foreach ((string code, string name, string icon) in SystemCategories.All)
-        {
-            Result<Category> category = Category.Create(userResult.Value.Id, name, icon, code);
-            if (category.IsFailure)
-            {
-                return Result.Failure<Guid>(category.Error);
-            }
-
-            dbContext.Categories.Add(category.Value);
-        }
-
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return userResult.Value.Id;

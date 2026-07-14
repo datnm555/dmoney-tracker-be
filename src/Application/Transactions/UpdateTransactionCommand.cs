@@ -9,7 +9,7 @@ public sealed record UpdateTransactionCommand(
     decimal CreditAmount,
     decimal DebitAmount,
     string? Note,
-    string? Category,
+    Guid? CategoryId,
     string? PaymentMethod = null,
     string? CardType = null,
     string? Bank = null,
@@ -19,4 +19,5 @@ public sealed record UpdateTransactionCommand(
     DateOnly? PrepaidFrom = null,
     DateOnly? PrepaidTo = null,
     Guid? PrepaidTransactionId = null,
-    Guid? SubCategoryId = null) : ICommand;
+    Guid? SubCategoryId = null,
+    Guid? ReimbursedByTransactionId = null) : ICommand;
