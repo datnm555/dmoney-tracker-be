@@ -219,4 +219,5 @@
   <data name="toast.deleted" xml:space="preserve"><value>Deleted successfully</value></data>
   <data name="table.actions" xml:space="preserve"><value>Actions</value></data>
   <data name="category.uncategorized" xml:space="preserve"><value>Uncategorised</value></data>
+  <data name="form.categoryRequired" xml:space="preserve"><value>Please choose a category.</value></data>
 </root>
