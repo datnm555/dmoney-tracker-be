@@ -27,4 +27,8 @@ public static class SubCategoryErrors
     public static readonly Error CategoryMismatch = Error.Validation(
         "SubCategories.CategoryMismatch",
         "The sub-category does not belong to the selected category.");
+
+    public static readonly Error InvalidIcon = Error.Validation(
+        "SubCategories.InvalidIcon",
+        "Invalid sub-category icon.");
 }

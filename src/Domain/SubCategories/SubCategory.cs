@@ -17,7 +17,15 @@ public sealed class SubCategory : AuditedEntity
     /// <summary>Auto-picked in the transaction dialog when its parent category is chosen.</summary>
     public bool IsDefault { get; private set; }
 
-    public static Result<SubCategory> Create(Guid userId, string category, string name, bool isDefault = false)
+    /// <summary>Icon key from the frontend's built-in icon set (later a CDN url).</summary>
+    public string? Icon { get; private set; }
+
+    public static Result<SubCategory> Create(
+        Guid userId,
+        string category,
+        string name,
+        bool isDefault = false,
+        string? icon = null)
     {
         string trimmedName = name?.Trim() ?? string.Empty;
         if (trimmedName.Length == 0)
@@ -31,9 +39,15 @@ public sealed class SubCategory : AuditedEntity
         }
 
         string trimmedCategory = category?.Trim() ?? string.Empty;
-        if (!TransactionCategories.IsValid(trimmedCategory))
+        if (!TransactionCategories.IsValidOrCustom(trimmedCategory))
         {
             return Result.Failure<SubCategory>(SubCategoryErrors.InvalidCategory);
+        }
+
+        string? trimmedIcon = string.IsNullOrWhiteSpace(icon) ? null : icon.Trim();
+        if (trimmedIcon is { Length: > SubCategoryConstants.IconMaxLength })
+        {
+            return Result.Failure<SubCategory>(SubCategoryErrors.InvalidIcon);
         }
 
         return new SubCategory
@@ -42,7 +56,8 @@ public sealed class SubCategory : AuditedEntity
             UserId = userId,
             Category = trimmedCategory,
             Name = trimmedName,
-            IsDefault = isDefault
+            IsDefault = isDefault,
+            Icon = trimmedIcon
         };
     }
 

@@ -4,4 +4,5 @@ public sealed record SubCategoryResponse(
     Guid Id,
     string Category,
     string Name,
-    bool IsDefault);
+    bool IsDefault,
+    string? Icon = null);

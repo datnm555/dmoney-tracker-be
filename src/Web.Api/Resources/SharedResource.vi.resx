@@ -193,4 +193,21 @@
   <data name="export.button" xml:space="preserve"><value>Xuất Excel</value></data>
   <data name="dashboard.byCategory" xml:space="preserve"><value>Chi tiêu theo danh mục</value></data>
   <data name="dashboard.noSubCategory" xml:space="preserve"><value>Chưa phân loại</value></data>
+  <data name="Categories.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên danh mục.</value></data>
+  <data name="Categories.NameTooLong" xml:space="preserve"><value>Tên danh mục tối đa 50 ký tự.</value></data>
+  <data name="Categories.IconRequired" xml:space="preserve"><value>Vui lòng chọn biểu tượng cho danh mục.</value></data>
+  <data name="Categories.Duplicate" xml:space="preserve"><value>Danh mục này đã tồn tại.</value></data>
+  <data name="Categories.NotFound" xml:space="preserve"><value>Không tìm thấy danh mục.</value></data>
+  <data name="Categories.InUse" xml:space="preserve"><value>Danh mục đang được dùng bởi giao dịch hoặc danh mục con, không thể xóa.</value></data>
+  <data name="SubCategories.InvalidIcon" xml:space="preserve"><value>Biểu tượng danh mục con không hợp lệ.</value></data>
+  <data name="menu.categories" xml:space="preserve"><value>Danh mục cha</value></data>
+  <data name="menu.subcategories" xml:space="preserve"><value>Danh mục con</value></data>
+  <data name="cat.title" xml:space="preserve"><value>Danh mục cha</value></data>
+  <data name="cat.hint" xml:space="preserve"><value>Danh mục hệ thống có sẵn và các danh mục bạn tự tạo.</value></data>
+  <data name="cat.create" xml:space="preserve"><value>Tạo danh mục</value></data>
+  <data name="cat.name" xml:space="preserve"><value>Tên danh mục</value></data>
+  <data name="cat.icon" xml:space="preserve"><value>Biểu tượng</value></data>
+  <data name="cat.system" xml:space="preserve"><value>Hệ thống</value></data>
+  <data name="cat.deleteConfirm" xml:space="preserve"><value>Xóa danh mục này?</value></data>
+  <data name="subcat.create" xml:space="preserve"><value>Tạo danh mục con</value></data>
 </root>

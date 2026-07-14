@@ -1,4 +1,5 @@
 using Application.Abstractions.Data;
+using Domain.Categories;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -14,6 +15,8 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<Transaction> Transactions => Set<Transaction>();
 
     public DbSet<SubCategory> SubCategories => Set<SubCategory>();
+
+    public DbSet<Category> Categories => Set<Category>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -193,4 +193,21 @@
   <data name="export.button" xml:space="preserve"><value>Export Excel</value></data>
   <data name="dashboard.byCategory" xml:space="preserve"><value>Spending by category</value></data>
   <data name="dashboard.noSubCategory" xml:space="preserve"><value>Uncategorised</value></data>
+  <data name="Categories.NameRequired" xml:space="preserve"><value>Please enter a category name.</value></data>
+  <data name="Categories.NameTooLong" xml:space="preserve"><value>Category name must be at most 50 characters.</value></data>
+  <data name="Categories.IconRequired" xml:space="preserve"><value>Please pick an icon for the category.</value></data>
+  <data name="Categories.Duplicate" xml:space="preserve"><value>This category already exists.</value></data>
+  <data name="Categories.NotFound" xml:space="preserve"><value>Category not found.</value></data>
+  <data name="Categories.InUse" xml:space="preserve"><value>This category is used by transactions or sub-categories and cannot be deleted.</value></data>
+  <data name="SubCategories.InvalidIcon" xml:space="preserve"><value>Invalid sub-category icon.</value></data>
+  <data name="menu.categories" xml:space="preserve"><value>Parent categories</value></data>
+  <data name="menu.subcategories" xml:space="preserve"><value>Sub-categories</value></data>
+  <data name="cat.title" xml:space="preserve"><value>Parent categories</value></data>
+  <data name="cat.hint" xml:space="preserve"><value>Built-in system categories plus the ones you create.</value></data>
+  <data name="cat.create" xml:space="preserve"><value>New category</value></data>
+  <data name="cat.name" xml:space="preserve"><value>Category name</value></data>
+  <data name="cat.icon" xml:space="preserve"><value>Icon</value></data>
+  <data name="cat.system" xml:space="preserve"><value>System</value></data>
+  <data name="cat.deleteConfirm" xml:space="preserve"><value>Delete this category?</value></data>
+  <data name="subcat.create" xml:space="preserve"><value>New sub-category</value></data>
 </root>

@@ -24,6 +24,9 @@ internal sealed class SubCategoryConfiguration : IEntityTypeConfiguration<SubCat
         builder.Property(s => s.IsDefault)
             .HasDefaultValue(false);
 
+        builder.Property(s => s.Icon)
+            .HasMaxLength(SubCategoryConstants.IconMaxLength);
+
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(s => s.UserId)

@@ -195,7 +195,7 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure(TransactionErrors.EmptyAmount);
         }
 
-        if (normalizedCategory is not null && !TransactionCategories.IsValid(normalizedCategory))
+        if (normalizedCategory is not null && !TransactionCategories.IsValidOrCustom(normalizedCategory))
         {
             return Result.Failure(TransactionErrors.InvalidCategory);
         }

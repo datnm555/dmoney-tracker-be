@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.Categories;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -49,6 +50,16 @@ internal sealed class UpdateTransactionCommandHandler(
             if (!prepaidExists)
             {
                 return Result.Failure(TransactionErrors.PrepaidNotFound);
+            }
+        }
+
+        if (TransactionCategories.CustomId(command.Category) is { } customCategoryId)
+        {
+            bool categoryExists = await dbContext.Categories.AnyAsync(
+                c => c.Id == customCategoryId && c.UserId == userId, cancellationToken);
+            if (!categoryExists)
+            {
+                return Result.Failure(CategoryErrors.NotFound);
             }
         }
 
