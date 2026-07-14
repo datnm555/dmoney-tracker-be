@@ -70,5 +70,32 @@ public sealed class SubCategory : AuditedEntity
         };
     }
 
+    public Result Update(string name, bool isDefault, string? icon, string updatedBy)
+    {
+        string trimmedName = name?.Trim() ?? string.Empty;
+        if (trimmedName.Length == 0)
+        {
+            return Result.Failure(SubCategoryErrors.NameRequired);
+        }
+
+        if (trimmedName.Length > SubCategoryConstants.NameMaxLength)
+        {
+            return Result.Failure(SubCategoryErrors.NameTooLong);
+        }
+
+        string? trimmedIcon = string.IsNullOrWhiteSpace(icon) ? null : icon.Trim();
+        if (trimmedIcon is { Length: > SubCategoryConstants.IconMaxLength })
+        {
+            return Result.Failure(SubCategoryErrors.InvalidIcon);
+        }
+
+        Name = trimmedName;
+        IsDefault = isDefault;
+        Icon = trimmedIcon;
+        UpdatedBy = updatedBy?.Trim() ?? string.Empty;
+
+        return Result.Success();
+    }
+
     public void SetDefault(bool isDefault) => IsDefault = isDefault;
 }

@@ -45,6 +45,28 @@ internal sealed class GetSubCategories : IEndpoint
     }
 }
 
+internal sealed class UpdateSubCategory : IEndpoint
+{
+    internal sealed record UpdateSubCategoryRequest(string Name, bool IsDefault = false, string? Icon = null);
+
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/subcategories/{id:guid}", async (
+            Guid id,
+            UpdateSubCategoryRequest request,
+            ICommandHandler<UpdateSubCategoryCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(
+                new UpdateSubCategoryCommand(id, request.Name, request.IsDefault, request.Icon),
+                cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
+
 internal sealed class DeleteSubCategory : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)

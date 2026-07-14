@@ -27,6 +27,32 @@ public sealed class Category : AuditedEntity
     /// <summary>Username of whoever last changed the category.</summary>
     public string? UpdatedBy { get; private set; }
 
+    public Result Update(string name, string icon, string updatedBy)
+    {
+        string trimmedName = name?.Trim() ?? string.Empty;
+        if (trimmedName.Length == 0)
+        {
+            return Result.Failure(CategoryErrors.NameRequired);
+        }
+
+        if (trimmedName.Length > CategoryConstants.NameMaxLength)
+        {
+            return Result.Failure(CategoryErrors.NameTooLong);
+        }
+
+        string trimmedIcon = icon?.Trim() ?? string.Empty;
+        if (trimmedIcon.Length is 0 or > CategoryConstants.IconMaxLength)
+        {
+            return Result.Failure(CategoryErrors.IconRequired);
+        }
+
+        Name = trimmedName;
+        Icon = trimmedIcon;
+        UpdatedBy = updatedBy?.Trim() ?? string.Empty;
+
+        return Result.Success();
+    }
+
     public static Result<Category> Create(string name, string icon, string createdBy, string? code = null)
     {
         string trimmedName = name?.Trim() ?? string.Empty;

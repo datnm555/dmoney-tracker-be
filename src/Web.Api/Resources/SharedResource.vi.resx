@@ -212,4 +212,14 @@
   <data name="subcat.create" xml:space="preserve"><value>Tạo danh mục con</value></data>
   <data name="form.reimbursedBy" xml:space="preserve"><value>Đã được hoàn bởi</value></data>
   <data name="form.reimbursedByNone" xml:space="preserve"><value>Chưa được hoàn</value></data>
+  <data name="subcat.edit" xml:space="preserve"><value>Sửa danh mục con</value></data>
+  <data name="cat.edit" xml:space="preserve"><value>Sửa danh mục</value></data>
+  <data name="toast.created" xml:space="preserve"><value>Đã tạo thành công</value></data>
+  <data name="toast.updated" xml:space="preserve"><value>Đã cập nhật thành công</value></data>
+  <data name="toast.deleted" xml:space="preserve"><value>Đã xóa thành công</value></data>
+  <data name="table.actions" xml:space="preserve"><value>Thao tác</value></data>
+  <data name="category.uncategorized" xml:space="preserve"><value>Chưa phân loại</value></data>
+  <data name="form.categoryRequired" xml:space="preserve"><value>Vui lòng chọn danh mục.</value></data>
+  <data name="Transactions.DateRequired" xml:space="preserve"><value>Vui lòng chọn ngày.</value></data>
+  <data name="Transactions.CategoryRequired" xml:space="preserve"><value>Vui lòng chọn danh mục.</value></data>
 </root>

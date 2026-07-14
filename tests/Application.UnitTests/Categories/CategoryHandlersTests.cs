@@ -40,6 +40,9 @@ public class CategoryHandlersTests
             new DeleteCategoryCommandHandler(_dbContext, userContext));
     }
 
+    private static void SetCreatedAt(Category category, DateTime createdAt) =>
+        typeof(Category).GetProperty(nameof(Category.CreatedAt))!.SetValue(category, createdAt);
+
     private static User UserWithId(Guid id)
     {
         User user = User.Create("t@example.com", "tester", "Tester", "hash").Value;
@@ -89,19 +92,20 @@ public class CategoryHandlersTests
     }
 
     [Fact]
-    public async Task Get_ReturnsSharedCategories_SystemFirst()
+    public async Task Get_ReturnsSharedCategories_InCreationOrder()
     {
-        Category custom = Category.Create("Du lịch", "plane", "tester").Value;
-        Category system = Category.Create("Hóa đơn", "zap", "tester", "bills").Value;
-        var (_, get, _) = CreateHandlers([custom, system]);
+        Category first = Category.Create("Du lịch", "plane", "tester").Value;
+        Category second = Category.Create("Hóa đơn", "zap", "tester", "bills").Value;
+        SetCreatedAt(first, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        SetCreatedAt(second, new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc));
+        var (_, get, _) = CreateHandlers([second, first]);
 
         var result = await get.Handle(new GetCategoriesQuery(), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Count.ShouldBe(2);
-        result.Value[0].Code.ShouldBe("bills");
-        result.Value[1].Name.ShouldBe("Du lịch");
-        result.Value[1].Code.ShouldBeNull();
+        result.Value[0].Name.ShouldBe("Du lịch");
+        result.Value[1].Code.ShouldBe("bills");
     }
 
     [Fact]
@@ -144,5 +148,43 @@ public class CategoryHandlersTests
         result.IsSuccess.ShouldBeTrue();
         _dbContext.Categories.Received(1).Remove(category);
         await _dbContext.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Update_ChangesNameIconAndStampsUpdatedBy()
+    {
+        Category category = Category.Create("Du lịch", "plane", "someone").Value;
+        var (_, _, _) = CreateHandlers([category]);
+        var update = new UpdateCategoryCommandHandler(_dbContext, UserContextFor(UserId));
+
+        var result = await update.Handle(
+            new UpdateCategoryCommand(category.Id, "Du lịch xa", "gift"), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        category.Name.ShouldBe("Du lịch xa");
+        category.Icon.ShouldBe("gift");
+        category.UpdatedBy.ShouldBe("tester");
+    }
+
+    [Fact]
+    public async Task Update_DuplicateName_Fails()
+    {
+        Category existing = Category.Create("Thú cưng", "paw", "tester").Value;
+        Category category = Category.Create("Du lịch", "plane", "tester").Value;
+        var (_, _, _) = CreateHandlers([existing, category]);
+        var update = new UpdateCategoryCommandHandler(_dbContext, UserContextFor(UserId));
+
+        var result = await update.Handle(
+            new UpdateCategoryCommand(category.Id, "Thú cưng", "plane"), CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CategoryErrors.Duplicate);
+    }
+
+    private static IUserContext UserContextFor(Guid id)
+    {
+        var userContext = Substitute.For<IUserContext>();
+        userContext.UserId.Returns(id);
+        return userContext;
     }
 }

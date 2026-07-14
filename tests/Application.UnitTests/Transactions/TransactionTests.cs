@@ -242,4 +242,13 @@ public class TransactionTests
         transaction.CardType.ShouldBe(CardTypes.Credit);
         transaction.Bank.ShouldBe("VPBank");
     }
+
+    [Fact]
+    public void Create_WithDefaultDate_Fails()
+    {
+        var result = Transaction.Create(UserId, default, "x", Vnd(1m), Money.Zero(), null);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("Transactions.DateRequired");
+    }
 }

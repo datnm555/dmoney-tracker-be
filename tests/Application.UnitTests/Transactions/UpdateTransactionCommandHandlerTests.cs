@@ -42,7 +42,7 @@ public class UpdateTransactionCommandHandlerTests
         Transaction tx = OwnTx();
         var handler = CreateHandler(tx);
         var command = new UpdateTransactionCommand(
-            tx.Id, new DateOnly(2026, 7, 10), "mới", 0m, 2_000m, "note", null);
+            tx.Id, new DateOnly(2026, 7, 10), "mới", 0m, 2_000m, "note", Bills.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -87,7 +87,7 @@ public class UpdateTransactionCommandHandlerTests
         Transaction tx = OwnTx();
         var handler = CreateHandler(tx);
         var command = new UpdateTransactionCommand(
-            tx.Id, new DateOnly(2026, 7, 10), "mới", 0m, 0m, null, null);
+            tx.Id, new DateOnly(2026, 7, 10), "mới", 0m, 0m, null, Bills.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -117,7 +117,7 @@ public class UpdateTransactionCommandHandlerTests
         var handler = CreateHandler(tx);
         var command = new UpdateTransactionCommand(
             tx.Id, new DateOnly(2026, 7, 10), "Netflix", 0m, 260_000m, null,
-            null, "card", "visa", "Techcombank");
+            Bills.Id, "card", "visa", "Techcombank");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -137,7 +137,7 @@ public class UpdateTransactionCommandHandlerTests
         var handler = CreateHandler(advance, credit);
 
         var command = new UpdateTransactionCommand(
-            advance.Id, advance.Date, advance.Content, 0m, 10_000_000m, null, null,
+            advance.Id, advance.Date, advance.Content, 0m, 10_000_000m, null, Bills.Id,
             IsAdvance: true, ReimbursedByTransactionId: credit.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
@@ -155,7 +155,7 @@ public class UpdateTransactionCommandHandlerTests
         var handler = CreateHandler(advance);
 
         var command = new UpdateTransactionCommand(
-            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, null, IsAdvance: true);
+            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, Bills.Id, IsAdvance: true);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -173,7 +173,7 @@ public class UpdateTransactionCommandHandlerTests
         var handler = CreateHandler(advance, otherDebit);
 
         var command = new UpdateTransactionCommand(
-            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, null,
+            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, Bills.Id,
             IsAdvance: true, ReimbursedByTransactionId: otherDebit.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
