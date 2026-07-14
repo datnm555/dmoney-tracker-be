@@ -89,19 +89,19 @@ public class CategoryHandlersTests
     }
 
     [Fact]
-    public async Task Get_ReturnsSharedCategories_SystemFirst()
+    public async Task Get_ReturnsSharedCategories_InCreationOrder()
     {
-        Category custom = Category.Create("Du lịch", "plane", "tester").Value;
-        Category system = Category.Create("Hóa đơn", "zap", "tester", "bills").Value;
-        var (_, get, _) = CreateHandlers([custom, system]);
+        // Same CreatedAt in-memory, so the time-ordered v7 ids break the tie.
+        Category first = Category.Create("Du lịch", "plane", "tester").Value;
+        Category second = Category.Create("Hóa đơn", "zap", "tester", "bills").Value;
+        var (_, get, _) = CreateHandlers([second, first]);
 
         var result = await get.Handle(new GetCategoriesQuery(), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Count.ShouldBe(2);
-        result.Value[0].Code.ShouldBe("bills");
-        result.Value[1].Name.ShouldBe("Du lịch");
-        result.Value[1].Code.ShouldBeNull();
+        result.Value[0].Name.ShouldBe("Du lịch");
+        result.Value[1].Code.ShouldBe("bills");
     }
 
     [Fact]

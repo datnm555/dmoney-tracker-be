@@ -30,8 +30,8 @@ internal sealed class GetSubCategoriesQueryHandler(
         }
 
         List<SubCategoryResponse> subCategories = await scope
-            .OrderBy(s => s.CategoryId)
-            .ThenBy(s => s.Name)
+            .OrderBy(s => s.CreatedAt)
+            .ThenBy(s => s.Id)
             .Select(s => new SubCategoryResponse(s.Id, s.CategoryId, s.Name, s.IsDefault, s.Icon))
             .ToListAsync(cancellationToken);
 
