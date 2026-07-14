@@ -191,4 +191,5 @@
   <data name="links.covers" xml:space="preserve"><value>Đã chi từ khoản này</value></data>
   <data name="links.coveredBy" xml:space="preserve"><value>Trả trước bởi</value></data>
   <data name="export.button" xml:space="preserve"><value>Xuất Excel</value></data>
+  <data name="dashboard.byCategory" xml:space="preserve"><value>Chi tiêu theo danh mục</value></data>
 </root>
