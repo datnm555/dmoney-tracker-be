@@ -218,4 +218,5 @@
   <data name="toast.updated" xml:space="preserve"><value>Updated successfully</value></data>
   <data name="toast.deleted" xml:space="preserve"><value>Deleted successfully</value></data>
   <data name="table.actions" xml:space="preserve"><value>Actions</value></data>
+  <data name="category.uncategorized" xml:space="preserve"><value>Uncategorised</value></data>
 </root>
