@@ -169,4 +169,18 @@
   <data name="form.prepaidMonths" xml:space="preserve"><value>Số tháng</value></data>
   <data name="common.months" xml:space="preserve"><value>tháng</value></data>
   <data name="dashboard.txThisYear" xml:space="preserve"><value>giao dịch trong năm</value></data>
+  <data name="settings.title" xml:space="preserve"><value>Cài đặt</value></data>
+  <data name="settings.subcategories" xml:space="preserve"><value>Danh mục con</value></data>
+  <data name="subcat.hint" xml:space="preserve"><value>Tạo danh mục con cho từng danh mục — ví dụ Hóa đơn → Xăng, Dầu. Khi tạo giao dịch, chọn danh mục sẽ hiện thêm các danh mục con này.</value></data>
+  <data name="subcat.name" xml:space="preserve"><value>Tên danh mục con</value></data>
+  <data name="subcat.add" xml:space="preserve"><value>Thêm</value></data>
+  <data name="subcat.empty" xml:space="preserve"><value>Chưa có danh mục con nào</value></data>
+  <data name="subcat.deleteConfirm" xml:space="preserve"><value>Xóa danh mục con này?</value></data>
+  <data name="form.subCategory" xml:space="preserve"><value>Danh mục con</value></data>
+  <data name="SubCategories.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên danh mục con.</value></data>
+  <data name="SubCategories.NameTooLong" xml:space="preserve"><value>Tên danh mục con tối đa 50 ký tự.</value></data>
+  <data name="SubCategories.InvalidCategory" xml:space="preserve"><value>Danh mục cha không hợp lệ.</value></data>
+  <data name="SubCategories.Duplicate" xml:space="preserve"><value>Danh mục con này đã tồn tại.</value></data>
+  <data name="SubCategories.NotFound" xml:space="preserve"><value>Không tìm thấy danh mục con.</value></data>
+  <data name="SubCategories.CategoryMismatch" xml:space="preserve"><value>Danh mục con không thuộc danh mục đã chọn.</value></data>
 </root>

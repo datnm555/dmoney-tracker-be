@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -67,13 +68,28 @@ internal sealed class UpdateTransactionCommandHandler(
             }
         }
 
+        if (command.SubCategoryId is { } subCategoryId)
+        {
+            SubCategory? subCategory = await dbContext.SubCategories
+                .FirstOrDefaultAsync(s => s.Id == subCategoryId && s.UserId == userId, cancellationToken);
+            if (subCategory is null)
+            {
+                return Result.Failure(SubCategoryErrors.NotFound);
+            }
+
+            if (subCategory.Category != command.Category?.Trim())
+            {
+                return Result.Failure(SubCategoryErrors.CategoryMismatch);
+            }
+        }
+
         Result updated = transaction.Update(
             command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.Category,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.AdvanceTransactionId,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
-            command.PrepaidTransactionId);
+            command.PrepaidTransactionId, command.SubCategoryId);
         if (updated.IsFailure)
         {
             return updated;

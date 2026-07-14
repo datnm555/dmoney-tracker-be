@@ -18,4 +18,5 @@ public sealed record UpdateTransactionCommand(
     bool IsPrepaid = false,
     DateOnly? PrepaidFrom = null,
     DateOnly? PrepaidTo = null,
-    Guid? PrepaidTransactionId = null) : ICommand;
+    Guid? PrepaidTransactionId = null,
+    Guid? SubCategoryId = null) : ICommand;

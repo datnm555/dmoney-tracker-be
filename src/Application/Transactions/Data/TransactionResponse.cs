@@ -16,4 +16,6 @@ public sealed record TransactionResponse(
     bool IsPrepaid,
     DateOnly? PrepaidFrom,
     DateOnly? PrepaidTo,
-    Guid? PrepaidTransactionId);
+    Guid? PrepaidTransactionId,
+    Guid? SubCategoryId,
+    string? SubCategoryName);

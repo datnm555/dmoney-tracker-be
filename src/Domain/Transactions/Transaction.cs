@@ -42,6 +42,8 @@ public sealed class Transaction : AuditedEntity
     /// <summary>For a money-out row: the prepaid credit that already covers this expense.</summary>
     public Guid? PrepaidTransactionId { get; private set; }
 
+    public Guid? SubCategoryId { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         DateOnly date,
@@ -58,7 +60,8 @@ public sealed class Transaction : AuditedEntity
         bool isPrepaid = false,
         DateOnly? prepaidFrom = null,
         DateOnly? prepaidTo = null,
-        Guid? prepaidTransactionId = null)
+        Guid? prepaidTransactionId = null,
+        Guid? subCategoryId = null)
     {
         if (advanceTransactionId is not null && (credit.Amount <= 0m || isAdvance))
         {
@@ -104,7 +107,8 @@ public sealed class Transaction : AuditedEntity
             IsPrepaid = isPrepaid,
             PrepaidFrom = isPrepaid ? prepaidFrom : null,
             PrepaidTo = isPrepaid ? prepaidTo : null,
-            PrepaidTransactionId = prepaidTransactionId
+            PrepaidTransactionId = prepaidTransactionId,
+            SubCategoryId = subCategoryId
         };
 
         return transaction;
@@ -125,7 +129,8 @@ public sealed class Transaction : AuditedEntity
         bool isPrepaid = false,
         DateOnly? prepaidFrom = null,
         DateOnly? prepaidTo = null,
-        Guid? prepaidTransactionId = null)
+        Guid? prepaidTransactionId = null,
+        Guid? subCategoryId = null)
     {
         if (advanceTransactionId is not null && (credit.Amount <= 0m || isAdvance))
         {
@@ -168,6 +173,7 @@ public sealed class Transaction : AuditedEntity
         PrepaidFrom = isPrepaid ? prepaidFrom : null;
         PrepaidTo = isPrepaid ? prepaidTo : null;
         PrepaidTransactionId = prepaidTransactionId;
+        SubCategoryId = subCategoryId;
 
         return Result.Success();
     }

@@ -169,4 +169,18 @@
   <data name="form.prepaidMonths" xml:space="preserve"><value>Number of months</value></data>
   <data name="common.months" xml:space="preserve"><value>month(s)</value></data>
   <data name="dashboard.txThisYear" xml:space="preserve"><value>transactions this year</value></data>
+  <data name="settings.title" xml:space="preserve"><value>Settings</value></data>
+  <data name="settings.subcategories" xml:space="preserve"><value>Sub-categories</value></data>
+  <data name="subcat.hint" xml:space="preserve"><value>Create sub-categories under each category — e.g. Bills → Fuel. They appear in the transaction dialog when the parent category is picked.</value></data>
+  <data name="subcat.name" xml:space="preserve"><value>Sub-category name</value></data>
+  <data name="subcat.add" xml:space="preserve"><value>Add</value></data>
+  <data name="subcat.empty" xml:space="preserve"><value>No sub-categories yet</value></data>
+  <data name="subcat.deleteConfirm" xml:space="preserve"><value>Delete this sub-category?</value></data>
+  <data name="form.subCategory" xml:space="preserve"><value>Sub-category</value></data>
+  <data name="SubCategories.NameRequired" xml:space="preserve"><value>Please enter a sub-category name.</value></data>
+  <data name="SubCategories.NameTooLong" xml:space="preserve"><value>Sub-category name must be at most 50 characters.</value></data>
+  <data name="SubCategories.InvalidCategory" xml:space="preserve"><value>Invalid parent category.</value></data>
+  <data name="SubCategories.Duplicate" xml:space="preserve"><value>This sub-category already exists.</value></data>
+  <data name="SubCategories.NotFound" xml:space="preserve"><value>Sub-category not found.</value></data>
+  <data name="SubCategories.CategoryMismatch" xml:space="preserve"><value>The sub-category does not belong to the selected category.</value></data>
 </root>

@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -53,13 +54,23 @@ internal sealed class CreateTransactionCommandHandler(
             }
         }
 
+        if (command.SubCategoryId is { } subCategoryId)
+        {
+            Result subCheck = await ValidateSubCategoryAsync(
+                subCategoryId, userId, command.Category, cancellationToken);
+            if (subCheck.IsFailure)
+            {
+                return Result.Failure<Guid>(subCheck.Error);
+            }
+        }
+
         Result<Transaction> transaction = Transaction.Create(
             userId, command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.Category,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.AdvanceTransactionId,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
-            command.PrepaidTransactionId);
+            command.PrepaidTransactionId, command.SubCategoryId);
         if (transaction.IsFailure)
         {
             return Result.Failure<Guid>(transaction.Error);
@@ -69,6 +80,21 @@ internal sealed class CreateTransactionCommandHandler(
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return transaction.Value.Id;
+    }
+
+    private async Task<Result> ValidateSubCategoryAsync(
+        Guid subCategoryId, Guid userId, string? category, CancellationToken cancellationToken)
+    {
+        SubCategory? subCategory = await dbContext.SubCategories
+            .FirstOrDefaultAsync(s => s.Id == subCategoryId && s.UserId == userId, cancellationToken);
+        if (subCategory is null)
+        {
+            return Result.Failure(SubCategoryErrors.NotFound);
+        }
+
+        return subCategory.Category == category?.Trim()
+            ? Result.Success()
+            : Result.Failure(SubCategoryErrors.CategoryMismatch);
     }
 
     private async Task<Result> ValidateAdvanceLinkAsync(

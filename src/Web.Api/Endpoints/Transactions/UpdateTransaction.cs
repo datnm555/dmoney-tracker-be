@@ -24,7 +24,8 @@ internal sealed class UpdateTransaction : IEndpoint
         bool IsPrepaid = false,
         DateOnly? PrepaidFrom = null,
         DateOnly? PrepaidTo = null,
-        Guid? PrepaidTransactionId = null);
+        Guid? PrepaidTransactionId = null,
+        Guid? SubCategoryId = null);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -51,7 +52,8 @@ internal sealed class UpdateTransaction : IEndpoint
                 request.IsPrepaid,
                 request.PrepaidFrom,
                 request.PrepaidTo,
-                request.PrepaidTransactionId);
+                request.PrepaidTransactionId,
+                request.SubCategoryId);
 
             Result result = await handler.Handle(command, cancellationToken);
 

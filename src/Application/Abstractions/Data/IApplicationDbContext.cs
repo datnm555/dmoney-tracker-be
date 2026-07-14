@@ -1,3 +1,4 @@
+using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,8 @@ public interface IApplicationDbContext
     DbSet<User> Users { get; }
 
     DbSet<Transaction> Transactions { get; }
+
+    DbSet<SubCategory> SubCategories { get; }
 
     DbSet<T> Set<T>() where T : class;
 

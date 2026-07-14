@@ -80,5 +80,10 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .WithMany()
             .HasForeignKey(t => t.PrepaidTransactionId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne<Domain.SubCategories.SubCategory>()
+            .WithMany()
+            .HasForeignKey(t => t.SubCategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

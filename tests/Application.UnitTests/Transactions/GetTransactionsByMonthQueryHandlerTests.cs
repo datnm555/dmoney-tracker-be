@@ -24,6 +24,8 @@ public class GetTransactionsByMonthQueryHandlerTests
         _userContext.UserId.Returns(UserId);
         var transactionsDbSet = transactions.ToList().BuildMockDbSet();
         _dbContext.Transactions.Returns(transactionsDbSet);
+        var subCategoriesDbSet = new List<Domain.SubCategories.SubCategory>().BuildMockDbSet();
+        _dbContext.SubCategories.Returns(subCategoriesDbSet);
         return new GetTransactionsByMonthQueryHandler(_dbContext, _userContext);
     }
 

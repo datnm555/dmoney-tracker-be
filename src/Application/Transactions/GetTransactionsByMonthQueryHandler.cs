@@ -71,7 +71,12 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                 t.IsPrepaid,
                 t.PrepaidFrom,
                 t.PrepaidTo,
-                t.PrepaidTransactionId))
+                t.PrepaidTransactionId,
+                t.SubCategoryId,
+                dbContext.SubCategories
+                    .Where(s => s.Id == t.SubCategoryId)
+                    .Select(s => s.Name)
+                    .FirstOrDefault()))
             .ToListAsync(cancellationToken);
 
         decimal totalCredit = await monthScope.SumAsync(t => t.Credit.Amount, cancellationToken);
