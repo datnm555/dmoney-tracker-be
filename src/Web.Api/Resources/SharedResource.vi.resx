@@ -168,4 +168,5 @@
   <data name="Transactions.PrepaidNotFound" xml:space="preserve"><value>Không tìm thấy khoản trả trước.</value></data>
   <data name="form.prepaidMonths" xml:space="preserve"><value>Số tháng</value></data>
   <data name="common.months" xml:space="preserve"><value>tháng</value></data>
+  <data name="dashboard.txThisYear" xml:space="preserve"><value>giao dịch trong năm</value></data>
 </root>
