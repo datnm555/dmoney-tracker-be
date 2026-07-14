@@ -89,6 +89,24 @@ internal sealed class UpdateTransactionCommandHandler(
             return updated;
         }
 
+        // Advance-side link: mark which credit reimbursed this advance.
+        if (transaction.IsAdvance && command.ReimbursedByTransactionId is { } reimbursedById)
+        {
+            bool creditValid = reimbursedById != transaction.Id && await dbContext.Transactions.AnyAsync(
+                t => t.Id == reimbursedById && t.UserId == userId && t.Credit.Amount > 0m && !t.IsAdvance,
+                cancellationToken);
+            if (!creditValid)
+            {
+                return Result.Failure(TransactionErrors.AdvanceLinkInvalid);
+            }
+
+            transaction.MarkReimbursedBy(reimbursedById);
+        }
+        else
+        {
+            transaction.ClearReimbursement();
+        }
+
         // Re-link the reimbursed advances to match the requested set.
         List<Guid> requestedIds = (command.AdvanceTransactionIds ?? []).Distinct().ToList();
         List<Transaction> currentlyLinked = await dbContext.Transactions

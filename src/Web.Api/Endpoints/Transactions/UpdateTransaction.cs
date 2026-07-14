@@ -25,7 +25,8 @@ internal sealed class UpdateTransaction : IEndpoint
         DateOnly? PrepaidFrom = null,
         DateOnly? PrepaidTo = null,
         Guid? PrepaidTransactionId = null,
-        Guid? SubCategoryId = null);
+        Guid? SubCategoryId = null,
+        Guid? ReimbursedByTransactionId = null);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -53,7 +54,8 @@ internal sealed class UpdateTransaction : IEndpoint
                 request.PrepaidFrom,
                 request.PrepaidTo,
                 request.PrepaidTransactionId,
-                request.SubCategoryId);
+                request.SubCategoryId,
+                request.ReimbursedByTransactionId);
 
             Result result = await handler.Handle(command, cancellationToken);
 

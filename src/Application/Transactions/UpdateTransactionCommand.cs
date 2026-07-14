@@ -19,4 +19,5 @@ public sealed record UpdateTransactionCommand(
     DateOnly? PrepaidFrom = null,
     DateOnly? PrepaidTo = null,
     Guid? PrepaidTransactionId = null,
-    Guid? SubCategoryId = null) : ICommand;
+    Guid? SubCategoryId = null,
+    Guid? ReimbursedByTransactionId = null) : ICommand;

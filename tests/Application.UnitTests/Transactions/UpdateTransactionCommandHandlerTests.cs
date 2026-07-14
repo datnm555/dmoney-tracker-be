@@ -126,4 +126,59 @@ public class UpdateTransactionCommandHandlerTests
         tx.CardType.ShouldBe(CardTypes.Visa);
         tx.Bank.ShouldBe("Techcombank");
     }
+
+    [Fact]
+    public async Task Handle_AdvanceWithReimbursedBy_LinksTheCredit()
+    {
+        Transaction advance = Transaction.Create(UserId, new DateOnly(2026, 1, 10), "Chuyển tiền lốp",
+            Money.Zero(), Money.Create(10_000_000m).Value, null, isAdvance: true).Value;
+        Transaction credit = Transaction.Create(UserId, new DateOnly(2026, 2, 1), "Hoàn tiền lốp",
+            Money.Create(10_000_000m).Value, Money.Zero(), null).Value;
+        var handler = CreateHandler(advance, credit);
+
+        var command = new UpdateTransactionCommand(
+            advance.Id, advance.Date, advance.Content, 0m, 10_000_000m, null, null,
+            IsAdvance: true, ReimbursedByTransactionId: credit.Id);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        advance.ReimbursedByTransactionId.ShouldBe(credit.Id);
+    }
+
+    [Fact]
+    public async Task Handle_AdvanceWithoutReimbursedBy_ClearsTheLink()
+    {
+        Transaction advance = Transaction.Create(UserId, new DateOnly(2026, 1, 10), "Ứng",
+            Money.Zero(), Money.Create(1_000m).Value, null, isAdvance: true).Value;
+        advance.MarkReimbursedBy(Guid.NewGuid());
+        var handler = CreateHandler(advance);
+
+        var command = new UpdateTransactionCommand(
+            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, null, IsAdvance: true);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        advance.ReimbursedByTransactionId.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Handle_AdvanceReimbursedByNonCredit_Fails()
+    {
+        Transaction advance = Transaction.Create(UserId, new DateOnly(2026, 1, 10), "Ứng",
+            Money.Zero(), Money.Create(1_000m).Value, null, isAdvance: true).Value;
+        Transaction otherDebit = Transaction.Create(UserId, new DateOnly(2026, 2, 1), "Chi khác",
+            Money.Zero(), Money.Create(5_000m).Value, null).Value;
+        var handler = CreateHandler(advance, otherDebit);
+
+        var command = new UpdateTransactionCommand(
+            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, null,
+            IsAdvance: true, ReimbursedByTransactionId: otherDebit.Id);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("Transactions.AdvanceLinkInvalid");
+    }
 }
