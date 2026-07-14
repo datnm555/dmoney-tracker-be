@@ -18,4 +18,14 @@ public sealed record TransactionResponse(
     DateOnly? PrepaidTo,
     Guid? PrepaidTransactionId,
     Guid? SubCategoryId,
-    string? SubCategoryName);
+    string? SubCategoryName,
+    Guid? ReimbursedByTransactionId = null,
+    IReadOnlyList<LinkedTransactionResponse>? Links = null);
+
+public sealed record LinkedTransactionResponse(
+    Guid Id,
+    DateOnly Date,
+    string Content,
+    MoneyResponse Credit,
+    MoneyResponse Debit,
+    string Relation);

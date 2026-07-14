@@ -186,4 +186,9 @@
   <data name="subcat.default" xml:space="preserve"><value>Default</value></data>
   <data name="filters.amountFrom" xml:space="preserve"><value>From</value></data>
   <data name="filters.amountTo" xml:space="preserve"><value>To</value></data>
+  <data name="links.reimburses" xml:space="preserve"><value>Reimburses</value></data>
+  <data name="links.reimbursedBy" xml:space="preserve"><value>Reimbursed by</value></data>
+  <data name="links.covers" xml:space="preserve"><value>Covers</value></data>
+  <data name="links.coveredBy" xml:space="preserve"><value>Covered by</value></data>
+  <data name="export.button" xml:space="preserve"><value>Export Excel</value></data>
 </root>

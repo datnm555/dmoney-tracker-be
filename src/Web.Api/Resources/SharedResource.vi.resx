@@ -186,4 +186,9 @@
   <data name="subcat.default" xml:space="preserve"><value>Mặc định</value></data>
   <data name="filters.amountFrom" xml:space="preserve"><value>Từ</value></data>
   <data name="filters.amountTo" xml:space="preserve"><value>Đến</value></data>
+  <data name="links.reimburses" xml:space="preserve"><value>Hoàn ứng cho</value></data>
+  <data name="links.reimbursedBy" xml:space="preserve"><value>Đã được hoàn bởi</value></data>
+  <data name="links.covers" xml:space="preserve"><value>Đã chi từ khoản này</value></data>
+  <data name="links.coveredBy" xml:space="preserve"><value>Trả trước bởi</value></data>
+  <data name="export.button" xml:space="preserve"><value>Xuất Excel</value></data>
 </root>

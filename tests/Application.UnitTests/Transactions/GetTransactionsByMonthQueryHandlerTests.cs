@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Transactions;
+using Application.Transactions.Data;
 using Domain.Transactions;
 using MockQueryable.NSubstitute;
 using NSubstitute;
@@ -137,5 +138,46 @@ public class GetTransactionsByMonthQueryHandlerTests
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(TransactionErrors.InvalidMonth);
+    }
+
+    [Fact]
+    public async Task Handle_AttachesAdvanceAndPrepaidLinks()
+    {
+        Transaction advance = Transaction.Create(
+            UserId, new DateOnly(2026, 6, 1), "Ứng tiền dầu",
+            Money.Zero(), Money.Create(4_900_000m).Value, null,
+            null, null, null, null, true).Value;
+        Transaction credit = Transaction.Create(
+            UserId, new DateOnly(2026, 7, 10), "Anh Huy hoàn",
+            Money.Create(4_900_000m).Value, Money.Zero(), null).Value;
+        advance.MarkReimbursedBy(credit.Id);
+
+        Transaction prepaid = Transaction.Create(
+            UserId, new DateOnly(2026, 7, 1), "Sinh hoạt 5 tháng",
+            Money.Create(25_000_000m).Value, Money.Zero(), null,
+            null, null, null, null, false, true,
+            new DateOnly(2026, 7, 1), new DateOnly(2026, 11, 30)).Value;
+        Transaction consumer = Transaction.Create(
+            UserId, new DateOnly(2026, 7, 15), "Sinh hoạt tháng 7",
+            Money.Zero(), Money.Zero(), null,
+            null, null, null, null, false, false, null, null, prepaid.Id).Value;
+
+        var handler = CreateHandler(advance, credit, prepaid, consumer);
+
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07"), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        TransactionResponse creditItem = result.Value.Items.Single(i => i.Content == "Anh Huy hoàn");
+        creditItem.Links.ShouldNotBeNull();
+        creditItem.Links.Single().Relation.ShouldBe("reimburses");
+        creditItem.Links.Single().Content.ShouldBe("Ứng tiền dầu");
+
+        TransactionResponse prepaidItem = result.Value.Items.Single(i => i.Content == "Sinh hoạt 5 tháng");
+        prepaidItem.Links.ShouldNotBeNull();
+        prepaidItem.Links.Single().Relation.ShouldBe("covers");
+
+        TransactionResponse consumerItem = result.Value.Items.Single(i => i.Content == "Sinh hoạt tháng 7");
+        consumerItem.Links.ShouldNotBeNull();
+        consumerItem.Links.Single().Relation.ShouldBe("coveredBy");
     }
 }

@@ -79,8 +79,11 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                 dbContext.SubCategories
                     .Where(s => s.Id == t.SubCategoryId)
                     .Select(s => s.Name)
-                    .FirstOrDefault()))
+                    .FirstOrDefault(),
+                t.ReimbursedByTransactionId))
             .ToListAsync(cancellationToken);
+
+        items = await AttachLinksAsync(items, cancellationToken);
 
         decimal totalCredit = await monthScope.SumAsync(t => t.Credit.Amount, cancellationToken);
         decimal totalDebit = await monthScope.SumAsync(t => t.Debit.Amount, cancellationToken);
@@ -90,5 +93,77 @@ internal sealed class GetTransactionsByMonthQueryHandler(
             new MoneyResponse(totalCredit, Money.DefaultCurrency),
             new MoneyResponse(totalDebit, Money.DefaultCurrency),
             new MoneyResponse(totalCredit - totalDebit, Money.DefaultCurrency));
+    }
+
+    /// <summary>Attaches related transactions (advance/prepaid links, both directions).</summary>
+    private async Task<List<TransactionResponse>> AttachLinksAsync(
+        List<TransactionResponse> items,
+        CancellationToken cancellationToken)
+    {
+        if (items.Count == 0)
+        {
+            return items;
+        }
+
+        List<Guid> itemIds = items.Select(i => i.Id).ToList();
+        List<Guid> parentIds = items
+            .SelectMany(i => new[] { i.ReimbursedByTransactionId, i.PrepaidTransactionId })
+            .Where(id => id is not null)
+            .Select(id => id!.Value)
+            .Distinct()
+            .ToList();
+
+        var related = await dbContext.Transactions
+            .Where(t => parentIds.Contains(t.Id)
+                        || (t.ReimbursedByTransactionId != null && itemIds.Contains(t.ReimbursedByTransactionId.Value))
+                        || (t.PrepaidTransactionId != null && itemIds.Contains(t.PrepaidTransactionId.Value)))
+            .Select(t => new
+            {
+                t.Id,
+                t.Date,
+                t.Content,
+                CreditAmount = t.Credit.Amount,
+                CreditCurrency = t.Credit.Currency,
+                DebitAmount = t.Debit.Amount,
+                DebitCurrency = t.Debit.Currency,
+                t.ReimbursedByTransactionId,
+                t.PrepaidTransactionId
+            })
+            .ToListAsync(cancellationToken);
+
+        LinkedTransactionResponse ToLink(dynamic r, string relation) => new(
+            r.Id, r.Date, r.Content,
+            new MoneyResponse(r.CreditAmount, r.CreditCurrency),
+            new MoneyResponse(r.DebitAmount, r.DebitCurrency),
+            relation);
+
+        return items.Select(item =>
+        {
+            var links = new List<LinkedTransactionResponse>();
+
+            // Credit that settled advances -> list them beneath it.
+            links.AddRange(related
+                .Where(r => r.ReimbursedByTransactionId == item.Id)
+                .Select(r => ToLink(r, "reimburses")));
+
+            // Advance already settled -> show the reimbursing credit.
+            if (item.ReimbursedByTransactionId is { } by)
+            {
+                links.AddRange(related.Where(r => r.Id == by).Select(r => ToLink(r, "reimbursedBy")));
+            }
+
+            // Prepaid credit -> the expenses drawn from it.
+            links.AddRange(related
+                .Where(r => r.PrepaidTransactionId == item.Id)
+                .Select(r => ToLink(r, "covers")));
+
+            // Expense covered by a prepaid credit -> show the source.
+            if (item.PrepaidTransactionId is { } prepaid)
+            {
+                links.AddRange(related.Where(r => r.Id == prepaid).Select(r => ToLink(r, "coveredBy")));
+            }
+
+            return links.Count > 0 ? item with { Links = links } : item;
+        }).ToList();
     }
 }
