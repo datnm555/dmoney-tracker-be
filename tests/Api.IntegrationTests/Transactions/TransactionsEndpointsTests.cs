@@ -111,11 +111,45 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     }
 
     [Fact]
+    public async Task MonthlySummary_IsScopedToPlan()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("plan-scope@example.com", "planscope");
+        Guid categoryId = await CreateCategoryAsync(client, "Lương Scope", "wallet");
+        Guid defaultPlan = await GetDefaultPlanIdAsync(client);
+        Guid tripPlan = await CreatePlanAsync(client, "Du lịch Scope");
+
+        foreach (var (plan, content, amount) in new[]
+                 { (defaultPlan, "Lương", 15_000_000m), (tripPlan, "Khách sạn", 3_000_000m) })
+        {
+            var create = await client.PostAsJsonAsync("/transactions", new
+            {
+                date = "2026-07-05",
+                content,
+                creditAmount = amount,
+                debitAmount = 0m,
+                note = (string?)null,
+                categoryId,
+                planId = plan
+            });
+            create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        }
+
+        var summary = await (await client.GetAsync($"/transactions?month=2026-07&planId={tripPlan}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        summary!.Items.Count.ShouldBe(1);
+        summary.Items[0].Content.ShouldBe("Khách sạn");
+        summary.TotalCredit.Amount.ShouldBe(3_000_000m);
+
+        // Missing planId is a client error, not "everything".
+        (await client.GetAsync("/transactions?month=2026-07")).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
     public async Task Endpoints_WithoutToken_Return401()
     {
         HttpClient anonymous = factory.CreateClient();
 
-        (await anonymous.GetAsync("/transactions?month=2026-07")).StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        (await anonymous.GetAsync($"/transactions?month=2026-07&planId={Guid.NewGuid()}")).StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         (await anonymous.PostAsJsonAsync("/transactions", ValidPayload(Guid.NewGuid()))).StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         (await anonymous.DeleteAsync($"/transactions/{Guid.NewGuid()}")).StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -135,7 +169,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         create.Headers.Location?.ToString().ShouldBe($"/transactions/{created.Id}");
 
         // Get month summary
-        var get = await client.GetAsync("/transactions?month=2026-07");
+        var get = await client.GetAsync($"/transactions?month=2026-07&planId={defaultPlan}");
         get.StatusCode.ShouldBe(HttpStatusCode.OK);
         var summary = await get.Content.ReadFromJsonAsync<SummaryBody>();
         summary.ShouldNotBeNull();
@@ -159,7 +193,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         });
         update.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var afterUpdate = await client.GetFromJsonAsync<SummaryBody>("/transactions?month=2026-07");
+        var afterUpdate = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month=2026-07&planId={defaultPlan}");
         afterUpdate!.Items[0].Content.ShouldBe("Lương + thưởng");
         afterUpdate.TotalCredit.Amount.ShouldBe(16_000_000m);
 
@@ -167,7 +201,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         var delete = await client.DeleteAsync($"/transactions/{created.Id}");
         delete.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var afterDelete = await client.GetFromJsonAsync<SummaryBody>("/transactions?month=2026-07");
+        var afterDelete = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month=2026-07&planId={defaultPlan}");
         afterDelete!.Items.ShouldBeEmpty();
     }
 
@@ -197,8 +231,9 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
     public async Task Get_WithInvalidMonth_Returns400()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("badmonth@example.com", "badmonth");
+        Guid defaultPlan = await GetDefaultPlanIdAsync(client);
 
-        var response = await client.GetAsync("/transactions?month=garbage");
+        var response = await client.GetAsync($"/transactions?month=garbage&planId={defaultPlan}");
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
@@ -246,7 +281,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
         string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
-        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}&planId={defaultPlan}");
         ItemBody item = summary!.Items.Single(i => i.Content == "Netflix Premium");
         item.PaymentMethod.ShouldBe("card");
         item.CardType.ShouldBe("visa");
@@ -317,7 +352,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         updateResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
-        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}&planId={defaultPlan}");
         ItemBody item = summary!.Items.Single(i => i.Content == "Netflix Premium 4K");
         item.PaymentMethod.ShouldBe("card");
         item.CardType.ShouldBe("credit");
@@ -345,7 +380,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
         string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
-        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}&planId={defaultPlan}");
         summary!.Items.Single(i => i.Content == "Lunch").PaymentMethod.ShouldBe("transfer");
     }
 
@@ -370,7 +405,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         imported!.Imported.ShouldBe(2);
 
         string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
-        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}&planId={defaultPlan}");
         ItemBody salary = summary!.Items.Single(i => i.Content == "Lương import");
         salary.Credit.Amount.ShouldBe(28_000_000m);
         salary.Debit.Amount.ShouldBe(0m);
@@ -420,7 +455,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         CreatedBody? created = await create.Content.ReadFromJsonAsync<CreatedBody>();
 
         string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
-        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}&planId={defaultPlan}");
         summary!.Items.Single(i => i.Content == "Tiền xe bus ứng trước").IsAdvance.ShouldBeTrue();
 
         var update = await client.PutAsJsonAsync($"/transactions/{created!.Id}", new
@@ -436,7 +471,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         });
         update.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}&planId={defaultPlan}");
         summary!.Items.Single(i => i.Content == "Tiền xe bus ứng trước").IsAdvance.ShouldBeFalse();
     }
 
@@ -467,7 +502,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             advanceIds.Add((await createAdvance.Content.ReadFromJsonAsync<CreatedBody>())!.Id);
         }
 
-        List<AdvanceBody>? open = await client.GetFromJsonAsync<List<AdvanceBody>>("/transactions/advances/open");
+        List<AdvanceBody>? open = await client.GetFromJsonAsync<List<AdvanceBody>>($"/transactions/advances/open?planId={defaultPlan}");
         open!.Count.ShouldBe(2);
 
         // One credit settles both advances at once.
@@ -485,11 +520,11 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         createReimb.StatusCode.ShouldBe(HttpStatusCode.Created);
         CreatedBody? reimb = await createReimb.Content.ReadFromJsonAsync<CreatedBody>();
 
-        open = await client.GetFromJsonAsync<List<AdvanceBody>>("/transactions/advances/open");
+        open = await client.GetFromJsonAsync<List<AdvanceBody>>($"/transactions/advances/open?planId={defaultPlan}");
         open!.ShouldBeEmpty();
 
         // Editing the reimbursement still sees both of its own advances.
-        open = await client.GetFromJsonAsync<List<AdvanceBody>>($"/transactions/advances/open?forTransaction={reimb!.Id}");
+        open = await client.GetFromJsonAsync<List<AdvanceBody>>($"/transactions/advances/open?forTransaction={reimb!.Id}&planId={defaultPlan}");
         open!.Count.ShouldBe(2);
 
         // A second reimbursement against an already-settled advance is rejected.
@@ -508,7 +543,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         (await second.Content.ReadAsStringAsync()).ShouldContain("Transactions.AdvanceAlreadySettled");
 
         string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
-        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}&planId={defaultPlan}");
         List<Guid> linked = summary!.Items.Single(i => i.Content == "Anh Huy hoàn tổng").AdvanceTransactionIds;
         linked.Count.ShouldBe(2);
         linked.ShouldContain(advanceIds[0]);
@@ -542,7 +577,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         CreatedBody? prepaid = await createPrepaid.Content.ReadFromJsonAsync<CreatedBody>();
 
         List<PrepaidBody> credits =
-            (await client.GetFromJsonAsync<List<PrepaidBody>>("/transactions/prepaid"))!;
+            (await client.GetFromJsonAsync<List<PrepaidBody>>($"/transactions/prepaid?planId={defaultPlan}"))!;
         credits.Single().Id.ShouldBe(prepaid!.Id);
         credits[0].PrepaidFrom.ShouldBe("2026-01-01");
 
@@ -564,11 +599,11 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         }
 
         // The prepaid credit stays available for the remaining months.
-        credits = (await client.GetFromJsonAsync<List<PrepaidBody>>("/transactions/prepaid"))!;
+        credits = (await client.GetFromJsonAsync<List<PrepaidBody>>($"/transactions/prepaid?planId={defaultPlan}"))!;
         credits.Count.ShouldBe(1);
 
         string month = DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
-        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}");
+        SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}&planId={defaultPlan}");
         summary!.Items.Count(i => i.PrepaidTransactionId == prepaid.Id).ShouldBe(2);
         summary.Items.Single(i => i.Content == "Sinh hoạt 5 tháng").IsPrepaid.ShouldBeTrue();
     }

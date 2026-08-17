@@ -59,7 +59,7 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
     {
         HttpClient anonymous = factory.CreateClient();
 
-        var response = await anonymous.GetAsync($"/transactions/stats?month={ThisMonth}");
+        var response = await anonymous.GetAsync($"/transactions/stats?month={ThisMonth}&planId={Guid.NewGuid()}");
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -68,8 +68,9 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
     public async Task Stats_WithInvalidMonth_Returns400()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("statsbad@example.com", "statsbad");
+        Guid defaultPlan = await GetDefaultPlanIdAsync(client);
 
-        var response = await client.GetAsync("/transactions/stats?month=garbage");
+        var response = await client.GetAsync($"/transactions/stats?month=garbage&planId={defaultPlan}");
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
@@ -89,7 +90,7 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
         (await client.PostAsJsonAsync("/transactions",
             Payload($"{ThisMonth}-10", 0m, 50_000m, salaryId, defaultPlan))).StatusCode.ShouldBe(HttpStatusCode.Created);
 
-        var response = await client.GetAsync($"/transactions/stats?month={ThisMonth}");
+        var response = await client.GetAsync($"/transactions/stats?month={ThisMonth}&planId={defaultPlan}");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var stats = await response.Content.ReadFromJsonAsync<StatsBody>();

@@ -12,6 +12,8 @@ public class GetOpenAdvancesQueryHandlerTests
 {
     private static readonly Guid UserId = Guid.NewGuid();
     private static readonly Guid OtherUserId = Guid.NewGuid();
+    private static readonly Domain.Plans.Plan Plan =
+        Domain.Plans.Plan.Create(UserId, "Sổ chính", true).Value;
 
     private static GetOpenAdvancesQueryHandler CreateHandler(params Transaction[] transactions)
     {
@@ -20,12 +22,14 @@ public class GetOpenAdvancesQueryHandlerTests
         userContext.UserId.Returns(UserId);
         var transactionsDbSet = transactions.ToList().BuildMockDbSet();
         dbContext.Transactions.Returns(transactionsDbSet);
+        var plansDbSet = new List<Domain.Plans.Plan> { Plan }.BuildMockDbSet();
+        dbContext.Plans.Returns(plansDbSet);
         return new GetOpenAdvancesQueryHandler(dbContext, userContext);
     }
 
     private static Transaction Advance(Guid userId, string content) =>
         Transaction.Create(
-            userId, Guid.NewGuid(), new DateOnly(2026, 7, 1), content,
+            userId, userId == UserId ? Plan.Id : Guid.NewGuid(), new DateOnly(2026, 7, 1), content,
             Money.Zero(), Money.Create(1_000_000m).Value, null,
             null, null, null, null, true).Value;
 
@@ -38,7 +42,7 @@ public class GetOpenAdvancesQueryHandlerTests
         Transaction foreign = Advance(OtherUserId, "Của người khác");
         var handler = CreateHandler(open, settledAdvance, foreign);
 
-        var result = await handler.Handle(new GetOpenAdvancesQuery(null), CancellationToken.None);
+        var result = await handler.Handle(new GetOpenAdvancesQuery(null, Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Count.ShouldBe(1);
@@ -55,7 +59,7 @@ public class GetOpenAdvancesQueryHandlerTests
         var handler = CreateHandler(settledAdvance);
 
         var result = await handler.Handle(
-            new GetOpenAdvancesQuery(reimbursementId), CancellationToken.None);
+            new GetOpenAdvancesQuery(reimbursementId, Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Count.ShouldBe(1);
