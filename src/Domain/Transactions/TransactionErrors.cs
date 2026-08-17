@@ -99,4 +99,8 @@ public static class TransactionErrors
     public static readonly Error ImportTooManyRows = Error.Validation(
         "Transactions.ImportTooManyRows",
         $"An import may contain at most {TransactionConstants.ImportMaxRows} rows.");
+
+    public static readonly Error PlanMoveLinked = Error.Conflict(
+        "Transactions.PlanMoveLinked",
+        "This transaction is linked to an advance or prepaid transaction and cannot move to another plan.");
 }

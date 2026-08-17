@@ -2,6 +2,7 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Categories;
+using Domain.Plans;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -22,12 +23,33 @@ internal sealed class UpdateTransactionCommandHandler(
             return Result.Failure(UserErrors.Unauthenticated);
         }
 
+        bool planExists = await dbContext.Plans.AnyAsync(
+            p => p.Id == command.PlanId && p.UserId == userId, cancellationToken);
+        if (!planExists)
+        {
+            return Result.Failure(PlanErrors.NotFound);
+        }
+
         Transaction? transaction = await dbContext.Transactions
             .FirstOrDefaultAsync(t => t.Id == command.Id && t.UserId == userId, cancellationToken);
 
         if (transaction is null)
         {
             return Result.Failure(TransactionErrors.NotFound);
+        }
+
+        if (transaction.PlanId != command.PlanId)
+        {
+            bool hasLinks = transaction.ReimbursedByTransactionId is not null
+                || transaction.PrepaidTransactionId is not null
+                || await dbContext.Transactions.AnyAsync(
+                    t => t.ReimbursedByTransactionId == transaction.Id
+                         || t.PrepaidTransactionId == transaction.Id,
+                    cancellationToken);
+            if (hasLinks)
+            {
+                return Result.Failure(TransactionErrors.PlanMoveLinked);
+            }
         }
 
         Result<Money> credit = Money.Create(command.CreditAmount);
@@ -81,7 +103,7 @@ internal sealed class UpdateTransactionCommandHandler(
         }
 
         Result updated = transaction.Update(
-            command.Date, command.Content, credit.Value, debit.Value,
+            command.PlanId, command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.CategoryId,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,

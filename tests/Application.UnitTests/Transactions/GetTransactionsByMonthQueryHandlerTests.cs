@@ -32,7 +32,7 @@ public class GetTransactionsByMonthQueryHandlerTests
 
     private static Transaction Tx(Guid userId, DateOnly date, decimal credit, decimal debit) =>
         Transaction.Create(
-            userId, date, "tx", Money.Create(credit).Value, Money.Create(debit).Value, null).Value;
+            userId, Guid.NewGuid(), date, "tx", Money.Create(credit).Value, Money.Create(debit).Value, null).Value;
 
     [Fact]
     public async Task Handle_ReturnsOnlyCurrentUsersRecordsInMonth_WithTotals()
@@ -97,7 +97,7 @@ public class GetTransactionsByMonthQueryHandlerTests
     public async Task Handle_ProjectsPaymentFieldsIntoResponse()
     {
         Transaction tx = Transaction.Create(
-            UserId, new DateOnly(2026, 7, 5), "Netflix",
+            UserId, Guid.NewGuid(), new DateOnly(2026, 7, 5), "Netflix",
             Money.Zero(), Money.Create(260_000m).Value, null,
             Guid.NewGuid(), PaymentMethods.Card, CardTypes.Visa, "Techcombank").Value;
         var handler = CreateHandler(tx);
@@ -144,21 +144,21 @@ public class GetTransactionsByMonthQueryHandlerTests
     public async Task Handle_AttachesAdvanceAndPrepaidLinks()
     {
         Transaction advance = Transaction.Create(
-            UserId, new DateOnly(2026, 6, 1), "Ứng tiền dầu",
+            UserId, Guid.NewGuid(), new DateOnly(2026, 6, 1), "Ứng tiền dầu",
             Money.Zero(), Money.Create(4_900_000m).Value, null,
             null, null, null, null, true).Value;
         Transaction credit = Transaction.Create(
-            UserId, new DateOnly(2026, 7, 10), "Anh Huy hoàn",
+            UserId, Guid.NewGuid(), new DateOnly(2026, 7, 10), "Anh Huy hoàn",
             Money.Create(4_900_000m).Value, Money.Zero(), null).Value;
         advance.MarkReimbursedBy(credit.Id);
 
         Transaction prepaid = Transaction.Create(
-            UserId, new DateOnly(2026, 7, 1), "Sinh hoạt 5 tháng",
+            UserId, Guid.NewGuid(), new DateOnly(2026, 7, 1), "Sinh hoạt 5 tháng",
             Money.Create(25_000_000m).Value, Money.Zero(), null,
             null, null, null, null, false, true,
             new DateOnly(2026, 7, 1), new DateOnly(2026, 11, 30)).Value;
         Transaction consumer = Transaction.Create(
-            UserId, new DateOnly(2026, 7, 15), "Sinh hoạt tháng 7",
+            UserId, Guid.NewGuid(), new DateOnly(2026, 7, 15), "Sinh hoạt tháng 7",
             Money.Zero(), Money.Zero(), null,
             null, null, null, null, false, false, null, null, prepaid.Id).Value;
 

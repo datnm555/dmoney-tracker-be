@@ -31,7 +31,7 @@ public class DeleteTransactionCommandHandlerTests
     [Fact]
     public async Task Handle_WithOwnRecord_RemovesAndSaves()
     {
-        Transaction tx = Transaction.Create(UserId, new DateOnly(2026, 7, 1), "x",
+        Transaction tx = Transaction.Create(UserId, Guid.NewGuid(), new DateOnly(2026, 7, 1), "x",
             Money.Create(1m).Value, Money.Zero(), null).Value;
         var handler = CreateHandler(tx);
 
@@ -45,7 +45,7 @@ public class DeleteTransactionCommandHandlerTests
     [Fact]
     public async Task Handle_WithOtherUsersRecord_FailsNotFound()
     {
-        Transaction foreign = Transaction.Create(OtherUserId, new DateOnly(2026, 7, 1), "x",
+        Transaction foreign = Transaction.Create(OtherUserId, Guid.NewGuid(), new DateOnly(2026, 7, 1), "x",
             Money.Create(1m).Value, Money.Zero(), null).Value;
         var handler = CreateHandler(foreign);
 

@@ -26,14 +26,15 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
         return client;
     }
 
-    private static object Payload(string date, decimal credit, decimal debit, Guid? categoryId) => new
+    private static object Payload(string date, decimal credit, decimal debit, Guid? categoryId, Guid planId) => new
     {
         date,
         content = "stats tx",
         creditAmount = credit,
         debitAmount = debit,
         note = (string?)null,
-        categoryId
+        categoryId,
+        planId
     };
 
     private static async Task<Guid> CreateCategoryAsync(HttpClient client, string name, string icon)
@@ -42,6 +43,14 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
     }
+
+    private static async Task<Guid> GetDefaultPlanIdAsync(HttpClient client)
+    {
+        var plans = await (await client.GetAsync("/plans")).Content.ReadFromJsonAsync<List<PlanListBody>>();
+        return plans![0].Id;
+    }
+
+    internal sealed record PlanListBody(Guid Id, string Name, bool IsDefault);
 
     internal sealed record CreatedBody(Guid Id);
 
@@ -69,15 +78,16 @@ public sealed class StatsEndpointTests(ApiTestFactory factory) : IClassFixture<A
     public async Task Stats_AggregatesMonthlyDailyAndCategory()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("stats@example.com", "statsuser");
+        Guid defaultPlan = await GetDefaultPlanIdAsync(client);
 
         Guid salaryId = await CreateCategoryAsync(client, "Lương stats", "wallet");
         Guid foodId = await CreateCategoryAsync(client, "Ăn hàng stats", "utensils");
         (await client.PostAsJsonAsync("/transactions",
-            Payload($"{ThisMonth}-05", 15_000_000m, 0m, salaryId))).StatusCode.ShouldBe(HttpStatusCode.Created);
+            Payload($"{ThisMonth}-05", 15_000_000m, 0m, salaryId, defaultPlan))).StatusCode.ShouldBe(HttpStatusCode.Created);
         (await client.PostAsJsonAsync("/transactions",
-            Payload($"{ThisMonth}-10", 0m, 200_000m, foodId))).StatusCode.ShouldBe(HttpStatusCode.Created);
+            Payload($"{ThisMonth}-10", 0m, 200_000m, foodId, defaultPlan))).StatusCode.ShouldBe(HttpStatusCode.Created);
         (await client.PostAsJsonAsync("/transactions",
-            Payload($"{ThisMonth}-10", 0m, 50_000m, salaryId))).StatusCode.ShouldBe(HttpStatusCode.Created);
+            Payload($"{ThisMonth}-10", 0m, 50_000m, salaryId, defaultPlan))).StatusCode.ShouldBe(HttpStatusCode.Created);
 
         var response = await client.GetAsync($"/transactions/stats?month={ThisMonth}");
 

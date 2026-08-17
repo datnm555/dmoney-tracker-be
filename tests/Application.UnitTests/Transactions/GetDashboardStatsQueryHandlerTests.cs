@@ -37,7 +37,7 @@ public class GetDashboardStatsQueryHandlerTests
     private static Transaction Tx(
         Guid userId, DateOnly date, decimal credit, decimal debit, Guid? categoryId = null) =>
         Transaction.Create(
-            userId, date, "tx", Money.Create(credit).Value, Money.Create(debit).Value, null, categoryId).Value;
+            userId, Guid.NewGuid(), date, "tx", Money.Create(credit).Value, Money.Create(debit).Value, null, categoryId).Value;
 
     [Fact]
     public async Task Handle_Monthly_Returns12ZeroFilledMonths_OldestFirst()

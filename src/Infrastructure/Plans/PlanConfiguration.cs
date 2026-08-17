@@ -1,4 +1,5 @@
 using Domain.Plans;
+using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,6 +16,11 @@ internal sealed class PlanConfiguration : IEntityTypeConfiguration<Plan>
         builder.Property(p => p.Name)
             .HasMaxLength(PlanConstants.NameMaxLength)
             .IsRequired();
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(p => p.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(p => p.UserId);
 

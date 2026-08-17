@@ -15,13 +15,13 @@ public class GetCreditsQueryHandlerTests
     [Fact]
     public async Task Handle_ReturnsOwnPlainCreditsOnly_NewestFirst()
     {
-        Transaction credit = Transaction.Create(UserId, new DateOnly(2026, 2, 1), "Hoàn tiền",
+        Transaction credit = Transaction.Create(UserId, Guid.NewGuid(), new DateOnly(2026, 2, 1), "Hoàn tiền",
             Money.Create(10_000_000m).Value, Money.Zero(), null).Value;
-        Transaction olderCredit = Transaction.Create(UserId, new DateOnly(2026, 1, 5), "Lương",
+        Transaction olderCredit = Transaction.Create(UserId, Guid.NewGuid(), new DateOnly(2026, 1, 5), "Lương",
             Money.Create(15_000_000m).Value, Money.Zero(), null).Value;
-        Transaction debit = Transaction.Create(UserId, new DateOnly(2026, 2, 2), "Chi",
+        Transaction debit = Transaction.Create(UserId, Guid.NewGuid(), new DateOnly(2026, 2, 2), "Chi",
             Money.Zero(), Money.Create(1_000m).Value, null).Value;
-        Transaction foreign = Transaction.Create(Guid.NewGuid(), new DateOnly(2026, 2, 3), "Khác",
+        Transaction foreign = Transaction.Create(Guid.NewGuid(), Guid.NewGuid(), new DateOnly(2026, 2, 3), "Khác",
             Money.Create(9_000m).Value, Money.Zero(), null).Value;
         var dbContext = Substitute.For<IApplicationDbContext>();
         var userContext = Substitute.For<IUserContext>();

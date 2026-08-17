@@ -9,6 +9,7 @@ public sealed record CreateTransactionCommand(
     decimal DebitAmount,
     string? Note,
     Guid? CategoryId,
+    Guid PlanId,
     string? PaymentMethod = null,
     string? CardType = null,
     string? Bank = null,

@@ -2,6 +2,7 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Categories;
+using Domain.Plans;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -22,6 +23,13 @@ internal sealed class CreateTransactionCommandHandler(
         if (userContext.UserId is not { } userId)
         {
             return Result.Failure<Guid>(UserErrors.Unauthenticated);
+        }
+
+        bool planExists = await dbContext.Plans.AnyAsync(
+            p => p.Id == command.PlanId && p.UserId == userId, cancellationToken);
+        if (!planExists)
+        {
+            return Result.Failure<Guid>(PlanErrors.NotFound);
         }
 
         Result<Money> credit = Money.Create(command.CreditAmount);
@@ -70,7 +78,7 @@ internal sealed class CreateTransactionCommandHandler(
         }
 
         Result<Transaction> transaction = Transaction.Create(
-            userId, command.Date, command.Content, credit.Value, debit.Value,
+            userId, command.PlanId, command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.CategoryId,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,

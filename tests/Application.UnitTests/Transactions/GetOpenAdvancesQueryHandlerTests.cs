@@ -25,7 +25,7 @@ public class GetOpenAdvancesQueryHandlerTests
 
     private static Transaction Advance(Guid userId, string content) =>
         Transaction.Create(
-            userId, new DateOnly(2026, 7, 1), content,
+            userId, Guid.NewGuid(), new DateOnly(2026, 7, 1), content,
             Money.Zero(), Money.Create(1_000_000m).Value, null,
             null, null, null, null, true).Value;
 

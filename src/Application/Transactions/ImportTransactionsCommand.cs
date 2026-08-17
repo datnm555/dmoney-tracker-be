@@ -9,4 +9,4 @@ public sealed record ImportTransactionRow(
     string? Note);
 
 public sealed record ImportTransactionsCommand(
-    IReadOnlyList<ImportTransactionRow> Rows) : ICommand<int>;
+    IReadOnlyList<ImportTransactionRow> Rows, Guid PlanId) : ICommand<int>;
