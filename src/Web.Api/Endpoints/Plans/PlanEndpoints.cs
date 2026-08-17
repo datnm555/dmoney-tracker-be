@@ -43,3 +43,41 @@ internal sealed class CreatePlan : IEndpoint
         }).RequireAuthorization();
     }
 }
+
+internal sealed class UpdatePlan : IEndpoint
+{
+    internal sealed record UpdatePlanRequest(string Name);
+
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/plans/{id:guid}", async (
+            Guid id,
+            UpdatePlanRequest request,
+            ICommandHandler<UpdatePlanCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(
+                new UpdatePlanCommand(id, request.Name), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
+
+internal sealed class DeletePlan : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapDelete("/plans/{id:guid}", async (
+            Guid id,
+            ICommandHandler<DeletePlanCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(new DeletePlanCommand(id), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}

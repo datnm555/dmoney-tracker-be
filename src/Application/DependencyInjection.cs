@@ -40,6 +40,8 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetDashboardStatsQuery, DashboardStatsResponse>, GetDashboardStatsQueryHandler>();
         services.AddScoped<IQueryHandler<GetPlansQuery, List<PlanResponse>>, GetPlansQueryHandler>();
         services.AddScoped<ICommandHandler<CreatePlanCommand, Guid>, CreatePlanCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdatePlanCommand>, UpdatePlanCommandHandler>();
+        services.AddScoped<ICommandHandler<DeletePlanCommand>, DeletePlanCommandHandler>();
         return services;
     }
 }

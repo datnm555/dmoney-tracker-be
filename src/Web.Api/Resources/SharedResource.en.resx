@@ -223,4 +223,23 @@
   <data name="Transactions.DateRequired" xml:space="preserve"><value>Please pick a date.</value></data>
   <data name="Transactions.CategoryRequired" xml:space="preserve"><value>Please choose a category.</value></data>
   <data name="Users.InvalidRefreshToken" xml:space="preserve"><value>The session has expired. Please sign in again.</value></data>
+  <data name="Plans.NameRequired" xml:space="preserve"><value>Please enter a plan name.</value></data>
+  <data name="Plans.NameTooLong" xml:space="preserve"><value>Plan name must be at most 100 characters.</value></data>
+  <data name="Plans.NotFound" xml:space="preserve"><value>Plan not found.</value></data>
+  <data name="Plans.NotEmpty" xml:space="preserve"><value>This plan still has transactions and cannot be deleted.</value></data>
+  <data name="Plans.CannotDeleteDefault" xml:space="preserve"><value>The default plan cannot be deleted.</value></data>
+  <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
+  <data name="menu.plans" xml:space="preserve"><value>Plans</value></data>
+  <data name="plans.title" xml:space="preserve"><value>Manage plans</value></data>
+  <data name="plans.switcher" xml:space="preserve"><value>Plan</value></data>
+  <data name="plans.create" xml:space="preserve"><value>New plan</value></data>
+  <data name="plans.name" xml:space="preserve"><value>Plan name</value></data>
+  <data name="plans.rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="plans.delete" xml:space="preserve"><value>Delete plan</value></data>
+  <data name="plans.deleteConfirm" xml:space="preserve"><value>Delete this plan?</value></data>
+  <data name="plans.default" xml:space="preserve"><value>Default</value></data>
+  <data name="plans.manage" xml:space="preserve"><value>Manage plans</value></data>
+  <data name="plans.created" xml:space="preserve"><value>Plan created and selected.</value></data>
+  <data name="plans.form" xml:space="preserve"><value>Plan</value></data>
+  <data name="import.targetPlan" xml:space="preserve"><value>Import into plan</value></data>
 </root>

@@ -23,6 +23,20 @@ public sealed class PlansEndpointsTests(ApiTestFactory factory) : IClassFixture<
         return client;
     }
 
+    private static async Task<Guid> CreatePlanAsync(HttpClient client, string name)
+    {
+        var response = await client.PostAsJsonAsync("/plans", new { name });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
+    private static async Task<Guid> CreateCategoryAsync(HttpClient client, string name, string icon)
+    {
+        var response = await client.PostAsJsonAsync("/categories", new { name, icon });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
     private sealed record LoginBody(string Token);
     internal sealed record PlanBody(Guid Id, string Name, bool IsDefault);
     internal sealed record CreatedBody(Guid Id);
@@ -71,5 +85,52 @@ public sealed class PlansEndpointsTests(ApiTestFactory factory) : IClassFixture<
         HttpClient client = await CreateAuthenticatedClientAsync("plan-empty@example.com", "planempty");
         var create = await client.PostAsJsonAsync("/plans", new { name = "  " });
         create.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task RenamePlan_Works()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("plan-rename@example.com", "planrename");
+        Guid planId = await CreatePlanAsync(client, "Cũ");
+
+        (await client.PutAsJsonAsync($"/plans/{planId}", new { name = "Mới" }))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        var plans = (await (await client.GetAsync("/plans")).Content.ReadFromJsonAsync<List<PlanBody>>())!;
+        plans.ShouldContain(p => p.Name == "Mới");
+    }
+
+    [Fact]
+    public async Task DeletePlan_Guards()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("plan-delete@example.com", "plandelete");
+        Guid defaultPlan = (await (await client.GetAsync("/plans")).Content
+            .ReadFromJsonAsync<List<PlanBody>>())![0].Id;
+
+        // Default plan is never deletable.
+        (await client.DeleteAsync($"/plans/{defaultPlan}")).StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        // A plan with transactions is not deletable.
+        Guid full = await CreatePlanAsync(client, "Có giao dịch");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi Delete", "tag");
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-07-05",
+            content = "Chi",
+            creditAmount = 0m,
+            debitAmount = 100_000m,
+            note = (string?)null,
+            categoryId,
+            planId = full
+        })).StatusCode.ShouldBe(HttpStatusCode.Created);
+        (await client.DeleteAsync($"/plans/{full}")).StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        // An empty non-default plan deletes fine.
+        Guid empty = await CreatePlanAsync(client, "Trống");
+        (await client.DeleteAsync($"/plans/{empty}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // Someone else's plan is a 404.
+        HttpClient other = await CreateAuthenticatedClientAsync("plan-other@example.com", "planother");
+        (await other.DeleteAsync($"/plans/{full}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }
