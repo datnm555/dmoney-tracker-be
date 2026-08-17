@@ -15,6 +15,7 @@ internal sealed class GetDashboardStats : IEndpoint
     {
         app.MapGet("/transactions/stats", async (
             string? month,
+            Guid planId,
             IQueryHandler<GetDashboardStatsQuery, DashboardStatsResponse> handler,
             IStringLocalizer<SharedResource> localizer,
             CancellationToken cancellationToken) =>
@@ -24,7 +25,7 @@ internal sealed class GetDashboardStats : IEndpoint
                 ?? DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
 
             Result<DashboardStatsResponse> result = await handler.Handle(
-                new GetDashboardStatsQuery(effectiveMonth),
+                new GetDashboardStatsQuery(effectiveMonth, planId),
                 cancellationToken);
 
             return result.ToHttpResult(localizer);

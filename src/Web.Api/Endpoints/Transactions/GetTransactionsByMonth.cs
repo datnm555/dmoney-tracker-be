@@ -15,6 +15,7 @@ internal sealed class GetTransactionsByMonth : IEndpoint
     {
         app.MapGet("/transactions", async (
             string? month,
+            Guid planId,
             IQueryHandler<GetTransactionsByMonthQuery, MonthlySummaryResponse> handler,
             IStringLocalizer<SharedResource> localizer,
             CancellationToken cancellationToken) =>
@@ -24,7 +25,7 @@ internal sealed class GetTransactionsByMonth : IEndpoint
                 ?? DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
 
             Result<MonthlySummaryResponse> result = await handler.Handle(
-                new GetTransactionsByMonthQuery(effectiveMonth),
+                new GetTransactionsByMonthQuery(effectiveMonth, planId),
                 cancellationToken);
 
             return result.ToHttpResult(localizer);

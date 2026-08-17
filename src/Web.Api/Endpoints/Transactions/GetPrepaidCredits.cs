@@ -13,12 +13,13 @@ internal sealed class GetPrepaidCredits : IEndpoint
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapGet("/transactions/prepaid", async (
+            Guid planId,
             IQueryHandler<GetPrepaidCreditsQuery, List<PrepaidCreditResponse>> handler,
             IStringLocalizer<SharedResource> localizer,
             CancellationToken cancellationToken) =>
         {
             Result<List<PrepaidCreditResponse>> result = await handler.Handle(
-                new GetPrepaidCreditsQuery(), cancellationToken);
+                new GetPrepaidCreditsQuery(planId), cancellationToken);
 
             return result.ToHttpResult(localizer, Results.Ok);
         }).RequireAuthorization();

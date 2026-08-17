@@ -223,4 +223,23 @@
   <data name="Transactions.DateRequired" xml:space="preserve"><value>Vui lòng chọn ngày.</value></data>
   <data name="Transactions.CategoryRequired" xml:space="preserve"><value>Vui lòng chọn danh mục.</value></data>
   <data name="Users.InvalidRefreshToken" xml:space="preserve"><value>Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</value></data>
+  <data name="Plans.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên sổ.</value></data>
+  <data name="Plans.NameTooLong" xml:space="preserve"><value>Tên sổ tối đa 100 ký tự.</value></data>
+  <data name="Plans.NotFound" xml:space="preserve"><value>Không tìm thấy sổ.</value></data>
+  <data name="Plans.NotEmpty" xml:space="preserve"><value>Sổ vẫn còn giao dịch nên chưa thể xóa.</value></data>
+  <data name="Plans.CannotDeleteDefault" xml:space="preserve"><value>Không thể xóa sổ mặc định.</value></data>
+  <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
+  <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>
+  <data name="plans.title" xml:space="preserve"><value>Quản lý sổ</value></data>
+  <data name="plans.switcher" xml:space="preserve"><value>Sổ</value></data>
+  <data name="plans.create" xml:space="preserve"><value>Tạo sổ mới</value></data>
+  <data name="plans.name" xml:space="preserve"><value>Tên sổ</value></data>
+  <data name="plans.rename" xml:space="preserve"><value>Đổi tên</value></data>
+  <data name="plans.delete" xml:space="preserve"><value>Xóa sổ</value></data>
+  <data name="plans.deleteConfirm" xml:space="preserve"><value>Xóa sổ này?</value></data>
+  <data name="plans.default" xml:space="preserve"><value>Mặc định</value></data>
+  <data name="plans.manage" xml:space="preserve"><value>Quản lý sổ</value></data>
+  <data name="plans.created" xml:space="preserve"><value>Đã tạo sổ và chuyển sang sổ mới.</value></data>
+  <data name="plans.form" xml:space="preserve"><value>Sổ</value></data>
+  <data name="import.targetPlan" xml:space="preserve"><value>Nhập vào sổ</value></data>
 </root>

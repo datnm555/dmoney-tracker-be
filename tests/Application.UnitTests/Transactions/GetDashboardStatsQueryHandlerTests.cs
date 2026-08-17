@@ -13,6 +13,8 @@ public class GetDashboardStatsQueryHandlerTests
 {
     private static readonly Guid UserId = Guid.NewGuid();
     private static readonly Guid OtherUserId = Guid.NewGuid();
+    private static readonly Domain.Plans.Plan Plan =
+        Domain.Plans.Plan.Create(UserId, "Sổ chính", true).Value;
 
     // Fixed "now" so the rolling window is deterministic: window = 2025-08 .. 2026-07.
     private static readonly DateTime Now = new(2026, 7, 15, 12, 0, 0, DateTimeKind.Utc);
@@ -31,13 +33,16 @@ public class GetDashboardStatsQueryHandlerTests
         _clock.UtcNow.Returns(Now);
         var transactionsDbSet = transactions.ToList().BuildMockDbSet();
         _dbContext.Transactions.Returns(transactionsDbSet);
+        var plansDbSet = new List<Domain.Plans.Plan> { Plan }.BuildMockDbSet();
+        _dbContext.Plans.Returns(plansDbSet);
         return new GetDashboardStatsQueryHandler(_dbContext, _userContext, _clock);
     }
 
     private static Transaction Tx(
         Guid userId, DateOnly date, decimal credit, decimal debit, Guid? categoryId = null) =>
         Transaction.Create(
-            userId, date, "tx", Money.Create(credit).Value, Money.Create(debit).Value, null, categoryId).Value;
+            userId, userId == UserId ? Plan.Id : Guid.NewGuid(), date, "tx",
+            Money.Create(credit).Value, Money.Create(debit).Value, null, categoryId).Value;
 
     [Fact]
     public async Task Handle_Monthly_Returns12ZeroFilledMonths_OldestFirst()
@@ -47,7 +52,7 @@ public class GetDashboardStatsQueryHandlerTests
             Tx(UserId, new DateOnly(2026, 3, 10), 0m, 2_000_000m),
             Tx(UserId, new DateOnly(2025, 7, 31), 999m, 0m)); // outside the window
 
-        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07"), CancellationToken.None);
+        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07", Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Monthly.Count.ShouldBe(12);
@@ -70,7 +75,7 @@ public class GetDashboardStatsQueryHandlerTests
             Tx(UserId, new DateOnly(2026, 7, 6), 1_000_000m, 0m),  // credit-only day: excluded
             Tx(UserId, new DateOnly(2026, 6, 5), 0m, 999m));        // other month: excluded
 
-        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07"), CancellationToken.None);
+        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07", Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Daily.Count.ShouldBe(2);
@@ -90,7 +95,7 @@ public class GetDashboardStatsQueryHandlerTests
             Tx(UserId, new DateOnly(2026, 7, 2), 0m, 50_000m),               // uncategorised bucket
             Tx(UserId, new DateOnly(2026, 7, 4), 5_000_000m, 0m, salaryId)); // credit-only: excluded
 
-        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07"), CancellationToken.None);
+        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07", Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.ByCategory.Count.ShouldBe(2);
@@ -106,7 +111,7 @@ public class GetDashboardStatsQueryHandlerTests
         var handler = CreateHandler(
             Tx(OtherUserId, new DateOnly(2026, 7, 5), 1_000_000m, 500_000m, Guid.NewGuid()));
 
-        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07"), CancellationToken.None);
+        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07", Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Monthly[11].TotalCredit.Amount.ShouldBe(0m);
@@ -122,7 +127,7 @@ public class GetDashboardStatsQueryHandlerTests
     {
         var handler = CreateHandler();
 
-        var result = await handler.Handle(new GetDashboardStatsQuery(month), CancellationToken.None);
+        var result = await handler.Handle(new GetDashboardStatsQuery(month, Plan.Id), CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.InvalidMonth");
@@ -141,7 +146,7 @@ public class GetDashboardStatsQueryHandlerTests
         _dbContext.Transactions.Returns(transactionsDbSet);
         var handler = new GetDashboardStatsQueryHandler(_dbContext, _userContext, _clock);
 
-        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07"), CancellationToken.None);
+        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07", Plan.Id), CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Users.Unauthenticated");

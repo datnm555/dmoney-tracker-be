@@ -14,12 +14,13 @@ internal sealed class GetOpenAdvances : IEndpoint
     {
         app.MapGet("/transactions/advances/open", async (
             Guid? forTransaction,
+            Guid planId,
             IQueryHandler<GetOpenAdvancesQuery, List<AdvanceResponse>> handler,
             IStringLocalizer<SharedResource> localizer,
             CancellationToken cancellationToken) =>
         {
             Result<List<AdvanceResponse>> result = await handler.Handle(
-                new GetOpenAdvancesQuery(forTransaction), cancellationToken);
+                new GetOpenAdvancesQuery(forTransaction, planId), cancellationToken);
 
             return result.ToHttpResult(localizer, Results.Ok);
         }).RequireAuthorization();

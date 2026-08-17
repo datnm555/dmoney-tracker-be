@@ -14,6 +14,10 @@ public class UpdateTransactionCommandHandlerTests
     private static readonly Domain.Categories.Category Bills =
         Domain.Categories.Category.Create("Hóa đơn", "zap", "tester", "bills").Value;
     private static readonly Guid OtherUserId = Guid.NewGuid();
+    private static readonly Domain.Plans.Plan Plan =
+        Domain.Plans.Plan.Create(UserId, "Sổ chính", true).Value;
+    private static readonly Domain.Plans.Plan OtherPlan =
+        Domain.Plans.Plan.Create(UserId, "Du lịch", false).Value;
 
     private IApplicationDbContext _dbContext = null!;
     private IUserContext _userContext = null!;
@@ -28,12 +32,14 @@ public class UpdateTransactionCommandHandlerTests
         _dbContext.Transactions.Returns(transactionsDbSet);
         var categoriesDbSet = new List<Domain.Categories.Category> { Bills }.BuildMockDbSet();
         _dbContext.Categories.Returns(categoriesDbSet);
+        var plansDbSet = new List<Domain.Plans.Plan> { Plan, OtherPlan }.BuildMockDbSet();
+        _dbContext.Plans.Returns(plansDbSet);
 
         return new UpdateTransactionCommandHandler(_dbContext, _userContext);
     }
 
     private static Transaction OwnTx() =>
-        Transaction.Create(UserId, new DateOnly(2026, 7, 1), "cũ",
+        Transaction.Create(UserId, Plan.Id, new DateOnly(2026, 7, 1), "cũ",
             Money.Create(1_000m).Value, Money.Zero(), null).Value;
 
     [Fact]
@@ -42,7 +48,7 @@ public class UpdateTransactionCommandHandlerTests
         Transaction tx = OwnTx();
         var handler = CreateHandler(tx);
         var command = new UpdateTransactionCommand(
-            tx.Id, new DateOnly(2026, 7, 10), "mới", 0m, 2_000m, "note", Bills.Id);
+            tx.Id, new DateOnly(2026, 7, 10), "mới", 0m, 2_000m, "note", Bills.Id, Plan.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -57,7 +63,7 @@ public class UpdateTransactionCommandHandlerTests
     {
         var handler = CreateHandler(OwnTx());
         var command = new UpdateTransactionCommand(
-            Guid.NewGuid(), new DateOnly(2026, 7, 10), "mới", 1m, 0m, null, null);
+            Guid.NewGuid(), new DateOnly(2026, 7, 10), "mới", 1m, 0m, null, null, Plan.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -66,13 +72,26 @@ public class UpdateTransactionCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_WithUnknownPlan_FailsNotFound()
+    {
+        var handler = CreateHandler(OwnTx());
+        var command = new UpdateTransactionCommand(
+            Guid.NewGuid(), new DateOnly(2026, 7, 10), "mới", 1m, 0m, null, null, Guid.NewGuid());
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("Plans.NotFound");
+    }
+
+    [Fact]
     public async Task Handle_WithOtherUsersRecord_FailsNotFound()
     {
-        Transaction foreign = Transaction.Create(OtherUserId, new DateOnly(2026, 7, 1), "x",
+        Transaction foreign = Transaction.Create(OtherUserId, Plan.Id, new DateOnly(2026, 7, 1), "x",
             Money.Create(1m).Value, Money.Zero(), null).Value;
         var handler = CreateHandler(foreign);
         var command = new UpdateTransactionCommand(
-            foreign.Id, new DateOnly(2026, 7, 10), "hack", 1m, 0m, null, null);
+            foreign.Id, new DateOnly(2026, 7, 10), "hack", 1m, 0m, null, null, Plan.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -87,7 +106,7 @@ public class UpdateTransactionCommandHandlerTests
         Transaction tx = OwnTx();
         var handler = CreateHandler(tx);
         var command = new UpdateTransactionCommand(
-            tx.Id, new DateOnly(2026, 7, 10), "mới", 0m, 0m, null, Bills.Id);
+            tx.Id, new DateOnly(2026, 7, 10), "mới", 0m, 0m, null, Bills.Id, Plan.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -102,7 +121,7 @@ public class UpdateTransactionCommandHandlerTests
         Transaction tx = OwnTx();
         var handler = CreateHandler(tx);
         var command = new UpdateTransactionCommand(
-            tx.Id, new DateOnly(2026, 7, 10), "mới", 1m, 0m, null, Bills.Id);
+            tx.Id, new DateOnly(2026, 7, 10), "mới", 1m, 0m, null, Bills.Id, Plan.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -117,7 +136,7 @@ public class UpdateTransactionCommandHandlerTests
         var handler = CreateHandler(tx);
         var command = new UpdateTransactionCommand(
             tx.Id, new DateOnly(2026, 7, 10), "Netflix", 0m, 260_000m, null,
-            Bills.Id, "card", "visa", "Techcombank");
+            Bills.Id, Plan.Id, "card", "visa", "Techcombank");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -130,14 +149,14 @@ public class UpdateTransactionCommandHandlerTests
     [Fact]
     public async Task Handle_AdvanceWithReimbursedBy_LinksTheCredit()
     {
-        Transaction advance = Transaction.Create(UserId, new DateOnly(2026, 1, 10), "Chuyển tiền lốp",
+        Transaction advance = Transaction.Create(UserId, Plan.Id, new DateOnly(2026, 1, 10), "Chuyển tiền lốp",
             Money.Zero(), Money.Create(10_000_000m).Value, null, isAdvance: true).Value;
-        Transaction credit = Transaction.Create(UserId, new DateOnly(2026, 2, 1), "Hoàn tiền lốp",
+        Transaction credit = Transaction.Create(UserId, Plan.Id, new DateOnly(2026, 2, 1), "Hoàn tiền lốp",
             Money.Create(10_000_000m).Value, Money.Zero(), null).Value;
         var handler = CreateHandler(advance, credit);
 
         var command = new UpdateTransactionCommand(
-            advance.Id, advance.Date, advance.Content, 0m, 10_000_000m, null, Bills.Id,
+            advance.Id, advance.Date, advance.Content, 0m, 10_000_000m, null, Bills.Id, Plan.Id,
             IsAdvance: true, ReimbursedByTransactionId: credit.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
@@ -149,13 +168,13 @@ public class UpdateTransactionCommandHandlerTests
     [Fact]
     public async Task Handle_AdvanceWithoutReimbursedBy_ClearsTheLink()
     {
-        Transaction advance = Transaction.Create(UserId, new DateOnly(2026, 1, 10), "Ứng",
+        Transaction advance = Transaction.Create(UserId, Plan.Id, new DateOnly(2026, 1, 10), "Ứng",
             Money.Zero(), Money.Create(1_000m).Value, null, isAdvance: true).Value;
         advance.MarkReimbursedBy(Guid.NewGuid());
         var handler = CreateHandler(advance);
 
         var command = new UpdateTransactionCommand(
-            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, Bills.Id, IsAdvance: true);
+            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, Bills.Id, Plan.Id, IsAdvance: true);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -166,19 +185,53 @@ public class UpdateTransactionCommandHandlerTests
     [Fact]
     public async Task Handle_AdvanceReimbursedByNonCredit_Fails()
     {
-        Transaction advance = Transaction.Create(UserId, new DateOnly(2026, 1, 10), "Ứng",
+        Transaction advance = Transaction.Create(UserId, Plan.Id, new DateOnly(2026, 1, 10), "Ứng",
             Money.Zero(), Money.Create(1_000m).Value, null, isAdvance: true).Value;
-        Transaction otherDebit = Transaction.Create(UserId, new DateOnly(2026, 2, 1), "Chi khác",
+        Transaction otherDebit = Transaction.Create(UserId, Plan.Id, new DateOnly(2026, 2, 1), "Chi khác",
             Money.Zero(), Money.Create(5_000m).Value, null).Value;
         var handler = CreateHandler(advance, otherDebit);
 
         var command = new UpdateTransactionCommand(
-            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, Bills.Id,
+            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, Bills.Id, Plan.Id,
             IsAdvance: true, ReimbursedByTransactionId: otherDebit.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.AdvanceLinkInvalid");
+    }
+
+    [Fact]
+    public async Task Handle_MoveToAnotherPlan_Succeeds()
+    {
+        Transaction tx = OwnTx();
+        var handler = CreateHandler(tx);
+        var command = new UpdateTransactionCommand(
+            tx.Id, tx.Date, tx.Content, tx.Credit.Amount, tx.Debit.Amount, null, Bills.Id, OtherPlan.Id);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        tx.PlanId.ShouldBe(OtherPlan.Id);
+    }
+
+    [Fact]
+    public async Task Handle_MoveLinkedAdvance_FailsPlanMoveLinked()
+    {
+        Transaction advance = Transaction.Create(UserId, Plan.Id, new DateOnly(2026, 1, 10), "Ứng",
+            Money.Zero(), Money.Create(1_000m).Value, null, isAdvance: true).Value;
+        Transaction credit = Transaction.Create(UserId, Plan.Id, new DateOnly(2026, 2, 1), "Hoàn tiền",
+            Money.Create(1_000m).Value, Money.Zero(), null).Value;
+        advance.MarkReimbursedBy(credit.Id);
+        var handler = CreateHandler(advance, credit);
+
+        var command = new UpdateTransactionCommand(
+            advance.Id, advance.Date, advance.Content, 0m, 1_000m, null, Bills.Id, OtherPlan.Id,
+            IsAdvance: true, ReimbursedByTransactionId: credit.Id);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("Transactions.PlanMoveLinked");
     }
 }
