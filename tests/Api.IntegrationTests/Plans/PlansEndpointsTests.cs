@@ -25,6 +25,7 @@ public sealed class PlansEndpointsTests(ApiTestFactory factory) : IClassFixture<
 
     private sealed record LoginBody(string Token);
     internal sealed record PlanBody(Guid Id, string Name, bool IsDefault);
+    internal sealed record CreatedBody(Guid Id);
 
     [Fact]
     public async Task GetPlans_WithoutToken_Returns401()
@@ -44,5 +45,31 @@ public sealed class PlansEndpointsTests(ApiTestFactory factory) : IClassFixture<
         plans.Count.ShouldBe(1);
         plans[0].Name.ShouldBe("Sổ chính");
         plans[0].IsDefault.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task CreatePlan_AppearsAfterDefault()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("plan-create@example.com", "plancreate");
+
+        var create = await client.PostAsJsonAsync("/plans", new { name = "Du lịch Đà Nẵng" });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var created = await create.Content.ReadFromJsonAsync<CreatedBody>();
+        created.ShouldNotBeNull();
+
+        var plans = (await (await client.GetAsync("/plans")).Content.ReadFromJsonAsync<List<PlanBody>>())!;
+        plans.Count.ShouldBe(2);
+        plans[0].IsDefault.ShouldBeTrue();
+        plans[1].Id.ShouldBe(created.Id);
+        plans[1].Name.ShouldBe("Du lịch Đà Nẵng");
+        plans[1].IsDefault.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task CreatePlan_EmptyName_Returns400()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("plan-empty@example.com", "planempty");
+        var create = await client.PostAsJsonAsync("/plans", new { name = "  " });
+        create.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 }

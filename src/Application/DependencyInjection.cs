@@ -39,6 +39,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetSubCategoriesQuery, List<SubCategoryResponse>>, GetSubCategoriesQueryHandler>();
         services.AddScoped<IQueryHandler<GetDashboardStatsQuery, DashboardStatsResponse>, GetDashboardStatsQueryHandler>();
         services.AddScoped<IQueryHandler<GetPlansQuery, List<PlanResponse>>, GetPlansQueryHandler>();
+        services.AddScoped<ICommandHandler<CreatePlanCommand, Guid>, CreatePlanCommandHandler>();
         return services;
     }
 }
