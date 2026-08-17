@@ -1,6 +1,8 @@
 using Application.Abstractions.Messaging;
 using Application.Categories;
 using Application.Categories.Data;
+using Application.Plans;
+using Application.Plans.Data;
 using Application.SubCategories;
 using Application.SubCategories.Data;
 using Application.Transactions;
@@ -36,6 +38,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<DeleteSubCategoryCommand>, DeleteSubCategoryCommandHandler>();
         services.AddScoped<IQueryHandler<GetSubCategoriesQuery, List<SubCategoryResponse>>, GetSubCategoriesQueryHandler>();
         services.AddScoped<IQueryHandler<GetDashboardStatsQuery, DashboardStatsResponse>, GetDashboardStatsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetPlansQuery, List<PlanResponse>>, GetPlansQueryHandler>();
         return services;
     }
 }

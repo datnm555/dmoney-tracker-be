@@ -1,4 +1,5 @@
 using Domain.Categories;
+using Domain.Plans;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -15,6 +16,8 @@ public interface IApplicationDbContext
     DbSet<SubCategory> SubCategories { get; }
 
     DbSet<Category> Categories { get; }
+
+    DbSet<Plan> Plans { get; }
 
     DbSet<RefreshToken> RefreshTokens { get; }
 
