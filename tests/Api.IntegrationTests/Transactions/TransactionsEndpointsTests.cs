@@ -610,6 +610,150 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
 
     internal sealed record PrepaidBody(Guid Id, string Date, string Content, MoneyBody Credit, string? PrepaidFrom, string? PrepaidTo);
 
+    [Fact]
+    public async Task CreateTransaction_CrossPlanAdvanceLink_Rejected()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("crossplan-advance@example.com", "crossadv1");
+        Guid defaultPlan = await GetDefaultPlanIdAsync(client);
+        Guid secondPlan = await CreatePlanAsync(client, "Sổ phụ");
+        Guid categoryId = await CreateCategoryAsync(client, "Cat crossadv", "tag");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var createAdvance = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Ứng trước sổ chính",
+            creditAmount = 0m,
+            debitAmount = 2_000_000m,
+            note = (string?)null,
+            categoryId,
+            isAdvance = true,
+            planId = defaultPlan
+        });
+        createAdvance.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid advanceId = (await createAdvance.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        var createCredit = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Hoàn từ sổ phụ",
+            creditAmount = 2_000_000m,
+            debitAmount = 0m,
+            note = (string?)null,
+            categoryId,
+            advanceTransactionIds = new[] { advanceId },
+            planId = secondPlan
+        });
+
+        createCredit.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        (await createCredit.Content.ReadAsStringAsync()).ShouldContain("Transactions.AdvanceNotFound");
+    }
+
+    [Fact]
+    public async Task UpdateTransaction_CrossPlanPrepaidLink_Rejected()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("crossplan-prepaid@example.com", "crossprep1");
+        Guid defaultPlan = await GetDefaultPlanIdAsync(client);
+        Guid secondPlan = await CreatePlanAsync(client, "Sổ phụ prepaid");
+        Guid categoryId = await CreateCategoryAsync(client, "Cat crossprep", "tag");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var createPrepaid = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Sinh hoạt trả trước",
+            creditAmount = 25_000_000m,
+            debitAmount = 0m,
+            note = (string?)null,
+            categoryId,
+            isPrepaid = true,
+            prepaidFrom = "2026-01-01",
+            prepaidTo = "2026-05-31",
+            planId = defaultPlan
+        });
+        createPrepaid.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid prepaidId = (await createPrepaid.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        var createDebit = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Chi tiêu sổ phụ",
+            creditAmount = 0m,
+            debitAmount = 300_000m,
+            note = (string?)null,
+            categoryId,
+            planId = secondPlan
+        });
+        createDebit.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid debitId = (await createDebit.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        var update = await client.PutAsJsonAsync($"/transactions/{debitId}", new
+        {
+            date = today,
+            content = "Chi tiêu sổ phụ",
+            creditAmount = 0m,
+            debitAmount = 300_000m,
+            note = (string?)null,
+            categoryId,
+            prepaidTransactionId = prepaidId,
+            planId = secondPlan
+        });
+
+        update.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        (await update.Content.ReadAsStringAsync()).ShouldContain("Transactions.PrepaidNotFound");
+    }
+
+    [Fact]
+    public async Task UpdateTransaction_MoveLinked_Returns409()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("moveLinked@example.com", "movelinked1");
+        Guid defaultPlan = await GetDefaultPlanIdAsync(client);
+        Guid secondPlan = await CreatePlanAsync(client, "Sổ phụ move");
+        Guid categoryId = await CreateCategoryAsync(client, "Cat movelinked", "tag");
+
+        string today = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var createAdvance = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Ứng trước",
+            creditAmount = 0m,
+            debitAmount = 2_000_000m,
+            note = (string?)null,
+            categoryId,
+            isAdvance = true,
+            planId = defaultPlan
+        });
+        createAdvance.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid advanceId = (await createAdvance.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        var createCredit = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = today,
+            content = "Hoàn ứng",
+            creditAmount = 2_000_000m,
+            debitAmount = 0m,
+            note = (string?)null,
+            categoryId,
+            advanceTransactionIds = new[] { advanceId },
+            planId = defaultPlan
+        });
+        createCredit.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        var update = await client.PutAsJsonAsync($"/transactions/{advanceId}", new
+        {
+            date = today,
+            content = "Ứng trước",
+            creditAmount = 0m,
+            debitAmount = 2_000_000m,
+            note = (string?)null,
+            categoryId,
+            isAdvance = true,
+            planId = secondPlan
+        });
+
+        update.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        (await update.Content.ReadAsStringAsync()).ShouldContain("Transactions.PlanMoveLinked");
+    }
 
     internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);

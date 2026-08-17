@@ -48,7 +48,8 @@ internal sealed class CreateTransactionCommandHandler(
         if (command.PrepaidTransactionId is { } prepaidId)
         {
             bool prepaidExists = await dbContext.Transactions.AnyAsync(
-                t => t.Id == prepaidId && t.UserId == userId && t.IsPrepaid, cancellationToken);
+                t => t.Id == prepaidId && t.UserId == userId && t.PlanId == command.PlanId && t.IsPrepaid,
+                cancellationToken);
             if (!prepaidExists)
             {
                 return Result.Failure<Guid>(TransactionErrors.PrepaidNotFound);
@@ -91,7 +92,7 @@ internal sealed class CreateTransactionCommandHandler(
         if (command.AdvanceTransactionIds is { Count: > 0 } advanceIds)
         {
             Result<List<Transaction>> advances = await LoadAdvancesForLinkingAsync(
-                advanceIds, userId, transaction.Value, null, cancellationToken);
+                advanceIds, userId, command.PlanId, transaction.Value, null, cancellationToken);
             if (advances.IsFailure)
             {
                 return Result.Failure<Guid>(advances.Error);
@@ -127,6 +128,7 @@ internal sealed class CreateTransactionCommandHandler(
     private async Task<Result<List<Transaction>>> LoadAdvancesForLinkingAsync(
         IReadOnlyList<Guid> advanceIds,
         Guid userId,
+        Guid planId,
         Transaction credit,
         Guid? reimbursingTransactionId,
         CancellationToken cancellationToken)
@@ -138,7 +140,7 @@ internal sealed class CreateTransactionCommandHandler(
 
         List<Guid> distinctIds = advanceIds.Distinct().ToList();
         List<Transaction> advances = await dbContext.Transactions
-            .Where(t => distinctIds.Contains(t.Id) && t.UserId == userId && t.IsAdvance)
+            .Where(t => distinctIds.Contains(t.Id) && t.UserId == userId && t.PlanId == planId && t.IsAdvance)
             .ToListAsync(cancellationToken);
         if (advances.Count != distinctIds.Count)
         {

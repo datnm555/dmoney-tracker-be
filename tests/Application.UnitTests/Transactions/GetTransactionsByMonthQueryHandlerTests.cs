@@ -117,6 +117,17 @@ public class GetTransactionsByMonthQueryHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ProjectsPlanIdIntoResponse()
+    {
+        var handler = CreateHandler(Tx(UserId, new DateOnly(2026, 7, 5), 15_000_000m, 0m));
+
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07", Plan.Id), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Items.Single().PlanId.ShouldBe(Plan.Id);
+    }
+
+    [Fact]
     public async Task Handle_WithYearOnly_ReturnsWholeYearWithTotals()
     {
         var handler = CreateHandler(

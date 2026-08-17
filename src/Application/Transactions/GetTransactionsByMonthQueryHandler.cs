@@ -89,6 +89,7 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                     .Where(s => s.Id == t.SubCategoryId)
                     .Select(s => s.Name)
                     .FirstOrDefault(),
+                t.PlanId,
                 t.ReimbursedByTransactionId))
             .ToListAsync(cancellationToken);
 
