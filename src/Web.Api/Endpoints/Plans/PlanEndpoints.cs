@@ -65,6 +65,24 @@ internal sealed class UpdatePlan : IEndpoint
     }
 }
 
+internal sealed class SetDefaultPlan : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/plans/{id:guid}/default", async (
+            Guid id,
+            ICommandHandler<SetDefaultPlanCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(
+                new SetDefaultPlanCommand(id), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
+
 internal sealed class DeletePlan : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)

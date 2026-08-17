@@ -101,6 +101,32 @@ public sealed class PlansEndpointsTests(ApiTestFactory factory) : IClassFixture<
     }
 
     [Fact]
+    public async Task SetDefaultPlan_MovesDefaultBetweenPlans()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("plan-setdef@example.com", "plansetdef");
+        Guid newPlan = await CreatePlanAsync(client, "Sổ phụ");
+
+        (await client.PutAsync($"/plans/{newPlan}/default", null))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        var plans = (await (await client.GetAsync("/plans")).Content.ReadFromJsonAsync<List<PlanBody>>())!;
+        plans.Single(p => p.IsDefault).Id.ShouldBe(newPlan);
+
+        // Idempotent on the plan that is already the default.
+        (await client.PutAsync($"/plans/{newPlan}/default", null))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // The old default is now deletable, the new one is protected.
+        Guid oldDefault = plans.Single(p => !p.IsDefault).Id;
+        (await client.DeleteAsync($"/plans/{newPlan}")).StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        (await client.DeleteAsync($"/plans/{oldDefault}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // Someone else's plan is a 404.
+        HttpClient other = await CreateAuthenticatedClientAsync("plan-setdef2@example.com", "plansetdef2");
+        (await other.PutAsync($"/plans/{newPlan}/default", null)).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
     public async Task DeletePlan_Guards()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("plan-delete@example.com", "plandelete");

@@ -14,7 +14,7 @@ public sealed class Plan : AuditedEntity
 
     public string Name { get; private set; } = string.Empty;
 
-    /// <summary>The auto-created "Sổ chính"; renamable, never deletable.</summary>
+    /// <summary>The user's default plan (initially "Sổ chính"); never deletable, movable via SetDefault.</summary>
     public bool IsDefault { get; private set; }
 
     public static Result<Plan> Create(Guid userId, string name, bool isDefault = false)
@@ -38,6 +38,10 @@ public sealed class Plan : AuditedEntity
             IsDefault = isDefault
         };
     }
+
+    public void MakeDefault() => IsDefault = true;
+
+    public void ClearDefault() => IsDefault = false;
 
     public Result Rename(string name)
     {

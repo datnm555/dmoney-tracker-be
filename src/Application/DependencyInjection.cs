@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CreatePlanCommand, Guid>, CreatePlanCommandHandler>();
         services.AddScoped<ICommandHandler<UpdatePlanCommand>, UpdatePlanCommandHandler>();
         services.AddScoped<ICommandHandler<DeletePlanCommand>, DeletePlanCommandHandler>();
+        services.AddScoped<ICommandHandler<SetDefaultPlanCommand>, SetDefaultPlanCommandHandler>();
         return services;
     }
 }
