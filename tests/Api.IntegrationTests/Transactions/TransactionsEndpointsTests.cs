@@ -791,6 +791,51 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         })).StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
+    [Fact]
+    public async Task Beneficiary_OnUpdate_Guards()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("ben-upd@example.com", "benupd");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi BenUpd", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        var ben = await client.PostAsJsonAsync("/beneficiaries", new { name = "Vợ" });
+        Guid benId = (await ben.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        var create = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-11", content = "Chợ", creditAmount = 0m, debitAmount = 300_000m,
+            note = (string?)null, categoryId, planId, beneficiaryId = benId
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid txId = (await create.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        // Switching to money-in while keeping the beneficiary is rejected.
+        var toCredit = await client.PutAsJsonAsync($"/transactions/{txId}", new
+        {
+            date = "2026-08-11", content = "Chợ", creditAmount = 300_000m, debitAmount = 0m,
+            note = (string?)null, categoryId, planId, beneficiaryId = benId
+        });
+        toCredit.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await toCredit.Content.ReadAsStringAsync()).ShouldContain("Transactions.BeneficiaryDebitOnly");
+
+        // Unknown beneficiary on update is a 404.
+        (await client.PutAsJsonAsync($"/transactions/{txId}", new
+        {
+            date = "2026-08-11", content = "Chợ", creditAmount = 0m, debitAmount = 300_000m,
+            note = (string?)null, categoryId, planId, beneficiaryId = Guid.NewGuid()
+        })).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+
+        // A valid debit update keeping the real beneficiary still round-trips.
+        (await client.PutAsJsonAsync($"/transactions/{txId}", new
+        {
+            date = "2026-08-11", content = "Chợ", creditAmount = 0m, debitAmount = 350_000m,
+            note = (string?)null, categoryId, planId, beneficiaryId = benId
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        var summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        summary!.Items.Single(i => i.Id == txId).BeneficiaryId.ShouldBe(benId);
+        summary.Items.Single(i => i.Id == txId).BeneficiaryName.ShouldBe("Vợ");
+    }
+
     internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
