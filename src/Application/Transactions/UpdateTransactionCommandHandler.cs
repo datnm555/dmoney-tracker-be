@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.Beneficiaries;
 using Domain.Categories;
 using Domain.Plans;
 using Domain.SubCategories;
@@ -28,6 +29,16 @@ internal sealed class UpdateTransactionCommandHandler(
         if (!planExists)
         {
             return Result.Failure(PlanErrors.NotFound);
+        }
+
+        if (command.BeneficiaryId is { } beneficiaryId)
+        {
+            bool beneficiaryExists = await dbContext.Beneficiaries.AnyAsync(
+                b => b.Id == beneficiaryId && b.UserId == userId, cancellationToken);
+            if (!beneficiaryExists)
+            {
+                return Result.Failure(BeneficiaryErrors.NotFound);
+            }
         }
 
         Transaction? transaction = await dbContext.Transactions
@@ -108,7 +119,7 @@ internal sealed class UpdateTransactionCommandHandler(
             command.Note, command.CategoryId,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
-            command.PrepaidTransactionId, command.SubCategoryId);
+            command.PrepaidTransactionId, command.SubCategoryId, command.BeneficiaryId);
         if (updated.IsFailure)
         {
             return updated;

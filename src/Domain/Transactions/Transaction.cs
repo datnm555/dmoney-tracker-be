@@ -48,6 +48,9 @@ public sealed class Transaction : AuditedEntity
 
     public Guid? SubCategoryId { get; private set; }
 
+    /// <summary>The person this money-out transaction was paid to. Debit-only.</summary>
+    public Guid? BeneficiaryId { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         Guid planId,
@@ -65,7 +68,8 @@ public sealed class Transaction : AuditedEntity
         DateOnly? prepaidFrom = null,
         DateOnly? prepaidTo = null,
         Guid? prepaidTransactionId = null,
-        Guid? subCategoryId = null)
+        Guid? subCategoryId = null,
+        Guid? beneficiaryId = null)
     {
         if (date == default)
         {
@@ -92,6 +96,11 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure<Transaction>(validation.Error);
         }
 
+        if (beneficiaryId is not null && debit.Amount <= 0m)
+        {
+            return Result.Failure<Transaction>(TransactionErrors.BeneficiaryDebitOnly);
+        }
+
         var transaction = new Transaction
         {
             Id = Guid.CreateVersion7(),
@@ -111,7 +120,8 @@ public sealed class Transaction : AuditedEntity
             PrepaidFrom = isPrepaid ? prepaidFrom : null,
             PrepaidTo = isPrepaid ? prepaidTo : null,
             PrepaidTransactionId = prepaidTransactionId,
-            SubCategoryId = subCategoryId
+            SubCategoryId = subCategoryId,
+            BeneficiaryId = beneficiaryId
         };
 
         return transaction;
@@ -133,7 +143,8 @@ public sealed class Transaction : AuditedEntity
         DateOnly? prepaidFrom = null,
         DateOnly? prepaidTo = null,
         Guid? prepaidTransactionId = null,
-        Guid? subCategoryId = null)
+        Guid? subCategoryId = null,
+        Guid? beneficiaryId = null)
     {
         if (date == default)
         {
@@ -160,6 +171,11 @@ public sealed class Transaction : AuditedEntity
             return validation;
         }
 
+        if (beneficiaryId is not null && debit.Amount <= 0m)
+        {
+            return Result.Failure(TransactionErrors.BeneficiaryDebitOnly);
+        }
+
         PlanId = planId;
         Date = date;
         Content = content.Trim();
@@ -176,6 +192,7 @@ public sealed class Transaction : AuditedEntity
         PrepaidTo = isPrepaid ? prepaidTo : null;
         PrepaidTransactionId = prepaidTransactionId;
         SubCategoryId = subCategoryId;
+        BeneficiaryId = beneficiaryId;
 
         return Result.Success();
     }

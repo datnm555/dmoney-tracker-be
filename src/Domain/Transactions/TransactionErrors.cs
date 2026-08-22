@@ -103,4 +103,8 @@ public static class TransactionErrors
     public static readonly Error PlanMoveLinked = Error.Conflict(
         "Transactions.PlanMoveLinked",
         "This transaction is linked to an advance or prepaid transaction and cannot move to another plan.");
+
+    public static readonly Error BeneficiaryDebitOnly = Error.Validation(
+        "Transactions.BeneficiaryDebitOnly",
+        "A beneficiary can only be set on a money-out transaction.");
 }

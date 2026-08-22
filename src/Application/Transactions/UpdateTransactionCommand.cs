@@ -21,4 +21,5 @@ public sealed record UpdateTransactionCommand(
     DateOnly? PrepaidTo = null,
     Guid? PrepaidTransactionId = null,
     Guid? SubCategoryId = null,
-    Guid? ReimbursedByTransactionId = null) : ICommand;
+    Guid? ReimbursedByTransactionId = null,
+    Guid? BeneficiaryId = null) : ICommand;

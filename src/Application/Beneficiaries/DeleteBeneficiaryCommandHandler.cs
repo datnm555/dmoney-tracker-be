@@ -27,6 +27,13 @@ internal sealed class DeleteBeneficiaryCommandHandler(
             return Result.Failure(BeneficiaryErrors.NotFound);
         }
 
+        bool inUse = await dbContext.Transactions.AnyAsync(
+            t => t.BeneficiaryId == beneficiary.Id, cancellationToken);
+        if (inUse)
+        {
+            return Result.Failure(BeneficiaryErrors.InUse);
+        }
+
         dbContext.Beneficiaries.Remove(beneficiary);
         await dbContext.SaveChangesAsync(cancellationToken);
         return Result.Success();

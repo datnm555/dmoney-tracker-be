@@ -755,10 +755,46 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         (await update.Content.ReadAsStringAsync()).ShouldContain("Transactions.PlanMoveLinked");
     }
 
+    [Fact]
+    public async Task Beneficiary_OnDebit_RoundTrips()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("ben-tx@example.com", "bentx");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi Ben", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        var ben = await client.PostAsJsonAsync("/beneficiaries", new { name = "Con" });
+        Guid benId = (await ben.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        var create = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Học phí", creditAmount = 0m, debitAmount = 2_000_000m,
+            note = (string?)null, categoryId, planId, beneficiaryId = benId
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        var summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        summary!.Items[0].BeneficiaryId.ShouldBe(benId);
+        summary.Items[0].BeneficiaryName.ShouldBe("Con");
+
+        // Credit with a beneficiary is rejected.
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Lương", creditAmount = 1_000_000m, debitAmount = 0m,
+            note = (string?)null, categoryId, planId, beneficiaryId = benId
+        })).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+
+        // Unknown beneficiary is a 404.
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Chi", creditAmount = 0m, debitAmount = 100m,
+            note = (string?)null, categoryId, planId, beneficiaryId = Guid.NewGuid()
+        })).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
     internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record MoneyBody(decimal Amount, string Currency);
-    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, Guid? CategoryId, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance, List<Guid> AdvanceTransactionIds, bool IsPrepaid, string? PrepaidFrom, string? PrepaidTo, Guid? PrepaidTransactionId);
+    internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, Guid? CategoryId, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance, List<Guid> AdvanceTransactionIds, bool IsPrepaid, string? PrepaidFrom, string? PrepaidTo, Guid? PrepaidTransactionId, Guid? BeneficiaryId, string? BeneficiaryName);
     internal sealed record SummaryBody(List<ItemBody> Items, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
 }

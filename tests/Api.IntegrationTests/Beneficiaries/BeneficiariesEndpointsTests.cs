@@ -26,12 +26,26 @@ public sealed class BeneficiariesEndpointsTests(ApiTestFactory factory) : IClass
     private sealed record LoginBody(string Token);
     internal sealed record BeneficiaryBody(Guid Id, string Name, bool IsDefault);
     internal sealed record CreatedBody(Guid Id);
+    internal sealed record PlanListBody(Guid Id, string Name, bool IsDefault);
 
     private static async Task<Guid> CreateBeneficiaryAsync(HttpClient client, string name)
     {
         var response = await client.PostAsJsonAsync("/beneficiaries", new { name });
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
+    private static async Task<Guid> CreateCategoryAsync(HttpClient client, string name, string icon)
+    {
+        var response = await client.PostAsJsonAsync("/categories", new { name, icon });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
+    private static async Task<Guid> GetDefaultPlanIdAsync(HttpClient client)
+    {
+        var plans = await (await client.GetAsync("/plans")).Content.ReadFromJsonAsync<List<PlanListBody>>();
+        return plans![0].Id;
     }
 
     [Fact]
@@ -109,5 +123,35 @@ public sealed class BeneficiariesEndpointsTests(ApiTestFactory factory) : IClass
         Guid mine = await CreateBeneficiaryAsync(client, "Của tôi");
         HttpClient other = await CreateAuthenticatedClientAsync("ben-other@example.com", "benother");
         (await other.DeleteAsync($"/beneficiaries/{mine}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Delete_InUse_ThenUnlink_Allows()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("ben-inuse@example.com", "beninuse");
+        Guid beneficiaryId = await CreateBeneficiaryAsync(client, "Con");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        Guid categoryId = await CreateCategoryAsync(client, "Chi InUse", "tag");
+
+        var create = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Học phí", creditAmount = 0m, debitAmount = 500_000m,
+            note = (string?)null, categoryId, planId, beneficiaryId
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid transactionId = (await create.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        // Still referenced by a transaction -> conflict.
+        (await client.DeleteAsync($"/beneficiaries/{beneficiaryId}")).StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        var update = await client.PutAsJsonAsync($"/transactions/{transactionId}", new
+        {
+            date = "2026-08-10", content = "Học phí", creditAmount = 0m, debitAmount = 500_000m,
+            note = (string?)null, categoryId, planId, beneficiaryId = (Guid?)null
+        });
+        update.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // Unlinked -> delete now succeeds.
+        (await client.DeleteAsync($"/beneficiaries/{beneficiaryId}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
 }
