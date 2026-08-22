@@ -13,6 +13,8 @@ public class GetTransactionsByMonthQueryHandlerTests
 {
     private static readonly Guid UserId = Guid.NewGuid();
     private static readonly Guid OtherUserId = Guid.NewGuid();
+    private static readonly Domain.Plans.Plan Plan =
+        Domain.Plans.Plan.Create(UserId, "Sổ chính", true).Value;
 
     private IApplicationDbContext _dbContext = null!;
     private IUserContext _userContext = null!;
@@ -27,12 +29,15 @@ public class GetTransactionsByMonthQueryHandlerTests
         _dbContext.Transactions.Returns(transactionsDbSet);
         var subCategoriesDbSet = new List<Domain.SubCategories.SubCategory>().BuildMockDbSet();
         _dbContext.SubCategories.Returns(subCategoriesDbSet);
+        var plansDbSet = new List<Domain.Plans.Plan> { Plan }.BuildMockDbSet();
+        _dbContext.Plans.Returns(plansDbSet);
         return new GetTransactionsByMonthQueryHandler(_dbContext, _userContext);
     }
 
     private static Transaction Tx(Guid userId, DateOnly date, decimal credit, decimal debit) =>
         Transaction.Create(
-            userId, date, "tx", Money.Create(credit).Value, Money.Create(debit).Value, null).Value;
+            userId, userId == UserId ? Plan.Id : Guid.NewGuid(), date, "tx",
+            Money.Create(credit).Value, Money.Create(debit).Value, null).Value;
 
     [Fact]
     public async Task Handle_ReturnsOnlyCurrentUsersRecordsInMonth_WithTotals()
@@ -43,7 +48,7 @@ public class GetTransactionsByMonthQueryHandlerTests
             Tx(UserId, new DateOnly(2026, 6, 30), 999m, 0m),          // other month
             Tx(OtherUserId, new DateOnly(2026, 7, 2), 555m, 0m));     // other user
 
-        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07"), CancellationToken.None);
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07", Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Items.Count.ShouldBe(2);
@@ -59,7 +64,7 @@ public class GetTransactionsByMonthQueryHandlerTests
     {
         var handler = CreateHandler();
 
-        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07"), CancellationToken.None);
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07", Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Items.ShouldBeEmpty();
@@ -72,7 +77,7 @@ public class GetTransactionsByMonthQueryHandlerTests
     {
         var handler = CreateHandler(Tx(UserId, new DateOnly(2026, 7, 3), 0m, 500_000m));
 
-        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07"), CancellationToken.None);
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07", Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Balance.Amount.ShouldBe(-500_000m);
@@ -87,7 +92,7 @@ public class GetTransactionsByMonthQueryHandlerTests
     {
         var handler = CreateHandler();
 
-        var result = await handler.Handle(new GetTransactionsByMonthQuery(month), CancellationToken.None);
+        var result = await handler.Handle(new GetTransactionsByMonthQuery(month, Plan.Id), CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.InvalidMonth");
@@ -97,18 +102,29 @@ public class GetTransactionsByMonthQueryHandlerTests
     public async Task Handle_ProjectsPaymentFieldsIntoResponse()
     {
         Transaction tx = Transaction.Create(
-            UserId, new DateOnly(2026, 7, 5), "Netflix",
+            UserId, Plan.Id, new DateOnly(2026, 7, 5), "Netflix",
             Money.Zero(), Money.Create(260_000m).Value, null,
-            Guid.NewGuid(), PaymentMethods.Card, CardTypes.Visa, "Techcombank").Value;
+            Guid.NewGuid(), PaymentMethods.Card, CardTypes.Debit, "Techcombank").Value;
         var handler = CreateHandler(tx);
 
-        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07"), CancellationToken.None);
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07", Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Items.Count.ShouldBe(1);
         result.Value.Items[0].PaymentMethod.ShouldBe(PaymentMethods.Card);
-        result.Value.Items[0].CardType.ShouldBe(CardTypes.Visa);
+        result.Value.Items[0].CardType.ShouldBe(CardTypes.Debit);
         result.Value.Items[0].Bank.ShouldBe("Techcombank");
+    }
+
+    [Fact]
+    public async Task Handle_ProjectsPlanIdIntoResponse()
+    {
+        var handler = CreateHandler(Tx(UserId, new DateOnly(2026, 7, 5), 15_000_000m, 0m));
+
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07", Plan.Id), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Items.Single().PlanId.ShouldBe(Plan.Id);
     }
 
     [Fact]
@@ -120,7 +136,7 @@ public class GetTransactionsByMonthQueryHandlerTests
             Tx(UserId, new DateOnly(2025, 12, 31), 999m, 0m),         // previous year
             Tx(OtherUserId, new DateOnly(2026, 3, 1), 555m, 0m));    // other user
 
-        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026"), CancellationToken.None);
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026", Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Items.Count.ShouldBe(2);
@@ -134,7 +150,7 @@ public class GetTransactionsByMonthQueryHandlerTests
     {
         var handler = CreateHandler();
 
-        var result = await handler.Handle(new GetTransactionsByMonthQuery("202A"), CancellationToken.None);
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("202A", Plan.Id), CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(TransactionErrors.InvalidMonth);
@@ -144,27 +160,27 @@ public class GetTransactionsByMonthQueryHandlerTests
     public async Task Handle_AttachesAdvanceAndPrepaidLinks()
     {
         Transaction advance = Transaction.Create(
-            UserId, new DateOnly(2026, 6, 1), "Ứng tiền dầu",
+            UserId, Plan.Id, new DateOnly(2026, 6, 1), "Ứng tiền dầu",
             Money.Zero(), Money.Create(4_900_000m).Value, null,
             null, null, null, null, true).Value;
         Transaction credit = Transaction.Create(
-            UserId, new DateOnly(2026, 7, 10), "Anh Huy hoàn",
+            UserId, Plan.Id, new DateOnly(2026, 7, 10), "Anh Huy hoàn",
             Money.Create(4_900_000m).Value, Money.Zero(), null).Value;
         advance.MarkReimbursedBy(credit.Id);
 
         Transaction prepaid = Transaction.Create(
-            UserId, new DateOnly(2026, 7, 1), "Sinh hoạt 5 tháng",
+            UserId, Plan.Id, new DateOnly(2026, 7, 1), "Sinh hoạt 5 tháng",
             Money.Create(25_000_000m).Value, Money.Zero(), null,
             null, null, null, null, false, true,
             new DateOnly(2026, 7, 1), new DateOnly(2026, 11, 30)).Value;
         Transaction consumer = Transaction.Create(
-            UserId, new DateOnly(2026, 7, 15), "Sinh hoạt tháng 7",
+            UserId, Plan.Id, new DateOnly(2026, 7, 15), "Sinh hoạt tháng 7",
             Money.Zero(), Money.Zero(), null,
             null, null, null, null, false, false, null, null, prepaid.Id).Value;
 
         var handler = CreateHandler(advance, credit, prepaid, consumer);
 
-        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07"), CancellationToken.None);
+        var result = await handler.Handle(new GetTransactionsByMonthQuery("2026-07", Plan.Id), CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         TransactionResponse creditItem = result.Value.Items.Single(i => i.Content == "Anh Huy hoàn");

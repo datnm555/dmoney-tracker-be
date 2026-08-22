@@ -12,6 +12,8 @@ namespace Application.UnitTests.Transactions;
 public class ImportTransactionsCommandHandlerTests
 {
     private static readonly Guid UserId = Guid.NewGuid();
+    private static readonly Domain.Plans.Plan Plan =
+        Domain.Plans.Plan.Create(UserId, "Sổ chính", true).Value;
 
     private IApplicationDbContext _dbContext = null!;
     private IUserContext _userContext = null!;
@@ -26,6 +28,8 @@ public class ImportTransactionsCommandHandlerTests
         _dbContext.Transactions.Returns(transactionsDbSet);
         var categoriesDbSet = new List<Domain.Categories.Category>().BuildMockDbSet();
         _dbContext.Categories.Returns(categoriesDbSet);
+        var plansDbSet = new List<Domain.Plans.Plan> { Plan }.BuildMockDbSet();
+        _dbContext.Plans.Returns(plansDbSet);
 
         return new ImportTransactionsCommandHandler(_dbContext, _userContext);
     }
@@ -41,7 +45,7 @@ public class ImportTransactionsCommandHandlerTests
         _dbContext.Transactions.When(x => x.Add(Arg.Any<Transaction>()))
             .Do(x => captured.Add(x.Arg<Transaction>()));
 
-        var command = new ImportTransactionsCommand([Row(28_000_000m, "Lương"), Row(-1_200_000m, "Tiền điện")]);
+        var command = new ImportTransactionsCommand([Row(28_000_000m, "Lương"), Row(-1_200_000m, "Tiền điện")], Plan.Id);
 
         Result<int> result = await handler.Handle(command, CancellationToken.None);
 
@@ -55,6 +59,7 @@ public class ImportTransactionsCommandHandlerTests
         // No shared "other" category in the mock db, so imports stay uncategorised.
         captured.ShouldAllBe(t => t.CategoryId == null);
         captured.ShouldAllBe(t => t.UserId == UserId);
+        captured.ShouldAllBe(t => t.PlanId == Plan.Id);
         captured.ShouldAllBe(t => t.PaymentMethod == PaymentMethods.Transfer);
         await _dbContext.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
@@ -64,10 +69,22 @@ public class ImportTransactionsCommandHandlerTests
     {
         var handler = CreateHandler(null);
 
-        var result = await handler.Handle(new ImportTransactionsCommand([Row(1000m)]), CancellationToken.None);
+        var result = await handler.Handle(new ImportTransactionsCommand([Row(1000m)], Plan.Id), CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Users.Unauthenticated");
+    }
+
+    [Fact]
+    public async Task Handle_WithUnknownPlan_FailsNotFound()
+    {
+        var handler = CreateHandler(UserId);
+
+        var result = await handler.Handle(
+            new ImportTransactionsCommand([Row(1000m)], Guid.NewGuid()), CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("Plans.NotFound");
     }
 
     [Fact]
@@ -75,7 +92,7 @@ public class ImportTransactionsCommandHandlerTests
     {
         var handler = CreateHandler(UserId);
 
-        var result = await handler.Handle(new ImportTransactionsCommand([]), CancellationToken.None);
+        var result = await handler.Handle(new ImportTransactionsCommand([], Plan.Id), CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(TransactionErrors.ImportEmpty);
@@ -90,7 +107,7 @@ public class ImportTransactionsCommandHandlerTests
             .Select(i => Row(1000m, $"Row {i}"))
             .ToList();
 
-        var result = await handler.Handle(new ImportTransactionsCommand(rows), CancellationToken.None);
+        var result = await handler.Handle(new ImportTransactionsCommand(rows, Plan.Id), CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(TransactionErrors.ImportTooManyRows);
@@ -103,7 +120,7 @@ public class ImportTransactionsCommandHandlerTests
         var handler = CreateHandler(UserId);
 
         var result = await handler.Handle(
-            new ImportTransactionsCommand([Row(1000m), Row(0m, "Zero")]), CancellationToken.None);
+            new ImportTransactionsCommand([Row(1000m), Row(0m, "Zero")], Plan.Id), CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.EmptyAmount");
@@ -116,7 +133,7 @@ public class ImportTransactionsCommandHandlerTests
         var handler = CreateHandler(UserId);
 
         var result = await handler.Handle(
-            new ImportTransactionsCommand([Row(1000m, "  ")]), CancellationToken.None);
+            new ImportTransactionsCommand([Row(1000m, "  ")], Plan.Id), CancellationToken.None);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.ContentRequired");

@@ -1,6 +1,8 @@
 using Application.Abstractions.Messaging;
 using Application.Categories;
 using Application.Categories.Data;
+using Application.Plans;
+using Application.Plans.Data;
 using Application.SubCategories;
 using Application.SubCategories.Data;
 using Application.Transactions;
@@ -24,6 +26,8 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetTransactionsByMonthQuery, MonthlySummaryResponse>, GetTransactionsByMonthQueryHandler>();
         services.AddScoped<IQueryHandler<GetOpenAdvancesQuery, List<AdvanceResponse>>, GetOpenAdvancesQueryHandler>();
         services.AddScoped<IQueryHandler<GetPrepaidCreditsQuery, List<PrepaidCreditResponse>>, GetPrepaidCreditsQueryHandler>();
+        services.AddScoped<ICommandHandler<RefreshTokenCommand, LoginResponse>, RefreshTokenCommandHandler>();
+        services.AddScoped<ICommandHandler<LogoutCommand>, LogoutCommandHandler>();
         services.AddScoped<IQueryHandler<GetCreditsQuery, List<CreditResponse>>, GetCreditsQueryHandler>();
         services.AddScoped<ICommandHandler<CreateCategoryCommand, Guid>, CreateCategoryCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateCategoryCommand>, UpdateCategoryCommandHandler>();
@@ -34,6 +38,11 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<DeleteSubCategoryCommand>, DeleteSubCategoryCommandHandler>();
         services.AddScoped<IQueryHandler<GetSubCategoriesQuery, List<SubCategoryResponse>>, GetSubCategoriesQueryHandler>();
         services.AddScoped<IQueryHandler<GetDashboardStatsQuery, DashboardStatsResponse>, GetDashboardStatsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetPlansQuery, List<PlanResponse>>, GetPlansQueryHandler>();
+        services.AddScoped<ICommandHandler<CreatePlanCommand, Guid>, CreatePlanCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdatePlanCommand>, UpdatePlanCommandHandler>();
+        services.AddScoped<ICommandHandler<DeletePlanCommand>, DeletePlanCommandHandler>();
+        services.AddScoped<ICommandHandler<SetDefaultPlanCommand>, SetDefaultPlanCommandHandler>();
         return services;
     }
 }

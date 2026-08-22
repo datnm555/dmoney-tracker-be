@@ -2,6 +2,7 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Application.Transactions.Data;
+using Domain.Plans;
 using Domain.Transactions;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +24,15 @@ internal sealed class GetOpenAdvancesQueryHandler(
             return Result.Failure<List<AdvanceResponse>>(UserErrors.Unauthenticated);
         }
 
+        bool planExists = await dbContext.Plans.AnyAsync(
+            p => p.Id == query.PlanId && p.UserId == userId, cancellationToken);
+        if (!planExists)
+        {
+            return Result.Failure<List<AdvanceResponse>>(PlanErrors.NotFound);
+        }
+
         List<AdvanceResponse> advances = await dbContext.Transactions
-            .Where(t => t.UserId == userId && t.IsAdvance)
+            .Where(t => t.UserId == userId && t.PlanId == query.PlanId && t.IsAdvance)
             .Where(t => t.ReimbursedByTransactionId == null
                         || t.ReimbursedByTransactionId == query.ForTransactionId)
             .OrderByDescending(t => t.Date)

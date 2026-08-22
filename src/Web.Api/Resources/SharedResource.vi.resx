@@ -87,8 +87,8 @@
   <data name="payment.cash" xml:space="preserve"><value>Tiền mặt</value></data>
   <data name="payment.card" xml:space="preserve"><value>Thẻ</value></data>
   <data name="payment.cardType" xml:space="preserve"><value>Loại thẻ</value></data>
-  <data name="payment.cardType.visa" xml:space="preserve"><value>VISA</value></data>
-  <data name="payment.cardType.credit" xml:space="preserve"><value>Credit</value></data>
+  <data name="payment.cardType.debit" xml:space="preserve"><value>Ghi nợ (Debit)</value></data>
+  <data name="payment.cardType.credit" xml:space="preserve"><value>Tín dụng (Credit)</value></data>
   <data name="payment.bank" xml:space="preserve"><value>Ngân hàng</value></data>
   <data name="payment.bank.other" xml:space="preserve"><value>Khác</value></data>
   <data name="Transactions.InvalidPaymentMethod" xml:space="preserve"><value>Hình thức thanh toán không hợp lệ.</value></data>
@@ -138,6 +138,9 @@
   <data name="filters.optional" xml:space="preserve"><value>(tùy chọn)</value></data>
   <data name="filters.reset" xml:space="preserve"><value>Xóa lọc</value></data>
   <data name="filters.allYear" xml:space="preserve"><value>Cả năm</value></data>
+  <data name="plans.setDefault" xml:space="preserve"><value>Đặt làm mặc định</value></data>
+  <data name="filters.expand" xml:space="preserve"><value>Mở rộng bộ lọc</value></data>
+  <data name="filters.collapse" xml:space="preserve"><value>Thu gọn bộ lọc</value></data>
   <data name="dashboard.cashflowSub" xml:space="preserve"><value>Cash flow</value></data>
   <data name="dashboard.legendIn" xml:space="preserve"><value>Thu</value></data>
   <data name="dashboard.legendOut" xml:space="preserve"><value>Chi</value></data>
@@ -193,6 +196,7 @@
   <data name="export.button" xml:space="preserve"><value>Xuất Excel</value></data>
   <data name="dashboard.byCategory" xml:space="preserve"><value>Chi tiêu theo danh mục</value></data>
   <data name="dashboard.noSubCategory" xml:space="preserve"><value>Chưa phân loại</value></data>
+  <data name="Categories.InvalidKind" xml:space="preserve"><value>Loại danh mục phải là chi, thu hoặc cả hai.</value></data>
   <data name="Categories.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên danh mục.</value></data>
   <data name="Categories.NameTooLong" xml:space="preserve"><value>Tên danh mục tối đa 50 ký tự.</value></data>
   <data name="Categories.IconRequired" xml:space="preserve"><value>Vui lòng chọn biểu tượng cho danh mục.</value></data>
@@ -222,4 +226,24 @@
   <data name="form.categoryRequired" xml:space="preserve"><value>Vui lòng chọn danh mục.</value></data>
   <data name="Transactions.DateRequired" xml:space="preserve"><value>Vui lòng chọn ngày.</value></data>
   <data name="Transactions.CategoryRequired" xml:space="preserve"><value>Vui lòng chọn danh mục.</value></data>
+  <data name="Users.InvalidRefreshToken" xml:space="preserve"><value>Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</value></data>
+  <data name="Plans.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên sổ.</value></data>
+  <data name="Plans.NameTooLong" xml:space="preserve"><value>Tên sổ tối đa 100 ký tự.</value></data>
+  <data name="Plans.NotFound" xml:space="preserve"><value>Không tìm thấy sổ.</value></data>
+  <data name="Plans.NotEmpty" xml:space="preserve"><value>Sổ vẫn còn giao dịch nên chưa thể xóa.</value></data>
+  <data name="Plans.CannotDeleteDefault" xml:space="preserve"><value>Không thể xóa sổ mặc định.</value></data>
+  <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
+  <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>
+  <data name="plans.title" xml:space="preserve"><value>Quản lý sổ</value></data>
+  <data name="plans.switcher" xml:space="preserve"><value>Sổ</value></data>
+  <data name="plans.create" xml:space="preserve"><value>Tạo sổ mới</value></data>
+  <data name="plans.name" xml:space="preserve"><value>Tên sổ</value></data>
+  <data name="plans.rename" xml:space="preserve"><value>Đổi tên</value></data>
+  <data name="plans.delete" xml:space="preserve"><value>Xóa sổ</value></data>
+  <data name="plans.deleteConfirm" xml:space="preserve"><value>Xóa sổ này?</value></data>
+  <data name="plans.default" xml:space="preserve"><value>Mặc định</value></data>
+  <data name="plans.manage" xml:space="preserve"><value>Quản lý sổ</value></data>
+  <data name="plans.created" xml:space="preserve"><value>Đã tạo sổ và chuyển sang sổ mới.</value></data>
+  <data name="plans.form" xml:space="preserve"><value>Sổ</value></data>
+  <data name="import.targetPlan" xml:space="preserve"><value>Nhập vào sổ</value></data>
 </root>

@@ -1,5 +1,6 @@
 using Application.Abstractions.Data;
 using Domain.Categories;
+using Domain.Plans;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -17,6 +18,10 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<SubCategory> SubCategories => Set<SubCategory>();
 
     public DbSet<Category> Categories => Set<Category>();
+
+    public DbSet<Plan> Plans => Set<Plan>();
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

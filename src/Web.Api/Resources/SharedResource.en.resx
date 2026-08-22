@@ -87,7 +87,7 @@
   <data name="payment.cash" xml:space="preserve"><value>Cash</value></data>
   <data name="payment.card" xml:space="preserve"><value>Card</value></data>
   <data name="payment.cardType" xml:space="preserve"><value>Card type</value></data>
-  <data name="payment.cardType.visa" xml:space="preserve"><value>VISA</value></data>
+  <data name="payment.cardType.debit" xml:space="preserve"><value>Debit</value></data>
   <data name="payment.cardType.credit" xml:space="preserve"><value>Credit</value></data>
   <data name="payment.bank" xml:space="preserve"><value>Bank</value></data>
   <data name="payment.bank.other" xml:space="preserve"><value>Other</value></data>
@@ -138,6 +138,9 @@
   <data name="filters.optional" xml:space="preserve"><value>(optional)</value></data>
   <data name="filters.reset" xml:space="preserve"><value>Reset</value></data>
   <data name="filters.allYear" xml:space="preserve"><value>Whole year</value></data>
+  <data name="plans.setDefault" xml:space="preserve"><value>Set as default</value></data>
+  <data name="filters.expand" xml:space="preserve"><value>Expand filters</value></data>
+  <data name="filters.collapse" xml:space="preserve"><value>Collapse filters</value></data>
   <data name="dashboard.cashflowSub" xml:space="preserve"><value>Cash flow</value></data>
   <data name="dashboard.legendIn" xml:space="preserve"><value>In</value></data>
   <data name="dashboard.legendOut" xml:space="preserve"><value>Out</value></data>
@@ -193,6 +196,7 @@
   <data name="export.button" xml:space="preserve"><value>Export Excel</value></data>
   <data name="dashboard.byCategory" xml:space="preserve"><value>Spending by category</value></data>
   <data name="dashboard.noSubCategory" xml:space="preserve"><value>Uncategorised</value></data>
+  <data name="Categories.InvalidKind" xml:space="preserve"><value>Category kind must be expense, income or both.</value></data>
   <data name="Categories.NameRequired" xml:space="preserve"><value>Please enter a category name.</value></data>
   <data name="Categories.NameTooLong" xml:space="preserve"><value>Category name must be at most 50 characters.</value></data>
   <data name="Categories.IconRequired" xml:space="preserve"><value>Please pick an icon for the category.</value></data>
@@ -222,4 +226,24 @@
   <data name="form.categoryRequired" xml:space="preserve"><value>Please choose a category.</value></data>
   <data name="Transactions.DateRequired" xml:space="preserve"><value>Please pick a date.</value></data>
   <data name="Transactions.CategoryRequired" xml:space="preserve"><value>Please choose a category.</value></data>
+  <data name="Users.InvalidRefreshToken" xml:space="preserve"><value>The session has expired. Please sign in again.</value></data>
+  <data name="Plans.NameRequired" xml:space="preserve"><value>Please enter a plan name.</value></data>
+  <data name="Plans.NameTooLong" xml:space="preserve"><value>Plan name must be at most 100 characters.</value></data>
+  <data name="Plans.NotFound" xml:space="preserve"><value>Plan not found.</value></data>
+  <data name="Plans.NotEmpty" xml:space="preserve"><value>This plan still has transactions and cannot be deleted.</value></data>
+  <data name="Plans.CannotDeleteDefault" xml:space="preserve"><value>The default plan cannot be deleted.</value></data>
+  <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
+  <data name="menu.plans" xml:space="preserve"><value>Plans</value></data>
+  <data name="plans.title" xml:space="preserve"><value>Manage plans</value></data>
+  <data name="plans.switcher" xml:space="preserve"><value>Plan</value></data>
+  <data name="plans.create" xml:space="preserve"><value>New plan</value></data>
+  <data name="plans.name" xml:space="preserve"><value>Plan name</value></data>
+  <data name="plans.rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="plans.delete" xml:space="preserve"><value>Delete plan</value></data>
+  <data name="plans.deleteConfirm" xml:space="preserve"><value>Delete this plan?</value></data>
+  <data name="plans.default" xml:space="preserve"><value>Default</value></data>
+  <data name="plans.manage" xml:space="preserve"><value>Manage plans</value></data>
+  <data name="plans.created" xml:space="preserve"><value>Plan created and selected.</value></data>
+  <data name="plans.form" xml:space="preserve"><value>Plan</value></data>
+  <data name="import.targetPlan" xml:space="preserve"><value>Import into plan</value></data>
 </root>

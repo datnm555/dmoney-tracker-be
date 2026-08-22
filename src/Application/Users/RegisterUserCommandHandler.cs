@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.Plans;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -43,6 +44,16 @@ internal sealed class RegisterUserCommandHandler(
         }
 
         dbContext.Users.Add(userResult.Value);
+
+        Result<Plan> defaultPlan = Plan.Create(
+            userResult.Value.Id, PlanConstants.DefaultPlanName, isDefault: true);
+        if (defaultPlan.IsFailure)
+        {
+            return Result.Failure<Guid>(defaultPlan.Error);
+        }
+
+        dbContext.Plans.Add(defaultPlan.Value);
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return userResult.Value.Id;

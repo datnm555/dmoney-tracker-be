@@ -8,6 +8,9 @@ public sealed class Transaction : AuditedEntity
 
     public Guid UserId { get; private set; }
 
+    /// <summary>The ledger ("Sổ") this transaction belongs to. Required.</summary>
+    public Guid PlanId { get; private set; }
+
     public DateOnly Date { get; private set; }
 
     public string Content { get; private set; } = string.Empty;
@@ -47,6 +50,7 @@ public sealed class Transaction : AuditedEntity
 
     public static Result<Transaction> Create(
         Guid userId,
+        Guid planId,
         DateOnly date,
         string content,
         Money credit,
@@ -92,6 +96,7 @@ public sealed class Transaction : AuditedEntity
         {
             Id = Guid.CreateVersion7(),
             UserId = userId,
+            PlanId = planId,
             Date = date,
             Content = content.Trim(),
             Credit = credit,
@@ -113,6 +118,7 @@ public sealed class Transaction : AuditedEntity
     }
 
     public Result Update(
+        Guid planId,
         DateOnly date,
         string content,
         Money credit,
@@ -154,6 +160,7 @@ public sealed class Transaction : AuditedEntity
             return validation;
         }
 
+        PlanId = planId;
         Date = date;
         Content = content.Trim();
         Credit = credit;
@@ -220,7 +227,13 @@ public sealed class Transaction : AuditedEntity
                 return Result.Failure(TransactionErrors.InvalidCardType);
             }
         }
-        else if (cardType is not null || bank is not null)
+        else if (cardType is not null)
+        {
+            return Result.Failure(TransactionErrors.CardDetailsNotAllowed);
+        }
+
+        // Bank identifies the source account for cards AND transfers; cash has none.
+        if (paymentMethod == PaymentMethods.Cash && bank is not null)
         {
             return Result.Failure(TransactionErrors.CardDetailsNotAllowed);
         }

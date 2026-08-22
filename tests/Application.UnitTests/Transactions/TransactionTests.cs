@@ -7,6 +7,7 @@ namespace Application.UnitTests.Transactions;
 public class TransactionTests
 {
     private static readonly Guid UserId = Guid.NewGuid();
+    private static readonly Guid PlanId = Guid.NewGuid();
     private static readonly DateOnly Date = new(2026, 7, 6);
 
     private static Money Vnd(decimal amount) => Money.Create(amount).Value;
@@ -14,12 +15,13 @@ public class TransactionTests
     [Fact]
     public void Create_WithValidInput_TrimsContentAndNote()
     {
-        var result = Transaction.Create(UserId, Date, "  Lương tháng 7  ", Vnd(15_000_000m), Money.Zero(), "  chuyển khoản  ");
+        var result = Transaction.Create(UserId, PlanId, Date, "  Lương tháng 7  ", Vnd(15_000_000m), Money.Zero(), "  chuyển khoản  ");
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Content.ShouldBe("Lương tháng 7");
         result.Value.Note.ShouldBe("chuyển khoản");
         result.Value.UserId.ShouldBe(UserId);
+        result.Value.PlanId.ShouldBe(PlanId);
         result.Value.Date.ShouldBe(Date);
         result.Value.Credit.Amount.ShouldBe(15_000_000m);
         result.Value.Debit.Amount.ShouldBe(0m);
@@ -28,7 +30,7 @@ public class TransactionTests
     [Fact]
     public void Create_WithEmptyNote_StoresNull()
     {
-        var result = Transaction.Create(UserId, Date, "Ăn trưa", Money.Zero(), Vnd(50_000m), "   ");
+        var result = Transaction.Create(UserId, PlanId, Date, "Ăn trưa", Money.Zero(), Vnd(50_000m), "   ");
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Note.ShouldBeNull();
@@ -37,7 +39,7 @@ public class TransactionTests
     [Fact]
     public void Create_WithBlankContent_Fails()
     {
-        var result = Transaction.Create(UserId, Date, "  ", Vnd(1m), Money.Zero(), null);
+        var result = Transaction.Create(UserId, PlanId, Date, "  ", Vnd(1m), Money.Zero(), null);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.ContentRequired");
@@ -46,7 +48,7 @@ public class TransactionTests
     [Fact]
     public void Create_WithContentOver500Chars_Fails()
     {
-        var result = Transaction.Create(UserId, Date, new string('x', 501), Vnd(1m), Money.Zero(), null);
+        var result = Transaction.Create(UserId, PlanId, Date, new string('x', 501), Vnd(1m), Money.Zero(), null);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.ContentTooLong");
@@ -55,7 +57,7 @@ public class TransactionTests
     [Fact]
     public void Create_WithNoteOver1000Chars_Fails()
     {
-        var result = Transaction.Create(UserId, Date, "ok", Vnd(1m), Money.Zero(), new string('x', 1001));
+        var result = Transaction.Create(UserId, PlanId, Date, "ok", Vnd(1m), Money.Zero(), new string('x', 1001));
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.NoteTooLong");
@@ -64,7 +66,7 @@ public class TransactionTests
     [Fact]
     public void Create_WithBothAmountsZero_Fails()
     {
-        var result = Transaction.Create(UserId, Date, "ok", Money.Zero(), Money.Zero(), null);
+        var result = Transaction.Create(UserId, PlanId, Date, "ok", Money.Zero(), Money.Zero(), null);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.EmptyAmount");
@@ -73,7 +75,7 @@ public class TransactionTests
     [Fact]
     public void Create_WithBothAmountsPositive_Succeeds()
     {
-        var result = Transaction.Create(UserId, Date, "hoàn tiền một phần", Vnd(100_000m), Vnd(250_000m), null);
+        var result = Transaction.Create(UserId, PlanId, Date, "hoàn tiền một phần", Vnd(100_000m), Vnd(250_000m), null);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -81,12 +83,14 @@ public class TransactionTests
     [Fact]
     public void Update_WithValidInput_ReplacesAllFields()
     {
-        Transaction transaction = Transaction.Create(UserId, Date, "cũ", Vnd(1_000m), Money.Zero(), null).Value;
+        Transaction transaction = Transaction.Create(UserId, PlanId, Date, "cũ", Vnd(1_000m), Money.Zero(), null).Value;
         var newDate = new DateOnly(2026, 7, 10);
+        var newPlanId = Guid.NewGuid();
 
-        var result = transaction.Update(newDate, "mới", Money.Zero(), Vnd(2_000m), "note mới");
+        var result = transaction.Update(newPlanId, newDate, "mới", Money.Zero(), Vnd(2_000m), "note mới");
 
         result.IsSuccess.ShouldBeTrue();
+        transaction.PlanId.ShouldBe(newPlanId);
         transaction.Date.ShouldBe(newDate);
         transaction.Content.ShouldBe("mới");
         transaction.Credit.Amount.ShouldBe(0m);
@@ -97,9 +101,9 @@ public class TransactionTests
     [Fact]
     public void Update_WithBothAmountsZero_FailsAndKeepsOldValues()
     {
-        Transaction transaction = Transaction.Create(UserId, Date, "cũ", Vnd(1_000m), Money.Zero(), null).Value;
+        Transaction transaction = Transaction.Create(UserId, PlanId, Date, "cũ", Vnd(1_000m), Money.Zero(), null).Value;
 
-        var result = transaction.Update(Date, "mới", Money.Zero(), Money.Zero(), null);
+        var result = transaction.Update(PlanId, Date, "mới", Money.Zero(), Money.Zero(), null);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.EmptyAmount");
@@ -112,7 +116,7 @@ public class TransactionTests
     {
         var categoryId = Guid.NewGuid();
 
-        var result = Transaction.Create(UserId, Date, "Ăn trưa", Money.Zero(), Vnd(50_000m), null, categoryId);
+        var result = Transaction.Create(UserId, PlanId, Date, "Ăn trưa", Money.Zero(), Vnd(50_000m), null, categoryId);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.CategoryId.ShouldBe(categoryId);
@@ -121,7 +125,7 @@ public class TransactionTests
     [Fact]
     public void Create_WithoutCategory_DefaultsToNull()
     {
-        var result = Transaction.Create(UserId, Date, "Lương", Vnd(1m), Money.Zero(), null);
+        var result = Transaction.Create(UserId, PlanId, Date, "Lương", Vnd(1m), Money.Zero(), null);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.CategoryId.ShouldBeNull();
@@ -130,9 +134,9 @@ public class TransactionTests
     [Fact]
     public void Update_WithNullCategory_ClearsIt()
     {
-        Transaction transaction = Transaction.Create(UserId, Date, "x", Vnd(1m), Money.Zero(), null, Guid.NewGuid()).Value;
+        Transaction transaction = Transaction.Create(UserId, PlanId, Date, "x", Vnd(1m), Money.Zero(), null, Guid.NewGuid()).Value;
 
-        var result = transaction.Update(Date, "x", Vnd(1m), Money.Zero(), null, null);
+        var result = transaction.Update(PlanId, Date, "x", Vnd(1m), Money.Zero(), null, null);
 
         result.IsSuccess.ShouldBeTrue();
         transaction.CategoryId.ShouldBeNull();
@@ -142,7 +146,7 @@ public class TransactionTests
     public void Create_WithoutPaymentMethod_DefaultsToTransfer()
     {
         var result = Transaction.Create(
-            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Lunch",
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Lunch",
             Money.Zero(), Vnd(50_000m), null);
 
         result.IsSuccess.ShouldBeTrue();
@@ -155,13 +159,13 @@ public class TransactionTests
     public void Create_CardWithTypeAndBank_Succeeds()
     {
         var result = Transaction.Create(
-            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Netflix",
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Netflix",
             Money.Zero(), Vnd(260_000m), null,
-            null, PaymentMethods.Card, CardTypes.Visa, "Techcombank");
+            null, PaymentMethods.Card, CardTypes.Debit, "Techcombank");
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.PaymentMethod.ShouldBe(PaymentMethods.Card);
-        result.Value.CardType.ShouldBe(CardTypes.Visa);
+        result.Value.CardType.ShouldBe(CardTypes.Debit);
         result.Value.Bank.ShouldBe("Techcombank");
     }
 
@@ -169,7 +173,7 @@ public class TransactionTests
     public void Create_CardWithoutCardType_Fails()
     {
         var result = Transaction.Create(
-            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Netflix",
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Netflix",
             Money.Zero(), Vnd(260_000m), null,
             null, PaymentMethods.Card);
 
@@ -181,7 +185,7 @@ public class TransactionTests
     public void Create_UnknownPaymentMethod_Fails()
     {
         var result = Transaction.Create(
-            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Lunch",
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Lunch",
             Money.Zero(), Vnd(50_000m), null,
             null, "crypto");
 
@@ -193,9 +197,33 @@ public class TransactionTests
     public void Create_CardDetailsOnNonCardMethod_Fails()
     {
         var result = Transaction.Create(
-            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Lunch",
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Lunch",
             Money.Zero(), Vnd(50_000m), null,
-            null, PaymentMethods.Cash, CardTypes.Visa);
+            null, PaymentMethods.Cash, CardTypes.Debit);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.CardDetailsNotAllowed);
+    }
+
+    [Fact]
+    public void Create_BankWithTransfer_Succeeds()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Chuyển khoản",
+            Money.Zero(), Vnd(50_000m), null,
+            null, PaymentMethods.Transfer, null, "Techcombank");
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Bank.ShouldBe("Techcombank");
+    }
+
+    [Fact]
+    public void Create_BankWithCash_Fails()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Lunch",
+            Money.Zero(), Vnd(50_000m), null,
+            null, PaymentMethods.Cash, null, "Techcombank");
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(TransactionErrors.CardDetailsNotAllowed);
@@ -205,7 +233,7 @@ public class TransactionTests
     public void Create_UnknownCardType_Fails()
     {
         var result = Transaction.Create(
-            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Netflix",
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Netflix",
             Money.Zero(), Vnd(260_000m), null,
             null, PaymentMethods.Card, "amex");
 
@@ -217,9 +245,9 @@ public class TransactionTests
     public void Create_CardWithBankTooLong_Fails()
     {
         var result = Transaction.Create(
-            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Netflix",
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Netflix",
             Money.Zero(), Vnd(260_000m), null,
-            null, PaymentMethods.Card, CardTypes.Visa, new string('x', 101));
+            null, PaymentMethods.Card, CardTypes.Debit, new string('x', 101));
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(TransactionErrors.BankTooLong);
@@ -229,11 +257,11 @@ public class TransactionTests
     public void Update_CanChangePaymentMethod()
     {
         Transaction transaction = Transaction.Create(
-            Guid.NewGuid(), new DateOnly(2026, 7, 7), "Lunch",
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Lunch",
             Money.Zero(), Vnd(50_000m), null).Value;
 
         Result result = transaction.Update(
-            transaction.Date, transaction.Content, Money.Zero(),
+            PlanId, transaction.Date, transaction.Content, Money.Zero(),
             Vnd(50_000m), null,
             null, PaymentMethods.Card, CardTypes.Credit, "VPBank");
 
@@ -246,7 +274,7 @@ public class TransactionTests
     [Fact]
     public void Create_WithDefaultDate_Fails()
     {
-        var result = Transaction.Create(UserId, default, "x", Vnd(1m), Money.Zero(), null);
+        var result = Transaction.Create(UserId, PlanId, default, "x", Vnd(1m), Money.Zero(), null);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Code.ShouldBe("Transactions.DateRequired");

@@ -45,6 +45,13 @@ namespace Infrastructure.Database.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasDefaultValue("expense");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -60,6 +67,36 @@ namespace Infrastructure.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("categories", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Plans.Plan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("plans", (string)null);
                 });
 
             modelBuilder.Entity("Domain.SubCategories.SubCategory", b =>
@@ -159,6 +196,9 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("character varying(20)")
                         .HasDefaultValue("transfer");
 
+                    b.Property<Guid>("PlanId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateOnly?>("PrepaidFrom")
                         .HasColumnType("date");
 
@@ -181,6 +221,8 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("PlanId");
+
                     b.HasIndex("PrepaidTransactionId");
 
                     b.HasIndex("ReimbursedByTransactionId");
@@ -189,7 +231,42 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("UserId", "Date");
 
+                    b.HasIndex("UserId", "PlanId");
+
                     b.ToTable("transactions", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Users.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("refresh_tokens", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Users.User", b =>
@@ -229,6 +306,15 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Plans.Plan", b =>
+                {
+                    b.HasOne("Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.SubCategories.SubCategory", b =>
                 {
                     b.HasOne("Domain.Categories.Category", null)
@@ -244,6 +330,12 @@ namespace Infrastructure.Database.Migrations
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Domain.Plans.Plan", null)
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Domain.Transactions.Transaction", null)
                         .WithMany()
@@ -318,6 +410,15 @@ namespace Infrastructure.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("Debit")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Users.RefreshToken", b =>
+                {
+                    b.HasOne("Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

@@ -2,6 +2,7 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Application.Transactions.Data;
+using Domain.Plans;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -22,9 +23,16 @@ internal sealed class GetPrepaidCreditsQueryHandler(
             return Result.Failure<List<PrepaidCreditResponse>>(UserErrors.Unauthenticated);
         }
 
+        bool planExists = await dbContext.Plans.AnyAsync(
+            p => p.Id == query.PlanId && p.UserId == userId, cancellationToken);
+        if (!planExists)
+        {
+            return Result.Failure<List<PrepaidCreditResponse>>(PlanErrors.NotFound);
+        }
+
         // A prepaid credit can cover many expenses, so linked ones stay listed.
         List<PrepaidCreditResponse> credits = await dbContext.Transactions
-            .Where(t => t.UserId == userId && t.IsPrepaid)
+            .Where(t => t.UserId == userId && t.PlanId == query.PlanId && t.IsPrepaid)
             .OrderByDescending(t => t.Date)
             .ThenByDescending(t => t.CreatedAt)
             .Select(t => new PrepaidCreditResponse(

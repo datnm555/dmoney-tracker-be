@@ -14,6 +14,8 @@ public class CreateTransactionCommandHandlerTests
     private static readonly Guid UserId = Guid.NewGuid();
     private static readonly Domain.Categories.Category Food =
         Domain.Categories.Category.Create("Ăn hàng", "utensils", "tester", "food").Value;
+    private static readonly Domain.Plans.Plan Plan =
+        Domain.Plans.Plan.Create(UserId, "Sổ chính", true).Value;
 
     private IApplicationDbContext _dbContext = null!;
     private IUserContext _userContext = null!;
@@ -28,12 +30,14 @@ public class CreateTransactionCommandHandlerTests
         _dbContext.Transactions.Returns(transactionsDbSet);
         var categoriesDbSet = new List<Domain.Categories.Category> { Food }.BuildMockDbSet();
         _dbContext.Categories.Returns(categoriesDbSet);
+        var plansDbSet = new List<Domain.Plans.Plan> { Plan }.BuildMockDbSet();
+        _dbContext.Plans.Returns(plansDbSet);
 
         return new CreateTransactionCommandHandler(_dbContext, _userContext);
     }
 
     private static CreateTransactionCommand ValidCommand() =>
-        new(new DateOnly(2026, 7, 6), "Lương tháng 7", 15_000_000m, 0m, null, Food.Id);
+        new(new DateOnly(2026, 7, 6), "Lương tháng 7", 15_000_000m, 0m, null, Food.Id, Plan.Id);
 
     [Fact]
     public async Task Handle_WithValidCommand_SavesForCurrentUser()
@@ -61,10 +65,23 @@ public class CreateTransactionCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_WithUnknownPlan_FailsNotFound()
+    {
+        var handler = CreateHandler(UserId);
+        var command = new CreateTransactionCommand(
+            new DateOnly(2026, 7, 6), "x", 1m, 0m, null, Food.Id, Guid.NewGuid());
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("Plans.NotFound");
+    }
+
+    [Fact]
     public async Task Handle_WithNegativeCredit_Fails()
     {
         var handler = CreateHandler(UserId);
-        var command = new CreateTransactionCommand(new DateOnly(2026, 7, 6), "x", -1m, 0m, null, Food.Id);
+        var command = new CreateTransactionCommand(new DateOnly(2026, 7, 6), "x", -1m, 0m, null, Food.Id, Plan.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -76,7 +93,7 @@ public class CreateTransactionCommandHandlerTests
     public async Task Handle_WithBothAmountsZero_Fails()
     {
         var handler = CreateHandler(UserId);
-        var command = new CreateTransactionCommand(new DateOnly(2026, 7, 6), "x", 0m, 0m, null, Food.Id);
+        var command = new CreateTransactionCommand(new DateOnly(2026, 7, 6), "x", 0m, 0m, null, Food.Id, Plan.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -88,7 +105,7 @@ public class CreateTransactionCommandHandlerTests
     public async Task Handle_WithCategory_PersistsIt()
     {
         var handler = CreateHandler(UserId);
-        var command = new CreateTransactionCommand(new DateOnly(2026, 7, 6), "Ăn trưa", 0m, 50_000m, null, Food.Id);
+        var command = new CreateTransactionCommand(new DateOnly(2026, 7, 6), "Ăn trưa", 0m, 50_000m, null, Food.Id, Plan.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -106,14 +123,14 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 7), "Netflix", 0m, 260_000m, null,
-            Food.Id, "card", "visa", "Techcombank");
+            Food.Id, Plan.Id, "card", "debit", "Techcombank");
 
         Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         captured.ShouldNotBeNull();
         captured.PaymentMethod.ShouldBe(PaymentMethods.Card);
-        captured.CardType.ShouldBe(CardTypes.Visa);
+        captured.CardType.ShouldBe(CardTypes.Debit);
         captured.Bank.ShouldBe("Techcombank");
     }
 
@@ -127,7 +144,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 9), "Tiền xe bus ứng trước", 0m, 2_000_000m, null,
-            Food.Id, null, null, null, true);
+            Food.Id, Plan.Id, null, null, null, true);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -138,7 +155,7 @@ public class CreateTransactionCommandHandlerTests
 
     private static Transaction OpenAdvance(Guid userId, decimal amount = 2_000_000m) =>
         Transaction.Create(
-            userId, new DateOnly(2026, 7, 1), "Ứng trước xe bus",
+            userId, Plan.Id, new DateOnly(2026, 7, 1), "Ứng trước xe bus",
             Money.Zero(), Money.Create(amount).Value, null,
             null, null, null, null, true).Value;
 
@@ -153,7 +170,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 9), "Hoàn ứng", 2_000_000m, 0m, null,
-            Food.Id, null, null, null, false, [advance.Id]);
+            Food.Id, Plan.Id, null, null, null, false, [advance.Id]);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -169,7 +186,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 9), "Hoàn ứng", 2_000_000m, 0m, null,
-            Food.Id, null, null, null, false, [Guid.NewGuid()]);
+            Food.Id, Plan.Id, null, null, null, false, [Guid.NewGuid()]);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -186,7 +203,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 9), "Hoàn ứng lần 2", 2_000_000m, 0m, null,
-            Food.Id, null, null, null, false, [advance.Id]);
+            Food.Id, Plan.Id, null, null, null, false, [advance.Id]);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -206,7 +223,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 14), "Anh Huy hoàn tổng", 7_000_000m, 0m, null,
-            Food.Id, null, null, null, false, [first.Id, second.Id]);
+            Food.Id, Plan.Id, null, null, null, false, [first.Id, second.Id]);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -224,7 +241,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 9), "Sai chiều", 0m, 500_000m, null,
-            Food.Id, null, null, null, false, [advance.Id]);
+            Food.Id, Plan.Id, null, null, null, false, [advance.Id]);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -234,7 +251,7 @@ public class CreateTransactionCommandHandlerTests
 
     private static Transaction PrepaidCredit(Guid userId) =>
         Transaction.Create(
-            userId, new DateOnly(2026, 1, 5), "Sinh hoạt 5 tháng",
+            userId, Plan.Id, new DateOnly(2026, 1, 5), "Sinh hoạt 5 tháng",
             Money.Create(25_000_000m).Value, Money.Zero(), null,
             Food.Id, null, null, null, false,
             true, new DateOnly(2026, 1, 1), new DateOnly(2026, 5, 31)).Value;
@@ -249,7 +266,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 1, 5), "Sinh hoạt 5 tháng", 25_000_000m, 0m, null,
-            Food.Id, null, null, null, false, null,
+            Food.Id, Plan.Id, null, null, null, false, null,
             true, new DateOnly(2026, 1, 1), new DateOnly(2026, 5, 31));
 
         var result = await handler.Handle(command, CancellationToken.None);
@@ -267,7 +284,7 @@ public class CreateTransactionCommandHandlerTests
         var handler = CreateHandler(UserId);
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 1, 5), "Sinh hoạt", 25_000_000m, 0m, null,
-            Food.Id, null, null, null, false, null, true);
+            Food.Id, Plan.Id, null, null, null, false, null, true);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -281,7 +298,7 @@ public class CreateTransactionCommandHandlerTests
         var handler = CreateHandler(UserId);
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 1, 5), "Sinh hoạt", 25_000_000m, 0m, null,
-            Food.Id, null, null, null, false, null,
+            Food.Id, Plan.Id, null, null, null, false, null,
             true, new DateOnly(2026, 5, 31), new DateOnly(2026, 1, 1));
 
         var result = await handler.Handle(command, CancellationToken.None);
@@ -296,7 +313,7 @@ public class CreateTransactionCommandHandlerTests
         var handler = CreateHandler(UserId);
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 1, 5), "Sai chiều", 0m, 1_000_000m, null,
-            Food.Id, null, null, null, false, null,
+            Food.Id, Plan.Id, null, null, null, false, null,
             true, new DateOnly(2026, 1, 1), new DateOnly(2026, 5, 31));
 
         var result = await handler.Handle(command, CancellationToken.None);
@@ -316,7 +333,7 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 2, 1), "Sinh hoạt tháng 2", 0m, 0m, null,
-            Food.Id, null, null, null, false, null,
+            Food.Id, Plan.Id, null, null, null, false, null,
             false, null, null, prepaid.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
@@ -334,7 +351,7 @@ public class CreateTransactionCommandHandlerTests
         var handler = CreateHandler(UserId);
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 2, 1), "Sinh hoạt tháng 2", 0m, 0m, null,
-            Food.Id, null, null, null, false, null,
+            Food.Id, Plan.Id, null, null, null, false, null,
             false, null, null, Guid.NewGuid());
 
         var result = await handler.Handle(command, CancellationToken.None);

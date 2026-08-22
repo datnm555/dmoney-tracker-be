@@ -11,7 +11,8 @@ namespace Application.Users;
 internal sealed class LoginCommandHandler(
     IApplicationDbContext dbContext,
     IPasswordHasher passwordHasher,
-    ITokenProvider tokenProvider)
+    ITokenProvider tokenProvider,
+    IDateTimeProvider clock)
     : ICommandHandler<LoginCommand, LoginResponse>
 {
     public async Task<Result<LoginResponse>> Handle(
@@ -32,6 +33,12 @@ internal sealed class LoginCommandHandler(
 
         string token = tokenProvider.Create(user);
 
-        return new LoginResponse(token, user.Id, user.Email, user.Username, user.DisplayName);
+        RefreshToken refreshToken = RefreshToken.Create(
+            user.Id, RefreshTokenGenerator.NewToken(), clock.UtcNow);
+        dbContext.RefreshTokens.Add(refreshToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return new LoginResponse(
+            token, user.Id, user.Email, user.Username, user.DisplayName, refreshToken.Token);
     }
 }
