@@ -83,6 +83,22 @@ public sealed class BeneficiariesEndpointsTests(ApiTestFactory factory) : IClass
     }
 
     [Fact]
+    public async Task Rename_DuplicateCheck_UsesTrimmedName()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("ben-trim@example.com", "bentrim");
+        await CreateBeneficiaryAsync(client, "Vợ");
+        Guid child = await CreateBeneficiaryAsync(client, "Con");
+
+        // " Vợ" trims to "Vợ", which already exists → conflict, not a sneaky duplicate.
+        (await client.PutAsJsonAsync($"/beneficiaries/{child}", new { name = " Vợ" }))
+            .StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        // Renaming to its own current name is fine (self is excluded from the check).
+        (await client.PutAsJsonAsync($"/beneficiaries/{child}", new { name = "Con" }))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
     public async Task Delete_Guards()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("ben-del@example.com", "bendel");

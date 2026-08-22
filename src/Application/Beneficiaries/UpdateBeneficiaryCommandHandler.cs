@@ -34,7 +34,7 @@ internal sealed class UpdateBeneficiaryCommandHandler(
         }
 
         bool isDuplicate = await dbContext.Beneficiaries
-            .AnyAsync(b => b.UserId == userId && b.Name == command.Name && b.Id != command.Id, cancellationToken);
+            .AnyAsync(b => b.UserId == userId && b.Name == beneficiary.Name && b.Id != command.Id, cancellationToken);
         if (isDuplicate)
         {
             return Result.Failure(BeneficiaryErrors.Duplicate);
