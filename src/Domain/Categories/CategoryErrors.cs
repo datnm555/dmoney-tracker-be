@@ -16,6 +16,10 @@ public static class CategoryErrors
         "Categories.IconRequired",
         "Please pick an icon for the category.");
 
+    public static readonly Error InvalidKind = Error.Validation(
+        "Categories.InvalidKind",
+        "Category kind must be expense, income or both.");
+
     public static readonly Error Duplicate = Error.Conflict(
         "Categories.Duplicate",
         "This category already exists.");

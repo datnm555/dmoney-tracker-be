@@ -274,7 +274,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             note = (string?)null,
             categoryId,
             paymentMethod = "card",
-            cardType = "visa",
+            cardType = "debit",
             bank = "Techcombank",
             planId = defaultPlan
         });
@@ -284,7 +284,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         SummaryBody? summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={month}&planId={defaultPlan}");
         ItemBody item = summary!.Items.Single(i => i.Content == "Netflix Premium");
         item.PaymentMethod.ShouldBe("card");
-        item.CardType.ShouldBe("visa");
+        item.CardType.ShouldBe("debit");
         item.Bank.ShouldBe("Techcombank");
     }
 
@@ -329,7 +329,7 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
             note = (string?)null,
             categoryId,
             paymentMethod = "card",
-            cardType = "visa",
+            cardType = "debit",
             bank = "Techcombank",
             planId = defaultPlan
         });

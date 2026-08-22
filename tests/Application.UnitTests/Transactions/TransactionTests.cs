@@ -161,11 +161,11 @@ public class TransactionTests
         var result = Transaction.Create(
             Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Netflix",
             Money.Zero(), Vnd(260_000m), null,
-            null, PaymentMethods.Card, CardTypes.Visa, "Techcombank");
+            null, PaymentMethods.Card, CardTypes.Debit, "Techcombank");
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.PaymentMethod.ShouldBe(PaymentMethods.Card);
-        result.Value.CardType.ShouldBe(CardTypes.Visa);
+        result.Value.CardType.ShouldBe(CardTypes.Debit);
         result.Value.Bank.ShouldBe("Techcombank");
     }
 
@@ -199,7 +199,31 @@ public class TransactionTests
         var result = Transaction.Create(
             Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Lunch",
             Money.Zero(), Vnd(50_000m), null,
-            null, PaymentMethods.Cash, CardTypes.Visa);
+            null, PaymentMethods.Cash, CardTypes.Debit);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.CardDetailsNotAllowed);
+    }
+
+    [Fact]
+    public void Create_BankWithTransfer_Succeeds()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Chuyển khoản",
+            Money.Zero(), Vnd(50_000m), null,
+            null, PaymentMethods.Transfer, null, "Techcombank");
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Bank.ShouldBe("Techcombank");
+    }
+
+    [Fact]
+    public void Create_BankWithCash_Fails()
+    {
+        var result = Transaction.Create(
+            Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Lunch",
+            Money.Zero(), Vnd(50_000m), null,
+            null, PaymentMethods.Cash, null, "Techcombank");
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(TransactionErrors.CardDetailsNotAllowed);
@@ -223,7 +247,7 @@ public class TransactionTests
         var result = Transaction.Create(
             Guid.NewGuid(), PlanId, new DateOnly(2026, 7, 7), "Netflix",
             Money.Zero(), Vnd(260_000m), null,
-            null, PaymentMethods.Card, CardTypes.Visa, new string('x', 101));
+            null, PaymentMethods.Card, CardTypes.Debit, new string('x', 101));
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(TransactionErrors.BankTooLong);

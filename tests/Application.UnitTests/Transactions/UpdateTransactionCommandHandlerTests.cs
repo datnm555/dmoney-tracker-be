@@ -136,13 +136,13 @@ public class UpdateTransactionCommandHandlerTests
         var handler = CreateHandler(tx);
         var command = new UpdateTransactionCommand(
             tx.Id, new DateOnly(2026, 7, 10), "Netflix", 0m, 260_000m, null,
-            Bills.Id, Plan.Id, "card", "visa", "Techcombank");
+            Bills.Id, Plan.Id, "card", "debit", "Techcombank");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         tx.PaymentMethod.ShouldBe(PaymentMethods.Card);
-        tx.CardType.ShouldBe(CardTypes.Visa);
+        tx.CardType.ShouldBe(CardTypes.Debit);
         tx.Bank.ShouldBe("Techcombank");
     }
 

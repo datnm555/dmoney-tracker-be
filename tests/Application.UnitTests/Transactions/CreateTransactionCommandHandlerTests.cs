@@ -123,14 +123,14 @@ public class CreateTransactionCommandHandlerTests
 
         var command = new CreateTransactionCommand(
             new DateOnly(2026, 7, 7), "Netflix", 0m, 260_000m, null,
-            Food.Id, Plan.Id, "card", "visa", "Techcombank");
+            Food.Id, Plan.Id, "card", "debit", "Techcombank");
 
         Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         result.IsSuccess.ShouldBeTrue();
         captured.ShouldNotBeNull();
         captured.PaymentMethod.ShouldBe(PaymentMethods.Card);
-        captured.CardType.ShouldBe(CardTypes.Visa);
+        captured.CardType.ShouldBe(CardTypes.Debit);
         captured.Bank.ShouldBe("Techcombank");
     }
 

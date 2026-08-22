@@ -4,4 +4,5 @@ public sealed record CategoryResponse(
     Guid Id,
     string Name,
     string Icon,
-    string? Code = null);
+    string? Code = null,
+    string Kind = "expense");

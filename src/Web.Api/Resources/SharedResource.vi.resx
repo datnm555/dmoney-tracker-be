@@ -87,8 +87,8 @@
   <data name="payment.cash" xml:space="preserve"><value>Tiền mặt</value></data>
   <data name="payment.card" xml:space="preserve"><value>Thẻ</value></data>
   <data name="payment.cardType" xml:space="preserve"><value>Loại thẻ</value></data>
-  <data name="payment.cardType.visa" xml:space="preserve"><value>VISA</value></data>
-  <data name="payment.cardType.credit" xml:space="preserve"><value>Credit</value></data>
+  <data name="payment.cardType.debit" xml:space="preserve"><value>Ghi nợ (Debit)</value></data>
+  <data name="payment.cardType.credit" xml:space="preserve"><value>Tín dụng (Credit)</value></data>
   <data name="payment.bank" xml:space="preserve"><value>Ngân hàng</value></data>
   <data name="payment.bank.other" xml:space="preserve"><value>Khác</value></data>
   <data name="Transactions.InvalidPaymentMethod" xml:space="preserve"><value>Hình thức thanh toán không hợp lệ.</value></data>
@@ -196,6 +196,7 @@
   <data name="export.button" xml:space="preserve"><value>Xuất Excel</value></data>
   <data name="dashboard.byCategory" xml:space="preserve"><value>Chi tiêu theo danh mục</value></data>
   <data name="dashboard.noSubCategory" xml:space="preserve"><value>Chưa phân loại</value></data>
+  <data name="Categories.InvalidKind" xml:space="preserve"><value>Loại danh mục phải là chi, thu hoặc cả hai.</value></data>
   <data name="Categories.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên danh mục.</value></data>
   <data name="Categories.NameTooLong" xml:space="preserve"><value>Tên danh mục tối đa 50 ký tự.</value></data>
   <data name="Categories.IconRequired" xml:space="preserve"><value>Vui lòng chọn biểu tượng cho danh mục.</value></data>

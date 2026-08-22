@@ -227,7 +227,13 @@ public sealed class Transaction : AuditedEntity
                 return Result.Failure(TransactionErrors.InvalidCardType);
             }
         }
-        else if (cardType is not null || bank is not null)
+        else if (cardType is not null)
+        {
+            return Result.Failure(TransactionErrors.CardDetailsNotAllowed);
+        }
+
+        // Bank identifies the source account for cards AND transfers; cash has none.
+        if (paymentMethod == PaymentMethods.Cash && bank is not null)
         {
             return Result.Failure(TransactionErrors.CardDetailsNotAllowed);
         }
