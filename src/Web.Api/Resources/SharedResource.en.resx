@@ -135,6 +135,7 @@
   <data name="filters.title" xml:space="preserve"><value>Filters</value></data>
   <data name="filters.type" xml:space="preserve"><value>Transaction type</value></data>
   <data name="filters.month" xml:space="preserve"><value>Month</value></data>
+  <data name="filters.beneficiary" xml:space="preserve"><value>Person</value></data>
   <data name="filters.optional" xml:space="preserve"><value>(optional)</value></data>
   <data name="filters.reset" xml:space="preserve"><value>Reset</value></data>
   <data name="filters.allYear" xml:space="preserve"><value>Whole year</value></data>
@@ -194,6 +195,7 @@
   <data name="links.covers" xml:space="preserve"><value>Covers</value></data>
   <data name="links.coveredBy" xml:space="preserve"><value>Covered by</value></data>
   <data name="export.button" xml:space="preserve"><value>Export Excel</value></data>
+  <data name="export.colBeneficiary" xml:space="preserve"><value>Person</value></data>
   <data name="dashboard.byCategory" xml:space="preserve"><value>Spending by category</value></data>
   <data name="dashboard.noSubCategory" xml:space="preserve"><value>Uncategorised</value></data>
   <data name="Categories.InvalidKind" xml:space="preserve"><value>Category kind must be expense, income or both.</value></data>
@@ -216,6 +218,7 @@
   <data name="subcat.create" xml:space="preserve"><value>New sub-category</value></data>
   <data name="form.reimbursedBy" xml:space="preserve"><value>Reimbursed by</value></data>
   <data name="form.reimbursedByNone" xml:space="preserve"><value>Not reimbursed yet</value></data>
+  <data name="form.beneficiary" xml:space="preserve"><value>Person</value></data>
   <data name="subcat.edit" xml:space="preserve"><value>Edit sub-category</value></data>
   <data name="cat.edit" xml:space="preserve"><value>Edit category</value></data>
   <data name="toast.created" xml:space="preserve"><value>Created successfully</value></data>
@@ -232,8 +235,24 @@
   <data name="Plans.NotFound" xml:space="preserve"><value>Plan not found.</value></data>
   <data name="Plans.NotEmpty" xml:space="preserve"><value>This plan still has transactions and cannot be deleted.</value></data>
   <data name="Plans.CannotDeleteDefault" xml:space="preserve"><value>The default plan cannot be deleted.</value></data>
+  <data name="Beneficiaries.NameRequired" xml:space="preserve"><value>Please enter a name for the person.</value></data>
+  <data name="Beneficiaries.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
+  <data name="Beneficiaries.Duplicate" xml:space="preserve"><value>This person already exists.</value></data>
+  <data name="Beneficiaries.NotFound" xml:space="preserve"><value>Person not found.</value></data>
+  <data name="Beneficiaries.InUse" xml:space="preserve"><value>This person is used by transactions and cannot be deleted.</value></data>
+  <data name="Transactions.BeneficiaryDebitOnly" xml:space="preserve"><value>A person can only be set on a money-out transaction.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
+  <data name="menu.beneficiaries" xml:space="preserve"><value>People</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Plans</value></data>
+  <data name="beneficiaries.title" xml:space="preserve"><value>Manage people</value></data>
+  <data name="beneficiaries.create" xml:space="preserve"><value>Add person</value></data>
+  <data name="beneficiaries.name" xml:space="preserve"><value>Person name</value></data>
+  <data name="beneficiaries.rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="beneficiaries.delete" xml:space="preserve"><value>Delete person</value></data>
+  <data name="beneficiaries.deleteConfirm" xml:space="preserve"><value>Delete this person?</value></data>
+  <data name="beneficiaries.default" xml:space="preserve"><value>Default</value></data>
+  <data name="beneficiaries.setDefault" xml:space="preserve"><value>Set default</value></data>
+  <data name="beneficiaries.none" xml:space="preserve"><value>None</value></data>
   <data name="plans.title" xml:space="preserve"><value>Manage plans</value></data>
   <data name="plans.switcher" xml:space="preserve"><value>Plan</value></data>
   <data name="plans.create" xml:space="preserve"><value>New plan</value></data>
