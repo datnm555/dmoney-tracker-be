@@ -43,3 +43,59 @@ internal sealed class CreateBeneficiary : IEndpoint
         }).RequireAuthorization();
     }
 }
+
+internal sealed class UpdateBeneficiary : IEndpoint
+{
+    internal sealed record UpdateBeneficiaryRequest(string Name);
+
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/beneficiaries/{id:guid}", async (
+            Guid id,
+            UpdateBeneficiaryRequest request,
+            ICommandHandler<UpdateBeneficiaryCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(
+                new UpdateBeneficiaryCommand(id, request.Name), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
+
+internal sealed class SetDefaultBeneficiary : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/beneficiaries/{id:guid}/default", async (
+            Guid id,
+            ICommandHandler<SetDefaultBeneficiaryCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(
+                new SetDefaultBeneficiaryCommand(id), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
+
+internal sealed class DeleteBeneficiary : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapDelete("/beneficiaries/{id:guid}", async (
+            Guid id,
+            ICommandHandler<DeleteBeneficiaryCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(new DeleteBeneficiaryCommand(id), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}

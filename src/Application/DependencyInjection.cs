@@ -47,6 +47,9 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<SetDefaultPlanCommand>, SetDefaultPlanCommandHandler>();
         services.AddScoped<IQueryHandler<GetBeneficiariesQuery, List<BeneficiaryResponse>>, GetBeneficiariesQueryHandler>();
         services.AddScoped<ICommandHandler<CreateBeneficiaryCommand, Guid>, CreateBeneficiaryCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateBeneficiaryCommand>, UpdateBeneficiaryCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteBeneficiaryCommand>, DeleteBeneficiaryCommandHandler>();
+        services.AddScoped<ICommandHandler<SetDefaultBeneficiaryCommand>, SetDefaultBeneficiaryCommandHandler>();
         return services;
     }
 }
