@@ -135,6 +135,7 @@
   <data name="filters.title" xml:space="preserve"><value>Bộ lọc</value></data>
   <data name="filters.type" xml:space="preserve"><value>Loại giao dịch</value></data>
   <data name="filters.month" xml:space="preserve"><value>Tháng</value></data>
+  <data name="filters.beneficiary" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="filters.optional" xml:space="preserve"><value>(tùy chọn)</value></data>
   <data name="filters.reset" xml:space="preserve"><value>Xóa lọc</value></data>
   <data name="filters.allYear" xml:space="preserve"><value>Cả năm</value></data>
@@ -194,6 +195,7 @@
   <data name="links.covers" xml:space="preserve"><value>Đã chi từ khoản này</value></data>
   <data name="links.coveredBy" xml:space="preserve"><value>Trả trước bởi</value></data>
   <data name="export.button" xml:space="preserve"><value>Xuất Excel</value></data>
+  <data name="export.colBeneficiary" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="dashboard.byCategory" xml:space="preserve"><value>Chi tiêu theo danh mục</value></data>
   <data name="dashboard.noSubCategory" xml:space="preserve"><value>Chưa phân loại</value></data>
   <data name="Categories.InvalidKind" xml:space="preserve"><value>Loại danh mục phải là chi, thu hoặc cả hai.</value></data>
@@ -216,6 +218,7 @@
   <data name="subcat.create" xml:space="preserve"><value>Tạo danh mục con</value></data>
   <data name="form.reimbursedBy" xml:space="preserve"><value>Đã được hoàn bởi</value></data>
   <data name="form.reimbursedByNone" xml:space="preserve"><value>Chưa được hoàn</value></data>
+  <data name="form.beneficiary" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="subcat.edit" xml:space="preserve"><value>Sửa danh mục con</value></data>
   <data name="cat.edit" xml:space="preserve"><value>Sửa danh mục</value></data>
   <data name="toast.created" xml:space="preserve"><value>Đã tạo thành công</value></data>
@@ -232,8 +235,24 @@
   <data name="Plans.NotFound" xml:space="preserve"><value>Không tìm thấy sổ.</value></data>
   <data name="Plans.NotEmpty" xml:space="preserve"><value>Sổ vẫn còn giao dịch nên chưa thể xóa.</value></data>
   <data name="Plans.CannotDeleteDefault" xml:space="preserve"><value>Không thể xóa sổ mặc định.</value></data>
+  <data name="Beneficiaries.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên đối tượng.</value></data>
+  <data name="Beneficiaries.NameTooLong" xml:space="preserve"><value>Tên đối tượng tối đa 100 ký tự.</value></data>
+  <data name="Beneficiaries.Duplicate" xml:space="preserve"><value>Đối tượng này đã tồn tại.</value></data>
+  <data name="Beneficiaries.NotFound" xml:space="preserve"><value>Không tìm thấy đối tượng.</value></data>
+  <data name="Beneficiaries.InUse" xml:space="preserve"><value>Đối tượng đang được dùng bởi giao dịch, không thể xóa.</value></data>
+  <data name="Transactions.BeneficiaryDebitOnly" xml:space="preserve"><value>Đối tượng chỉ áp dụng cho giao dịch ghi nợ.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
+  <data name="menu.beneficiaries" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>
+  <data name="beneficiaries.title" xml:space="preserve"><value>Quản lý đối tượng</value></data>
+  <data name="beneficiaries.create" xml:space="preserve"><value>Thêm đối tượng</value></data>
+  <data name="beneficiaries.name" xml:space="preserve"><value>Tên đối tượng</value></data>
+  <data name="beneficiaries.rename" xml:space="preserve"><value>Đổi tên</value></data>
+  <data name="beneficiaries.delete" xml:space="preserve"><value>Xóa đối tượng</value></data>
+  <data name="beneficiaries.deleteConfirm" xml:space="preserve"><value>Xóa đối tượng này?</value></data>
+  <data name="beneficiaries.default" xml:space="preserve"><value>Mặc định</value></data>
+  <data name="beneficiaries.setDefault" xml:space="preserve"><value>Đặt mặc định</value></data>
+  <data name="beneficiaries.none" xml:space="preserve"><value>Không có</value></data>
   <data name="plans.title" xml:space="preserve"><value>Quản lý sổ</value></data>
   <data name="plans.switcher" xml:space="preserve"><value>Sổ</value></data>
   <data name="plans.create" xml:space="preserve"><value>Tạo sổ mới</value></data>

@@ -1,4 +1,5 @@
 using Application.Abstractions.Data;
+using Domain.Beneficiaries;
 using Domain.Categories;
 using Domain.Plans;
 using Domain.SubCategories;
@@ -20,6 +21,8 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<Category> Categories => Set<Category>();
 
     public DbSet<Plan> Plans => Set<Plan>();
+
+    public DbSet<Beneficiary> Beneficiaries => Set<Beneficiary>();
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 

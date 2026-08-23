@@ -21,7 +21,9 @@ public sealed record TransactionResponse(
     string? SubCategoryName,
     Guid PlanId,
     Guid? ReimbursedByTransactionId = null,
-    IReadOnlyList<LinkedTransactionResponse>? Links = null);
+    IReadOnlyList<LinkedTransactionResponse>? Links = null,
+    Guid? BeneficiaryId = null,
+    string? BeneficiaryName = null);
 
 public sealed record LinkedTransactionResponse(
     Guid Id,

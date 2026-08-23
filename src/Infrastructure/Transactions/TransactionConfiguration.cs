@@ -93,5 +93,10 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .WithMany()
             .HasForeignKey(t => t.SubCategoryId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne<Domain.Beneficiaries.Beneficiary>()
+            .WithMany()
+            .HasForeignKey(t => t.BeneficiaryId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

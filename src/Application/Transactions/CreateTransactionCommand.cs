@@ -19,4 +19,5 @@ public sealed record CreateTransactionCommand(
     DateOnly? PrepaidFrom = null,
     DateOnly? PrepaidTo = null,
     Guid? PrepaidTransactionId = null,
-    Guid? SubCategoryId = null) : ICommand<Guid>;
+    Guid? SubCategoryId = null,
+    Guid? BeneficiaryId = null) : ICommand<Guid>;

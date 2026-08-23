@@ -90,7 +90,13 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                     .Select(s => s.Name)
                     .FirstOrDefault(),
                 t.PlanId,
-                t.ReimbursedByTransactionId))
+                t.ReimbursedByTransactionId,
+                null,
+                t.BeneficiaryId,
+                dbContext.Beneficiaries
+                    .Where(b => b.Id == t.BeneficiaryId)
+                    .Select(b => b.Name)
+                    .FirstOrDefault()))
             .ToListAsync(cancellationToken);
 
         items = await AttachLinksAsync(items, cancellationToken);

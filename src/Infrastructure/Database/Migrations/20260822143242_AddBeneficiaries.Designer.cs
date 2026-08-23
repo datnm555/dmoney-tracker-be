@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260822143242_AddBeneficiaries")]
+    partial class AddBeneficiaries
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,9 +187,6 @@ namespace Infrastructure.Database.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<Guid?>("BeneficiaryId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("CardType")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
@@ -251,8 +251,6 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BeneficiaryId");
 
                     b.HasIndex("CategoryId");
 
@@ -370,11 +368,6 @@ namespace Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Domain.Transactions.Transaction", b =>
                 {
-                    b.HasOne("Domain.Beneficiaries.Beneficiary", null)
-                        .WithMany()
-                        .HasForeignKey("BeneficiaryId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Domain.Categories.Category", null)
                         .WithMany()
                         .HasForeignKey("CategoryId")

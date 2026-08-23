@@ -1,3 +1,4 @@
+using Domain.Beneficiaries;
 using Domain.Categories;
 using Domain.Plans;
 using Domain.SubCategories;
@@ -18,6 +19,8 @@ public interface IApplicationDbContext
     DbSet<Category> Categories { get; }
 
     DbSet<Plan> Plans { get; }
+
+    DbSet<Beneficiary> Beneficiaries { get; }
 
     DbSet<RefreshToken> RefreshTokens { get; }
 
