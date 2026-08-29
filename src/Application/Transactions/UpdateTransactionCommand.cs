@@ -22,4 +22,6 @@ public sealed record UpdateTransactionCommand(
     Guid? PrepaidTransactionId = null,
     Guid? SubCategoryId = null,
     Guid? ReimbursedByTransactionId = null,
-    Guid? BeneficiaryId = null) : ICommand;
+    Guid? BeneficiaryId = null,
+    Guid? GoldTypeId = null,
+    decimal? GoldQuantity = null) : ICommand;

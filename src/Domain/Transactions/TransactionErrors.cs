@@ -107,4 +107,12 @@ public static class TransactionErrors
     public static readonly Error BeneficiaryDebitOnly = Error.Validation(
         "Transactions.BeneficiaryDebitOnly",
         "A beneficiary can only be set on a money-out transaction.");
+
+    public static readonly Error GoldPairRequired = Error.Validation(
+        "Transactions.GoldPairRequired",
+        "Gold type and gold quantity must be provided together.");
+
+    public static readonly Error GoldQuantityInvalid = Error.Validation(
+        "Transactions.GoldQuantityInvalid",
+        "Gold quantity must be greater than zero.");
 }

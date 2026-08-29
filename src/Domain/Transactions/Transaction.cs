@@ -51,6 +51,12 @@ public sealed class Transaction : AuditedEntity
     /// <summary>The person this money-out transaction was paid to. Debit-only.</summary>
     public Guid? BeneficiaryId { get; private set; }
 
+    /// <summary>Gold type when this transaction buys (debit) or sells (credit) gold. Paired with GoldQuantity.</summary>
+    public Guid? GoldTypeId { get; private set; }
+
+    /// <summary>Gold quantity in chỉ (1 lượng = 10 chỉ). Paired with GoldTypeId.</summary>
+    public decimal? GoldQuantity { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         Guid planId,
@@ -69,7 +75,9 @@ public sealed class Transaction : AuditedEntity
         DateOnly? prepaidTo = null,
         Guid? prepaidTransactionId = null,
         Guid? subCategoryId = null,
-        Guid? beneficiaryId = null)
+        Guid? beneficiaryId = null,
+        Guid? goldTypeId = null,
+        decimal? goldQuantity = null)
     {
         if (date == default)
         {
@@ -101,6 +109,16 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure<Transaction>(TransactionErrors.BeneficiaryDebitOnly);
         }
 
+        if ((goldTypeId is null) != (goldQuantity is null))
+        {
+            return Result.Failure<Transaction>(TransactionErrors.GoldPairRequired);
+        }
+
+        if (goldQuantity is { } quantity && quantity <= 0m)
+        {
+            return Result.Failure<Transaction>(TransactionErrors.GoldQuantityInvalid);
+        }
+
         var transaction = new Transaction
         {
             Id = Guid.CreateVersion7(),
@@ -121,7 +139,9 @@ public sealed class Transaction : AuditedEntity
             PrepaidTo = isPrepaid ? prepaidTo : null,
             PrepaidTransactionId = prepaidTransactionId,
             SubCategoryId = subCategoryId,
-            BeneficiaryId = beneficiaryId
+            BeneficiaryId = beneficiaryId,
+            GoldTypeId = goldTypeId,
+            GoldQuantity = goldQuantity
         };
 
         return transaction;
@@ -144,7 +164,9 @@ public sealed class Transaction : AuditedEntity
         DateOnly? prepaidTo = null,
         Guid? prepaidTransactionId = null,
         Guid? subCategoryId = null,
-        Guid? beneficiaryId = null)
+        Guid? beneficiaryId = null,
+        Guid? goldTypeId = null,
+        decimal? goldQuantity = null)
     {
         if (date == default)
         {
@@ -176,6 +198,16 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure(TransactionErrors.BeneficiaryDebitOnly);
         }
 
+        if ((goldTypeId is null) != (goldQuantity is null))
+        {
+            return Result.Failure(TransactionErrors.GoldPairRequired);
+        }
+
+        if (goldQuantity is { } quantity && quantity <= 0m)
+        {
+            return Result.Failure(TransactionErrors.GoldQuantityInvalid);
+        }
+
         PlanId = planId;
         Date = date;
         Content = content.Trim();
@@ -193,6 +225,8 @@ public sealed class Transaction : AuditedEntity
         PrepaidTransactionId = prepaidTransactionId;
         SubCategoryId = subCategoryId;
         BeneficiaryId = beneficiaryId;
+        GoldTypeId = goldTypeId;
+        GoldQuantity = goldQuantity;
 
         return Result.Success();
     }

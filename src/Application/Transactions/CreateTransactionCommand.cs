@@ -20,4 +20,6 @@ public sealed record CreateTransactionCommand(
     DateOnly? PrepaidTo = null,
     Guid? PrepaidTransactionId = null,
     Guid? SubCategoryId = null,
-    Guid? BeneficiaryId = null) : ICommand<Guid>;
+    Guid? BeneficiaryId = null,
+    Guid? GoldTypeId = null,
+    decimal? GoldQuantity = null) : ICommand<Guid>;

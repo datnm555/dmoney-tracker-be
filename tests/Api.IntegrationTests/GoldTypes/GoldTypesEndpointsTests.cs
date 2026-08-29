@@ -26,12 +26,26 @@ public sealed class GoldTypesEndpointsTests(ApiTestFactory factory) : IClassFixt
     private sealed record LoginBody(string Token);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record GoldTypeBody(Guid Id, string Name);
+    internal sealed record PlanListBody(Guid Id, string Name, bool IsDefault);
 
     private static async Task<Guid> CreateGoldTypeAsync(HttpClient client, string name)
     {
         var response = await client.PostAsJsonAsync("/gold-types", new { name });
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
+    private static async Task<Guid> CreateCategoryAsync(HttpClient client, string name, string icon)
+    {
+        var response = await client.PostAsJsonAsync("/categories", new { name, icon });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
+    private static async Task<Guid> GetDefaultPlanIdAsync(HttpClient client)
+    {
+        var plans = await (await client.GetAsync("/plans")).Content.ReadFromJsonAsync<List<PlanListBody>>();
+        return plans![0].Id;
     }
 
     [Fact]
@@ -85,5 +99,33 @@ public sealed class GoldTypesEndpointsTests(ApiTestFactory factory) : IClassFixt
         Guid mine = await CreateGoldTypeAsync(client, "Của tôi");
         HttpClient other = await CreateAuthenticatedClientAsync("gold-other@example.com", "goldother");
         (await other.DeleteAsync($"/gold-types/{mine}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Delete_InUse_ThenUnlink_Allows()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("gold-inuse@example.com", "goldinuse");
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Đang dùng");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        Guid categoryId = await CreateCategoryAsync(client, "Chi GInUse", "tag");
+
+        var create = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Mua vàng", creditAmount = 0m, debitAmount = 10_000_000m,
+            note = (string?)null, categoryId, planId, goldTypeId, goldQuantity = 1m
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid transactionId = (await create.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        (await client.DeleteAsync($"/gold-types/{goldTypeId}")).StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        var update = await client.PutAsJsonAsync($"/transactions/{transactionId}", new
+        {
+            date = "2026-08-10", content = "Mua vàng", creditAmount = 0m, debitAmount = 10_000_000m,
+            note = (string?)null, categoryId, planId
+        });
+        update.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        (await client.DeleteAsync($"/gold-types/{goldTypeId}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
 }
