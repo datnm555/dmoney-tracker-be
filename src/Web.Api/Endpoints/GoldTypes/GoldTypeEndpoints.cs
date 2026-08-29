@@ -43,3 +43,41 @@ internal sealed class CreateGoldType : IEndpoint
         }).RequireAuthorization();
     }
 }
+
+internal sealed class UpdateGoldType : IEndpoint
+{
+    internal sealed record UpdateGoldTypeRequest(string Name);
+
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/gold-types/{id:guid}", async (
+            Guid id,
+            UpdateGoldTypeRequest request,
+            ICommandHandler<UpdateGoldTypeCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(
+                new UpdateGoldTypeCommand(id, request.Name), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
+
+internal sealed class DeleteGoldType : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapDelete("/gold-types/{id:guid}", async (
+            Guid id,
+            ICommandHandler<DeleteGoldTypeCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(new DeleteGoldTypeCommand(id), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}

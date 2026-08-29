@@ -54,6 +54,8 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<SetDefaultBeneficiaryCommand>, SetDefaultBeneficiaryCommandHandler>();
         services.AddScoped<IQueryHandler<GetGoldTypesQuery, List<GoldTypeResponse>>, GetGoldTypesQueryHandler>();
         services.AddScoped<ICommandHandler<CreateGoldTypeCommand, Guid>, CreateGoldTypeCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateGoldTypeCommand>, UpdateGoldTypeCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteGoldTypeCommand>, DeleteGoldTypeCommandHandler>();
         return services;
     }
 }

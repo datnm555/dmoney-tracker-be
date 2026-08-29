@@ -56,4 +56,34 @@ public sealed class GoldTypesEndpointsTests(ApiTestFactory factory) : IClassFixt
         list!.Count.ShouldBe(2);
         list.Select(g => g.Name).ShouldBe(new List<string> { "Nhẫn trơn 9999", "SJC miếng" }); // ordered by name
     }
+
+    [Fact]
+    public async Task Rename_Works_AndChecksDuplicates()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("gold-rename@example.com", "goldrename");
+        Guid ring = await CreateGoldTypeAsync(client, "Nhẫn trơn");
+        await CreateGoldTypeAsync(client, "SJC");
+
+        (await client.PutAsJsonAsync($"/gold-types/{ring}", new { name = "Nhẫn trơn 9999" }))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        // Renaming onto an existing name is a conflict.
+        (await client.PutAsJsonAsync($"/gold-types/{ring}", new { name = "SJC" }))
+            .StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        var list = await (await client.GetAsync("/gold-types")).Content.ReadFromJsonAsync<List<GoldTypeBody>>();
+        list!.Select(g => g.Name).ShouldContain("Nhẫn trơn 9999");
+    }
+
+    [Fact]
+    public async Task Delete_Guards()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("gold-del@example.com", "golddel");
+        Guid unused = await CreateGoldTypeAsync(client, "Trống");
+        (await client.DeleteAsync($"/gold-types/{unused}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // Foreign user's gold type is a 404.
+        Guid mine = await CreateGoldTypeAsync(client, "Của tôi");
+        HttpClient other = await CreateAuthenticatedClientAsync("gold-other@example.com", "goldother");
+        (await other.DeleteAsync($"/gold-types/{mine}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
 }
