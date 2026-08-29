@@ -1,5 +1,6 @@
 using Domain.Beneficiaries;
 using Domain.Categories;
+using Domain.GoldTypes;
 using Domain.Plans;
 using Domain.SubCategories;
 using Domain.Transactions;
@@ -21,6 +22,8 @@ public interface IApplicationDbContext
     DbSet<Plan> Plans { get; }
 
     DbSet<Beneficiary> Beneficiaries { get; }
+
+    DbSet<GoldType> GoldTypes { get; }
 
     DbSet<RefreshToken> RefreshTokens { get; }
 

@@ -1,6 +1,7 @@
 using Application.Abstractions.Data;
 using Domain.Beneficiaries;
 using Domain.Categories;
+using Domain.GoldTypes;
 using Domain.Plans;
 using Domain.SubCategories;
 using Domain.Transactions;
@@ -23,6 +24,8 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<Plan> Plans => Set<Plan>();
 
     public DbSet<Beneficiary> Beneficiaries => Set<Beneficiary>();
+
+    public DbSet<GoldType> GoldTypes => Set<GoldType>();
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
