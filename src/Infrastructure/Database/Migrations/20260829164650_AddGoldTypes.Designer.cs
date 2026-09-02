@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260829164650_AddGoldTypes")]
+    partial class AddGoldTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,12 +235,6 @@ namespace Infrastructure.Database.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<decimal?>("GoldQuantity")
-                        .HasColumnType("numeric(18,4)");
-
-                    b.Property<Guid?>("GoldTypeId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsAdvance")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -288,8 +285,6 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("BeneficiaryId");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("GoldTypeId");
 
                     b.HasIndex("PlanId");
 
@@ -423,11 +418,6 @@ namespace Infrastructure.Database.Migrations
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Domain.GoldTypes.GoldType", null)
-                        .WithMany()
-                        .HasForeignKey("GoldTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Domain.Plans.Plan", null)
                         .WithMany()

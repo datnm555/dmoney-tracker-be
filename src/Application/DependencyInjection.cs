@@ -3,6 +3,10 @@ using Application.Beneficiaries;
 using Application.Beneficiaries.Data;
 using Application.Categories;
 using Application.Categories.Data;
+using Application.Gold;
+using Application.Gold.Data;
+using Application.GoldTypes;
+using Application.GoldTypes.Data;
 using Application.Plans;
 using Application.Plans.Data;
 using Application.SubCategories;
@@ -50,6 +54,11 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<UpdateBeneficiaryCommand>, UpdateBeneficiaryCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteBeneficiaryCommand>, DeleteBeneficiaryCommandHandler>();
         services.AddScoped<ICommandHandler<SetDefaultBeneficiaryCommand>, SetDefaultBeneficiaryCommandHandler>();
+        services.AddScoped<IQueryHandler<GetGoldTypesQuery, List<GoldTypeResponse>>, GetGoldTypesQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateGoldTypeCommand, Guid>, CreateGoldTypeCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateGoldTypeCommand>, UpdateGoldTypeCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteGoldTypeCommand>, DeleteGoldTypeCommandHandler>();
+        services.AddScoped<IQueryHandler<GetGoldSummaryQuery, GoldSummaryResponse>, GetGoldSummaryQueryHandler>();
         return services;
     }
 }

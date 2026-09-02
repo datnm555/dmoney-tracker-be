@@ -23,7 +23,10 @@ public sealed record TransactionResponse(
     Guid? ReimbursedByTransactionId = null,
     IReadOnlyList<LinkedTransactionResponse>? Links = null,
     Guid? BeneficiaryId = null,
-    string? BeneficiaryName = null);
+    string? BeneficiaryName = null,
+    Guid? GoldTypeId = null,
+    string? GoldTypeName = null,
+    decimal? GoldQuantity = null);
 
 public sealed record LinkedTransactionResponse(
     Guid Id,

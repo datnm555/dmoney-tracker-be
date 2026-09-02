@@ -3,6 +3,7 @@ using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Beneficiaries;
 using Domain.Categories;
+using Domain.GoldTypes;
 using Domain.Plans;
 using Domain.SubCategories;
 using Domain.Transactions;
@@ -40,6 +41,16 @@ internal sealed class CreateTransactionCommandHandler(
             if (!beneficiaryExists)
             {
                 return Result.Failure<Guid>(BeneficiaryErrors.NotFound);
+            }
+        }
+
+        if (command.GoldTypeId is { } commandGoldTypeId)
+        {
+            bool goldTypeExists = await dbContext.GoldTypes.AnyAsync(
+                g => g.Id == commandGoldTypeId && g.UserId == userId, cancellationToken);
+            if (!goldTypeExists)
+            {
+                return Result.Failure<Guid>(GoldTypeErrors.NotFound);
             }
         }
 
@@ -94,7 +105,8 @@ internal sealed class CreateTransactionCommandHandler(
             command.Note, command.CategoryId,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
-            command.PrepaidTransactionId, command.SubCategoryId, command.BeneficiaryId);
+            command.PrepaidTransactionId, command.SubCategoryId, command.BeneficiaryId,
+            command.GoldTypeId, command.GoldQuantity);
         if (transaction.IsFailure)
         {
             return Result.Failure<Guid>(transaction.Error);

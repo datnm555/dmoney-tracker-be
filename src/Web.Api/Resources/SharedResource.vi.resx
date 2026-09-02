@@ -241,6 +241,14 @@
   <data name="Beneficiaries.NotFound" xml:space="preserve"><value>Không tìm thấy đối tượng.</value></data>
   <data name="Beneficiaries.InUse" xml:space="preserve"><value>Đối tượng đang được dùng bởi giao dịch, không thể xóa.</value></data>
   <data name="Transactions.BeneficiaryDebitOnly" xml:space="preserve"><value>Đối tượng chỉ áp dụng cho giao dịch ghi nợ.</value></data>
+  <data name="GoldTypes.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên loại vàng.</value></data>
+  <data name="GoldTypes.NameTooLong" xml:space="preserve"><value>Tên loại vàng tối đa 100 ký tự.</value></data>
+  <data name="GoldTypes.Duplicate" xml:space="preserve"><value>Loại vàng này đã tồn tại.</value></data>
+  <data name="GoldTypes.NotFound" xml:space="preserve"><value>Không tìm thấy loại vàng.</value></data>
+  <data name="GoldTypes.InUse" xml:space="preserve"><value>Loại vàng đang được dùng bởi giao dịch, không thể xóa.</value></data>
+  <data name="Transactions.GoldPairRequired" xml:space="preserve"><value>Loại vàng và số chỉ phải được nhập cùng nhau.</value></data>
+  <data name="Transactions.GoldQuantityInvalid" xml:space="preserve"><value>Số chỉ phải lớn hơn 0.</value></data>
+  <data name="Transactions.GoldRequiresAmount" xml:space="preserve"><value>Giao dịch vàng phải có tiền ra (mua) hoặc tiền vào (bán).</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>
@@ -253,6 +261,35 @@
   <data name="beneficiaries.default" xml:space="preserve"><value>Mặc định</value></data>
   <data name="beneficiaries.setDefault" xml:space="preserve"><value>Đặt mặc định</value></data>
   <data name="beneficiaries.none" xml:space="preserve"><value>Không có</value></data>
+  <data name="menu.gold" xml:space="preserve"><value>Vàng</value></data>
+  <data name="menu.goldTypes" xml:space="preserve"><value>Loại vàng</value></data>
+  <data name="gold.title" xml:space="preserve"><value>Quản lý vàng</value></data>
+  <data name="gold.held" xml:space="preserve"><value>Đang giữ</value></data>
+  <data name="gold.bought" xml:space="preserve"><value>Đã mua</value></data>
+  <data name="gold.sold" xml:space="preserve"><value>Đã bán</value></data>
+  <data name="gold.avgCost" xml:space="preserve"><value>Giá vốn TB/chỉ</value></data>
+  <data name="gold.totalSpent" xml:space="preserve"><value>Tổng tiền mua</value></data>
+  <data name="gold.totalReceived" xml:space="preserve"><value>Tổng tiền bán</value></data>
+  <data name="gold.history" xml:space="preserve"><value>Lịch sử mua bán</value></data>
+  <data name="gold.unit" xml:space="preserve"><value>chỉ</value></data>
+  <data name="gold.buy" xml:space="preserve"><value>Mua</value></data>
+  <data name="gold.sell" xml:space="preserve"><value>Bán</value></data>
+  <data name="gold.pricePerChi" xml:space="preserve"><value>Giá/chỉ</value></data>
+  <data name="gold.empty" xml:space="preserve"><value>Chưa có giao dịch vàng nào.</value></data>
+  <data name="goldTypes.title" xml:space="preserve"><value>Quản lý loại vàng</value></data>
+  <data name="goldTypes.create" xml:space="preserve"><value>Thêm loại vàng</value></data>
+  <data name="goldTypes.name" xml:space="preserve"><value>Tên loại vàng</value></data>
+  <data name="goldTypes.rename" xml:space="preserve"><value>Đổi tên</value></data>
+  <data name="goldTypes.delete" xml:space="preserve"><value>Xóa loại vàng</value></data>
+  <data name="goldTypes.deleteConfirm" xml:space="preserve"><value>Xóa loại vàng này?</value></data>
+  <data name="form.goldToggle" xml:space="preserve"><value>Giao dịch vàng</value></data>
+  <data name="form.goldToggleHint" xml:space="preserve"><value>Ghi số chỉ vàng mua (tiền ra) hoặc bán (tiền vào).</value></data>
+  <data name="form.goldType" xml:space="preserve"><value>Loại vàng</value></data>
+  <data name="form.goldQuantity" xml:space="preserve"><value>Số chỉ</value></data>
+  <data name="form.goldTypeRequired" xml:space="preserve"><value>Vui lòng chọn loại vàng.</value></data>
+  <data name="form.goldQuantityRequired" xml:space="preserve"><value>Vui lòng nhập số chỉ hợp lệ.</value></data>
+  <data name="export.colGoldType" xml:space="preserve"><value>Loại vàng</value></data>
+  <data name="export.colGoldQuantity" xml:space="preserve"><value>Số chỉ</value></data>
   <data name="plans.title" xml:space="preserve"><value>Quản lý sổ</value></data>
   <data name="plans.switcher" xml:space="preserve"><value>Sổ</value></data>
   <data name="plans.create" xml:space="preserve"><value>Tạo sổ mới</value></data>
