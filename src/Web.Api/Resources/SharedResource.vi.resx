@@ -245,7 +245,7 @@
   <data name="GoldTypes.NameTooLong" xml:space="preserve"><value>Tên loại vàng tối đa 100 ký tự.</value></data>
   <data name="GoldTypes.Duplicate" xml:space="preserve"><value>Loại vàng này đã tồn tại.</value></data>
   <data name="GoldTypes.NotFound" xml:space="preserve"><value>Không tìm thấy loại vàng.</value></data>
-  <data name="GoldTypes.InUse" xml:space="preserve"><value>Loại vàng đang được dùng bởi giao dịch, không thể xóa.</value></data>
+  <data name="GoldTypes.InUse" xml:space="preserve"><value>Loại vàng đang được dùng bởi giao dịch hoặc vàng có sẵn, không thể xóa.</value></data>
   <data name="Transactions.GoldPairRequired" xml:space="preserve"><value>Loại vàng và số chỉ phải được nhập cùng nhau.</value></data>
   <data name="Transactions.GoldQuantityInvalid" xml:space="preserve"><value>Số chỉ phải lớn hơn 0.</value></data>
   <data name="Transactions.GoldRequiresAmount" xml:space="preserve"><value>Giao dịch vàng phải có tiền ra (mua) hoặc tiền vào (bán).</value></data>
