@@ -249,6 +249,11 @@
   <data name="Transactions.GoldPairRequired" xml:space="preserve"><value>Loại vàng và số chỉ phải được nhập cùng nhau.</value></data>
   <data name="Transactions.GoldQuantityInvalid" xml:space="preserve"><value>Số chỉ phải lớn hơn 0.</value></data>
   <data name="Transactions.GoldRequiresAmount" xml:space="preserve"><value>Giao dịch vàng phải có tiền ra (mua) hoặc tiền vào (bán).</value></data>
+  <data name="GoldAcquisitions.DateRequired" xml:space="preserve"><value>Vui lòng chọn ngày.</value></data>
+  <data name="GoldAcquisitions.QuantityInvalid" xml:space="preserve"><value>Số chỉ phải lớn hơn 0.</value></data>
+  <data name="GoldAcquisitions.UnitPriceInvalid" xml:space="preserve"><value>Đơn giá không được âm.</value></data>
+  <data name="GoldAcquisitions.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 255 ký tự.</value></data>
+  <data name="GoldAcquisitions.NotFound" xml:space="preserve"><value>Không tìm thấy dòng vàng có sẵn.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>
@@ -288,6 +293,14 @@
   <data name="form.goldQuantity" xml:space="preserve"><value>Số chỉ</value></data>
   <data name="form.goldTypeRequired" xml:space="preserve"><value>Vui lòng chọn loại vàng.</value></data>
   <data name="form.goldQuantityRequired" xml:space="preserve"><value>Vui lòng nhập số chỉ hợp lệ.</value></data>
+  <data name="goldAcq.add" xml:space="preserve"><value>Khai báo vàng có sẵn</value></data>
+  <data name="goldAcq.edit" xml:space="preserve"><value>Sửa vàng có sẵn</value></data>
+  <data name="goldAcq.badge" xml:space="preserve"><value>Có sẵn</value></data>
+  <data name="goldAcq.date" xml:space="preserve"><value>Ngày</value></data>
+  <data name="goldAcq.quantity" xml:space="preserve"><value>Số chỉ</value></data>
+  <data name="goldAcq.unitPrice" xml:space="preserve"><value>Đơn giá/chỉ</value></data>
+  <data name="goldAcq.note" xml:space="preserve"><value>Ghi chú</value></data>
+  <data name="goldAcq.deleteConfirm" xml:space="preserve"><value>Xóa dòng vàng có sẵn này?</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Loại vàng</value></data>
   <data name="export.colGoldQuantity" xml:space="preserve"><value>Số chỉ</value></data>
   <data name="plans.title" xml:space="preserve"><value>Quản lý sổ</value></data>
