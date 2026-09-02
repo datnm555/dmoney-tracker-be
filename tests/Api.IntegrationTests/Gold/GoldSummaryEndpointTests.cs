@@ -50,12 +50,26 @@ public sealed class GoldSummaryEndpointTests(ApiTestFactory factory) : IClassFix
         return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
     }
 
+    private static async Task<Guid> CreateAcquisitionAsync(
+        HttpClient client, Guid goldTypeId, string date, decimal quantity, decimal unitPrice)
+    {
+        var response = await client.PostAsJsonAsync("/gold/acquisitions", new
+        {
+            goldTypeId, date, quantity, unitPrice, note = (string?)null
+        });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record PlanListBody(Guid Id, string Name, bool IsDefault);
     internal sealed record MoneyBody(decimal Amount, string Currency);
 
-    internal sealed record GoldSummaryBody(List<GoldSummaryBody.TypeItem> Types, List<GoldSummaryBody.TxItem> Transactions)
+    internal sealed record GoldSummaryBody(
+        List<GoldSummaryBody.TypeItem> Types,
+        List<GoldSummaryBody.TxItem> Transactions,
+        List<GoldSummaryBody.AcquisitionBody> Acquisitions)
     {
         internal sealed record TypeItem(
             Guid GoldTypeId, string Name, decimal HeldQuantity, decimal BoughtQuantity, decimal SoldQuantity,
@@ -64,6 +78,10 @@ public sealed class GoldSummaryEndpointTests(ApiTestFactory factory) : IClassFix
         internal sealed record TxItem(
             Guid TransactionId, string Date, string Content, Guid GoldTypeId, string GoldTypeName,
             decimal GoldQuantity, MoneyBody Credit, MoneyBody Debit, MoneyBody PricePerChi);
+
+        internal sealed record AcquisitionBody(
+            Guid Id, string Date, Guid GoldTypeId, string GoldTypeName,
+            decimal Quantity, MoneyBody UnitPrice, MoneyBody Value, string? Note);
     }
 
     [Fact]
@@ -112,5 +130,38 @@ public sealed class GoldSummaryEndpointTests(ApiTestFactory factory) : IClassFix
         body.Transactions[0].Content.ShouldBe("Bán 1 chỉ");
         body.Transactions[0].PricePerChi.Amount.ShouldBe(12_000_000m);
         body.Transactions.Single(x => x.Content == "Mua 2 chỉ").PricePerChi.Amount.ShouldBe(10_000_000m);
+    }
+
+    [Fact]
+    public async Task GoldSummary_MergesAcquisitions()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("gold-merge@example.com", "goldmerge");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi GMerge", "tag");
+        Guid defaultPlanId = await GetDefaultPlanIdAsync(client);
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Nhẫn merge");
+
+        async Task PostTx(string date, string content, decimal credit, decimal debit, decimal qty) =>
+            (await client.PostAsJsonAsync("/transactions", new
+            {
+                date, content, creditAmount = credit, debitAmount = debit,
+                note = (string?)null, categoryId, planId = defaultPlanId, goldTypeId, goldQuantity = qty
+            })).StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        await PostTx("2026-08-01", "Mua 2 chỉ", 0m, 20_000_000m, 2m);
+        await CreateAcquisitionAsync(client, goldTypeId, "2024-05-10", 3m, 5_000_000m);
+        await CreateAcquisitionAsync(client, goldTypeId, "2024-06-01", 1m, 0m); // gift
+        await PostTx("2026-08-03", "Bán 1 chỉ", 12_000_000m, 0m, 1m);
+
+        var body = await (await client.GetAsync("/gold/summary")).Content.ReadFromJsonAsync<GoldSummaryBody>();
+
+        GoldSummaryBody.TypeItem type = body!.Types.Single(x => x.Name == "Nhẫn merge");
+        type.BoughtQuantity.ShouldBe(6m);
+        type.SoldQuantity.ShouldBe(1m);
+        type.HeldQuantity.ShouldBe(5m);
+        type.TotalSpent.Amount.ShouldBe(35_000_000m);
+        type.TotalReceived.Amount.ShouldBe(12_000_000m);
+        type.AverageCostPerChi.Amount.ShouldBe(Math.Round(35_000_000m / 6m, 2));
+
+        body.Acquisitions.Count.ShouldBe(2);
     }
 }

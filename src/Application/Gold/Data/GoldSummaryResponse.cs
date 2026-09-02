@@ -1,10 +1,12 @@
+using Application.GoldAcquisitions.Data;
 using Application.Transactions.Data;
 
 namespace Application.Gold.Data;
 
 public sealed record GoldSummaryResponse(
     IReadOnlyList<GoldTypeSummaryResponse> Types,
-    IReadOnlyList<GoldTransactionResponse> Transactions);
+    IReadOnlyList<GoldTransactionResponse> Transactions,
+    IReadOnlyList<GoldAcquisitionResponse> Acquisitions);
 
 public sealed record GoldTypeSummaryResponse(
     Guid GoldTypeId,
