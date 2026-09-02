@@ -248,6 +248,7 @@
   <data name="GoldTypes.InUse" xml:space="preserve"><value>This gold type is used by transactions and cannot be deleted.</value></data>
   <data name="Transactions.GoldPairRequired" xml:space="preserve"><value>Gold type and gold quantity must be provided together.</value></data>
   <data name="Transactions.GoldQuantityInvalid" xml:space="preserve"><value>Gold quantity must be greater than zero.</value></data>
+  <data name="Transactions.GoldRequiresAmount" xml:space="preserve"><value>A gold transaction must have either money out (buy) or money in (sell).</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>People</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Plans</value></data>

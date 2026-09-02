@@ -119,6 +119,11 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure<Transaction>(TransactionErrors.GoldQuantityInvalid);
         }
 
+        if (goldQuantity is not null && (credit.Amount > 0m) == (debit.Amount > 0m))
+        {
+            return Result.Failure<Transaction>(TransactionErrors.GoldRequiresAmount);
+        }
+
         var transaction = new Transaction
         {
             Id = Guid.CreateVersion7(),
@@ -206,6 +211,11 @@ public sealed class Transaction : AuditedEntity
         if (goldQuantity is { } quantity && quantity <= 0m)
         {
             return Result.Failure(TransactionErrors.GoldQuantityInvalid);
+        }
+
+        if (goldQuantity is not null && (credit.Amount > 0m) == (debit.Amount > 0m))
+        {
+            return Result.Failure(TransactionErrors.GoldRequiresAmount);
         }
 
         PlanId = planId;

@@ -248,6 +248,7 @@
   <data name="GoldTypes.InUse" xml:space="preserve"><value>Loại vàng đang được dùng bởi giao dịch, không thể xóa.</value></data>
   <data name="Transactions.GoldPairRequired" xml:space="preserve"><value>Loại vàng và số chỉ phải được nhập cùng nhau.</value></data>
   <data name="Transactions.GoldQuantityInvalid" xml:space="preserve"><value>Số chỉ phải lớn hơn 0.</value></data>
+  <data name="Transactions.GoldRequiresAmount" xml:space="preserve"><value>Giao dịch vàng phải có tiền ra (mua) hoặc tiền vào (bán).</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>

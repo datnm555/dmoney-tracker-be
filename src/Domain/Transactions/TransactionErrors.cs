@@ -115,4 +115,8 @@ public static class TransactionErrors
     public static readonly Error GoldQuantityInvalid = Error.Validation(
         "Transactions.GoldQuantityInvalid",
         "Gold quantity must be greater than zero.");
+
+    public static readonly Error GoldRequiresAmount = Error.Validation(
+        "Transactions.GoldRequiresAmount",
+        "A gold transaction must have either money out (buy) or money in (sell).");
 }

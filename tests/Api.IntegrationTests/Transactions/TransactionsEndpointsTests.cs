@@ -943,6 +943,33 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         item.GoldQuantity.ShouldBe(0.5m);
     }
 
+    [Fact]
+    public async Task Gold_RequiresExactlyOneMoneySide()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("gold-amt@example.com", "goldamt");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi GAmt", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Nhẫn GAmt");
+
+        // Prepaid credit covering a period.
+        var prepaid = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-01", content = "Trả trước", creditAmount = 30_000_000m, debitAmount = 0m,
+            note = (string?)null, categoryId, planId,
+            isPrepaid = true, prepaidFrom = "2026-08-01", prepaidTo = "2026-08-31"
+        });
+        prepaid.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid prepaidId = (await prepaid.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        // Zero-amount gold transaction covered by the prepaid credit → 400.
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Lấy vàng đã trả trước", creditAmount = 0m, debitAmount = 0m,
+            note = (string?)null, categoryId, planId, prepaidTransactionId = prepaidId,
+            goldTypeId, goldQuantity = 2m
+        })).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
     internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
