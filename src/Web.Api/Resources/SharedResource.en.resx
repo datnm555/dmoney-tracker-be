@@ -249,11 +249,17 @@
   <data name="Transactions.GoldPairRequired" xml:space="preserve"><value>Gold type and gold quantity must be provided together.</value></data>
   <data name="Transactions.GoldQuantityInvalid" xml:space="preserve"><value>Gold quantity must be greater than zero.</value></data>
   <data name="Transactions.GoldRequiresAmount" xml:space="preserve"><value>A gold transaction must have either money out (buy) or money in (sell).</value></data>
+  <data name="Transactions.PurchasePlaceRequiresGold" xml:space="preserve"><value>A purchase place only applies to gold transactions.</value></data>
   <data name="GoldAcquisitions.DateRequired" xml:space="preserve"><value>Please choose a date.</value></data>
   <data name="GoldAcquisitions.QuantityInvalid" xml:space="preserve"><value>Quantity must be greater than zero.</value></data>
   <data name="GoldAcquisitions.UnitPriceInvalid" xml:space="preserve"><value>Unit price cannot be negative.</value></data>
   <data name="GoldAcquisitions.NoteTooLong" xml:space="preserve"><value>Note must be at most 255 characters.</value></data>
   <data name="GoldAcquisitions.NotFound" xml:space="preserve"><value>Pre-owned gold entry not found.</value></data>
+  <data name="PurchasePlaces.NameRequired" xml:space="preserve"><value>Please enter a name for the purchase place.</value></data>
+  <data name="PurchasePlaces.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
+  <data name="PurchasePlaces.Duplicate" xml:space="preserve"><value>This purchase place already exists.</value></data>
+  <data name="PurchasePlaces.NotFound" xml:space="preserve"><value>Purchase place not found.</value></data>
+  <data name="PurchasePlaces.InUse" xml:space="preserve"><value>This purchase place is used by gold entries and cannot be deleted.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>People</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Plans</value></data>
@@ -301,6 +307,14 @@
   <data name="goldAcq.unitPrice" xml:space="preserve"><value>Price per chỉ</value></data>
   <data name="goldAcq.note" xml:space="preserve"><value>Note</value></data>
   <data name="goldAcq.deleteConfirm" xml:space="preserve"><value>Delete this pre-owned gold entry?</value></data>
+  <data name="menu.purchasePlaces" xml:space="preserve"><value>Purchase places</value></data>
+  <data name="purchasePlaces.title" xml:space="preserve"><value>Manage purchase places</value></data>
+  <data name="purchasePlaces.create" xml:space="preserve"><value>Add purchase place</value></data>
+  <data name="purchasePlaces.name" xml:space="preserve"><value>Purchase place name</value></data>
+  <data name="purchasePlaces.rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="purchasePlaces.delete" xml:space="preserve"><value>Delete purchase place</value></data>
+  <data name="purchasePlaces.deleteConfirm" xml:space="preserve"><value>Delete this purchase place?</value></data>
+  <data name="form.purchasePlace" xml:space="preserve"><value>Purchase place</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Gold type</value></data>
   <data name="export.colGoldQuantity" xml:space="preserve"><value>Gold (chỉ)</value></data>
   <data name="plans.title" xml:space="preserve"><value>Manage plans</value></data>

@@ -249,11 +249,17 @@
   <data name="Transactions.GoldPairRequired" xml:space="preserve"><value>Loại vàng và số chỉ phải được nhập cùng nhau.</value></data>
   <data name="Transactions.GoldQuantityInvalid" xml:space="preserve"><value>Số chỉ phải lớn hơn 0.</value></data>
   <data name="Transactions.GoldRequiresAmount" xml:space="preserve"><value>Giao dịch vàng phải có tiền ra (mua) hoặc tiền vào (bán).</value></data>
+  <data name="Transactions.PurchasePlaceRequiresGold" xml:space="preserve"><value>Nơi mua chỉ áp dụng cho giao dịch vàng.</value></data>
   <data name="GoldAcquisitions.DateRequired" xml:space="preserve"><value>Vui lòng chọn ngày.</value></data>
   <data name="GoldAcquisitions.QuantityInvalid" xml:space="preserve"><value>Số chỉ phải lớn hơn 0.</value></data>
   <data name="GoldAcquisitions.UnitPriceInvalid" xml:space="preserve"><value>Đơn giá không được âm.</value></data>
   <data name="GoldAcquisitions.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 255 ký tự.</value></data>
   <data name="GoldAcquisitions.NotFound" xml:space="preserve"><value>Không tìm thấy dòng vàng có sẵn.</value></data>
+  <data name="PurchasePlaces.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên nơi mua.</value></data>
+  <data name="PurchasePlaces.NameTooLong" xml:space="preserve"><value>Tên nơi mua tối đa 100 ký tự.</value></data>
+  <data name="PurchasePlaces.Duplicate" xml:space="preserve"><value>Nơi mua này đã tồn tại.</value></data>
+  <data name="PurchasePlaces.NotFound" xml:space="preserve"><value>Không tìm thấy nơi mua.</value></data>
+  <data name="PurchasePlaces.InUse" xml:space="preserve"><value>Nơi mua đang được dùng bởi các dòng vàng, không thể xóa.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>
@@ -301,6 +307,14 @@
   <data name="goldAcq.unitPrice" xml:space="preserve"><value>Đơn giá/chỉ</value></data>
   <data name="goldAcq.note" xml:space="preserve"><value>Ghi chú</value></data>
   <data name="goldAcq.deleteConfirm" xml:space="preserve"><value>Xóa dòng vàng có sẵn này?</value></data>
+  <data name="menu.purchasePlaces" xml:space="preserve"><value>Nơi mua</value></data>
+  <data name="purchasePlaces.title" xml:space="preserve"><value>Quản lý nơi mua</value></data>
+  <data name="purchasePlaces.create" xml:space="preserve"><value>Thêm nơi mua</value></data>
+  <data name="purchasePlaces.name" xml:space="preserve"><value>Tên nơi mua</value></data>
+  <data name="purchasePlaces.rename" xml:space="preserve"><value>Đổi tên</value></data>
+  <data name="purchasePlaces.delete" xml:space="preserve"><value>Xóa nơi mua</value></data>
+  <data name="purchasePlaces.deleteConfirm" xml:space="preserve"><value>Xóa nơi mua này?</value></data>
+  <data name="form.purchasePlace" xml:space="preserve"><value>Nơi mua</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Loại vàng</value></data>
   <data name="export.colGoldQuantity" xml:space="preserve"><value>Số chỉ</value></data>
   <data name="plans.title" xml:space="preserve"><value>Quản lý sổ</value></data>
