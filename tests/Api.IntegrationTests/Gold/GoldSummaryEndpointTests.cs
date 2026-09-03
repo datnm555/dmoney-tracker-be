@@ -51,12 +51,20 @@ public sealed class GoldSummaryEndpointTests(ApiTestFactory factory) : IClassFix
     }
 
     private static async Task<Guid> CreateAcquisitionAsync(
-        HttpClient client, Guid goldTypeId, string date, decimal quantity, decimal unitPrice)
+        HttpClient client, Guid goldTypeId, string date, decimal quantity, decimal unitPrice,
+        Guid? purchasePlaceId = null)
     {
         var response = await client.PostAsJsonAsync("/gold/acquisitions", new
         {
-            goldTypeId, date, quantity, unitPrice, note = (string?)null
+            goldTypeId, date, quantity, unitPrice, note = (string?)null, purchasePlaceId
         });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
+    private static async Task<Guid> CreatePurchasePlaceAsync(HttpClient client, string name)
+    {
+        var response = await client.PostAsJsonAsync("/purchase-places", new { name });
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
     }
@@ -77,11 +85,13 @@ public sealed class GoldSummaryEndpointTests(ApiTestFactory factory) : IClassFix
 
         internal sealed record TxItem(
             Guid TransactionId, string Date, string Content, Guid GoldTypeId, string GoldTypeName,
-            decimal GoldQuantity, MoneyBody Credit, MoneyBody Debit, MoneyBody PricePerChi);
+            decimal GoldQuantity, MoneyBody Credit, MoneyBody Debit, MoneyBody PricePerChi,
+            Guid? PurchasePlaceId, string? PurchasePlaceName);
 
         internal sealed record AcquisitionBody(
             Guid Id, string Date, Guid GoldTypeId, string GoldTypeName,
-            decimal Quantity, MoneyBody UnitPrice, MoneyBody Value, string? Note);
+            decimal Quantity, MoneyBody UnitPrice, MoneyBody Value, string? Note,
+            Guid? PurchasePlaceId, string? PurchasePlaceName);
     }
 
     [Fact]
@@ -163,5 +173,34 @@ public sealed class GoldSummaryEndpointTests(ApiTestFactory factory) : IClassFix
         type.AverageCostPerChi.Amount.ShouldBe(Math.Round(35_000_000m / 6m, 2));
 
         body.Acquisitions.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task GoldSummary_CarriesPurchasePlace_OnTransactionsAndAcquisitions()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("gold-sum-place@example.com", "goldsumplace");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi SumPlace", "tag");
+        Guid defaultPlanId = await GetDefaultPlanIdAsync(client);
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Nhẫn sumplace");
+        Guid placeId = await CreatePurchasePlaceAsync(client, "SJC sumplace");
+
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-01", content = "Mua có nơi", creditAmount = 0m, debitAmount = 10_000_000m,
+            note = (string?)null, categoryId, planId = defaultPlanId, goldTypeId, goldQuantity = 1m,
+            purchasePlaceId = placeId
+        })).StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        await CreateAcquisitionAsync(client, goldTypeId, "2024-05-10", 1m, 5_000_000m, placeId);
+
+        var body = await (await client.GetAsync("/gold/summary")).Content.ReadFromJsonAsync<GoldSummaryBody>();
+
+        GoldSummaryBody.TxItem tx = body!.Transactions.Single(t => t.Content == "Mua có nơi");
+        tx.PurchasePlaceId.ShouldBe(placeId);
+        tx.PurchasePlaceName.ShouldBe("SJC sumplace");
+
+        GoldSummaryBody.AcquisitionBody acq = body.Acquisitions.Single();
+        acq.PurchasePlaceId.ShouldBe(placeId);
+        acq.PurchasePlaceName.ShouldBe("SJC sumplace");
     }
 }

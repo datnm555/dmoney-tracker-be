@@ -10,4 +10,6 @@ public sealed record GoldAcquisitionResponse(
     decimal Quantity,
     MoneyResponse UnitPrice,
     MoneyResponse Value,
-    string? Note);
+    string? Note,
+    Guid? PurchasePlaceId = null,
+    string? PurchasePlaceName = null);

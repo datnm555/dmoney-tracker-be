@@ -30,6 +30,11 @@ internal sealed class GoldAcquisitionConfiguration : IEntityTypeConfiguration<Go
             .HasForeignKey(a => a.GoldTypeId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne<Domain.PurchasePlaces.PurchasePlace>()
+            .WithMany()
+            .HasForeignKey(a => a.PurchasePlaceId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(a => a.UserId);
 
         builder.Ignore(a => a.DomainEvents);

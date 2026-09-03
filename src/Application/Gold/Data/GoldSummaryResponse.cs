@@ -27,4 +27,6 @@ public sealed record GoldTransactionResponse(
     decimal GoldQuantity,
     MoneyResponse Credit,
     MoneyResponse Debit,
-    MoneyResponse PricePerChi);
+    MoneyResponse PricePerChi,
+    Guid? PurchasePlaceId = null,
+    string? PurchasePlaceName = null);

@@ -57,6 +57,9 @@ public sealed class Transaction : AuditedEntity
     /// <summary>Gold quantity in chỉ (1 lượng = 10 chỉ). Paired with GoldTypeId.</summary>
     public decimal? GoldQuantity { get; private set; }
 
+    /// <summary>Where the gold was bought/sold. Only valid alongside GoldTypeId.</summary>
+    public Guid? PurchasePlaceId { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         Guid planId,
@@ -77,7 +80,8 @@ public sealed class Transaction : AuditedEntity
         Guid? subCategoryId = null,
         Guid? beneficiaryId = null,
         Guid? goldTypeId = null,
-        decimal? goldQuantity = null)
+        decimal? goldQuantity = null,
+        Guid? purchasePlaceId = null)
     {
         if (date == default)
         {
@@ -124,6 +128,11 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure<Transaction>(TransactionErrors.GoldRequiresAmount);
         }
 
+        if (purchasePlaceId is not null && goldTypeId is null)
+        {
+            return Result.Failure<Transaction>(TransactionErrors.PurchasePlaceRequiresGold);
+        }
+
         var transaction = new Transaction
         {
             Id = Guid.CreateVersion7(),
@@ -146,7 +155,8 @@ public sealed class Transaction : AuditedEntity
             SubCategoryId = subCategoryId,
             BeneficiaryId = beneficiaryId,
             GoldTypeId = goldTypeId,
-            GoldQuantity = goldQuantity
+            GoldQuantity = goldQuantity,
+            PurchasePlaceId = purchasePlaceId
         };
 
         return transaction;
@@ -171,7 +181,8 @@ public sealed class Transaction : AuditedEntity
         Guid? subCategoryId = null,
         Guid? beneficiaryId = null,
         Guid? goldTypeId = null,
-        decimal? goldQuantity = null)
+        decimal? goldQuantity = null,
+        Guid? purchasePlaceId = null)
     {
         if (date == default)
         {
@@ -218,6 +229,11 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure(TransactionErrors.GoldRequiresAmount);
         }
 
+        if (purchasePlaceId is not null && goldTypeId is null)
+        {
+            return Result.Failure(TransactionErrors.PurchasePlaceRequiresGold);
+        }
+
         PlanId = planId;
         Date = date;
         Content = content.Trim();
@@ -237,6 +253,7 @@ public sealed class Transaction : AuditedEntity
         BeneficiaryId = beneficiaryId;
         GoldTypeId = goldTypeId;
         GoldQuantity = goldQuantity;
+        PurchasePlaceId = purchasePlaceId;
 
         return Result.Success();
     }

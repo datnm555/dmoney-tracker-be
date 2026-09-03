@@ -106,5 +106,10 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .WithMany()
             .HasForeignKey(t => t.GoldTypeId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<Domain.PurchasePlaces.PurchasePlace>()
+            .WithMany()
+            .HasForeignKey(t => t.PurchasePlaceId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

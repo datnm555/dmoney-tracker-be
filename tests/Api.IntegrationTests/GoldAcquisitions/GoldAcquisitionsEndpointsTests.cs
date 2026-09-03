@@ -28,11 +28,19 @@ public sealed class GoldAcquisitionsEndpointsTests(ApiTestFactory factory) : ICl
     internal sealed record MoneyBody(decimal Amount, string Currency);
     internal sealed record AcquisitionBody(
         Guid Id, string Date, Guid GoldTypeId, string GoldTypeName,
-        decimal Quantity, MoneyBody UnitPrice, MoneyBody Value, string? Note);
+        decimal Quantity, MoneyBody UnitPrice, MoneyBody Value, string? Note,
+        Guid? PurchasePlaceId, string? PurchasePlaceName);
 
     private static async Task<Guid> CreateGoldTypeAsync(HttpClient client, string name)
     {
         var response = await client.PostAsJsonAsync("/gold-types", new { name });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
+    private static async Task<Guid> CreatePurchasePlaceAsync(HttpClient client, string name)
+    {
+        var response = await client.PostAsJsonAsync("/purchase-places", new { name });
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
     }
@@ -168,5 +176,74 @@ public sealed class GoldAcquisitionsEndpointsTests(ApiTestFactory factory) : ICl
         })).StatusCode.ShouldBe(HttpStatusCode.NotFound);
 
         (await other.DeleteAsync($"/gold/acquisitions/{mineId}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task PurchasePlace_RoundTrips_AndUpdatePathThreads()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("goldacq-place@example.com", "goldacqplace");
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Nhẫn acq place");
+        Guid placeId = await CreatePurchasePlaceAsync(client, "SJC acq");
+
+        var create = await client.PostAsJsonAsync("/gold/acquisitions", new
+        {
+            goldTypeId,
+            date = "2024-05-10",
+            quantity = 1m,
+            unitPrice = 5_000_000m,
+            note = (string?)null,
+            purchasePlaceId = placeId
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid id = (await create.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        var list = await (await client.GetAsync("/gold/acquisitions")).Content
+            .ReadFromJsonAsync<List<AcquisitionBody>>();
+        AcquisitionBody item = list!.Single(a => a.Id == id);
+        item.PurchasePlaceId.ShouldBe(placeId);
+        item.PurchasePlaceName.ShouldBe("SJC acq");
+
+        // Create without a place, then PUT with one — guards the explicit request-DTO threading.
+        var createNoPlace = await client.PostAsJsonAsync("/gold/acquisitions", new
+        {
+            goldTypeId,
+            date = "2024-06-01",
+            quantity = 1m,
+            unitPrice = 5_000_000m,
+            note = (string?)null
+        });
+        createNoPlace.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid id2 = (await createNoPlace.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        (await client.PutAsJsonAsync($"/gold/acquisitions/{id2}", new
+        {
+            goldTypeId,
+            date = "2024-06-01",
+            quantity = 1m,
+            unitPrice = 5_000_000m,
+            note = (string?)null,
+            purchasePlaceId = placeId
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        var list2 = await (await client.GetAsync("/gold/acquisitions")).Content
+            .ReadFromJsonAsync<List<AcquisitionBody>>();
+        list2!.Single(a => a.Id == id2).PurchasePlaceId.ShouldBe(placeId);
+    }
+
+    [Fact]
+    public async Task PurchasePlace_Unknown_Returns404()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("goldacq-placeunk@example.com", "goldacqplaceunk");
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Nhẫn placeunk");
+
+        (await client.PostAsJsonAsync("/gold/acquisitions", new
+        {
+            goldTypeId,
+            date = "2024-01-01",
+            quantity = 1m,
+            unitPrice = 100_000m,
+            note = (string?)null,
+            purchasePlaceId = Guid.NewGuid()
+        })).StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }

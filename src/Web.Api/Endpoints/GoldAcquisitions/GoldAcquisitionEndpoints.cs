@@ -47,7 +47,8 @@ internal sealed class CreateGoldAcquisition : IEndpoint
 internal sealed class UpdateGoldAcquisition : IEndpoint
 {
     internal sealed record UpdateGoldAcquisitionRequest(
-        Guid GoldTypeId, DateOnly Date, decimal Quantity, decimal UnitPrice, string? Note);
+        Guid GoldTypeId, DateOnly Date, decimal Quantity, decimal UnitPrice, string? Note,
+        Guid? PurchasePlaceId = null);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -60,7 +61,8 @@ internal sealed class UpdateGoldAcquisition : IEndpoint
         {
             Result result = await handler.Handle(
                 new UpdateGoldAcquisitionCommand(
-                    id, request.GoldTypeId, request.Date, request.Quantity, request.UnitPrice, request.Note),
+                    id, request.GoldTypeId, request.Date, request.Quantity, request.UnitPrice, request.Note,
+                    request.PurchasePlaceId),
                 cancellationToken);
 
             return result.ToHttpResult(localizer);

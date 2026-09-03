@@ -119,4 +119,8 @@ public static class TransactionErrors
     public static readonly Error GoldRequiresAmount = Error.Validation(
         "Transactions.GoldRequiresAmount",
         "A gold transaction must have either money out (buy) or money in (sell).");
+
+    public static readonly Error PurchasePlaceRequiresGold = Error.Validation(
+        "Transactions.PurchasePlaceRequiresGold",
+        "A purchase place only applies to gold transactions.");
 }

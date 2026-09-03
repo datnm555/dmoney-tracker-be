@@ -5,6 +5,7 @@ using Domain.Beneficiaries;
 using Domain.Categories;
 using Domain.GoldTypes;
 using Domain.Plans;
+using Domain.PurchasePlaces;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -51,6 +52,16 @@ internal sealed class CreateTransactionCommandHandler(
             if (!goldTypeExists)
             {
                 return Result.Failure<Guid>(GoldTypeErrors.NotFound);
+            }
+        }
+
+        if (command.PurchasePlaceId is { } commandPurchasePlaceId)
+        {
+            bool purchasePlaceExists = await dbContext.PurchasePlaces.AnyAsync(
+                p => p.Id == commandPurchasePlaceId && p.UserId == userId, cancellationToken);
+            if (!purchasePlaceExists)
+            {
+                return Result.Failure<Guid>(PurchasePlaceErrors.NotFound);
             }
         }
 
@@ -106,7 +117,7 @@ internal sealed class CreateTransactionCommandHandler(
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
             command.PrepaidTransactionId, command.SubCategoryId, command.BeneficiaryId,
-            command.GoldTypeId, command.GoldQuantity);
+            command.GoldTypeId, command.GoldQuantity, command.PurchasePlaceId);
         if (transaction.IsFailure)
         {
             return Result.Failure<Guid>(transaction.Error);

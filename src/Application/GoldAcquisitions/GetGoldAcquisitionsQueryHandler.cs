@@ -36,7 +36,12 @@ internal sealed class GetGoldAcquisitionsQueryHandler(
                 a.Quantity,
                 new MoneyResponse(a.UnitPrice, Money.DefaultCurrency),
                 new MoneyResponse(Math.Round(a.Quantity * a.UnitPrice, 0), Money.DefaultCurrency),
-                a.Note))
+                a.Note,
+                a.PurchasePlaceId,
+                dbContext.PurchasePlaces
+                    .Where(p => p.Id == a.PurchasePlaceId)
+                    .Select(p => p.Name)
+                    .FirstOrDefault()))
             .ToListAsync(cancellationToken);
     }
 }

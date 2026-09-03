@@ -27,6 +27,15 @@ internal sealed class DeletePurchasePlaceCommandHandler(
             return Result.Failure(PurchasePlaceErrors.NotFound);
         }
 
+        bool inUse = await dbContext.Transactions.AnyAsync(
+            t => t.PurchasePlaceId == purchasePlace.Id, cancellationToken)
+            || await dbContext.GoldAcquisitions.AnyAsync(
+                a => a.PurchasePlaceId == purchasePlace.Id, cancellationToken);
+        if (inUse)
+        {
+            return Result.Failure(PurchasePlaceErrors.InUse);
+        }
+
         dbContext.PurchasePlaces.Remove(purchasePlace);
         await dbContext.SaveChangesAsync(cancellationToken);
         return Result.Success();

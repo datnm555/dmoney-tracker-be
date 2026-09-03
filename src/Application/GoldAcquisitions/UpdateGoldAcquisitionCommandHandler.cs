@@ -3,6 +3,7 @@ using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.GoldAcquisitions;
 using Domain.GoldTypes;
+using Domain.PurchasePlaces;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -35,8 +36,19 @@ internal sealed class UpdateGoldAcquisitionCommandHandler(
             return Result.Failure(GoldTypeErrors.NotFound);
         }
 
+        if (command.PurchasePlaceId is { } commandPurchasePlaceId)
+        {
+            bool purchasePlaceExists = await dbContext.PurchasePlaces.AnyAsync(
+                p => p.Id == commandPurchasePlaceId && p.UserId == userId, cancellationToken);
+            if (!purchasePlaceExists)
+            {
+                return Result.Failure(PurchasePlaceErrors.NotFound);
+            }
+        }
+
         Result update = acquisition.Update(
-            command.GoldTypeId, command.Date, command.Quantity, command.UnitPrice, command.Note);
+            command.GoldTypeId, command.Date, command.Quantity, command.UnitPrice, command.Note,
+            command.PurchasePlaceId);
         if (update.IsFailure)
         {
             return update;

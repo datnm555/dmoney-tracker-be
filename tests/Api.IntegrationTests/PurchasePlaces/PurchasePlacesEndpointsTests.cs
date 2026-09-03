@@ -26,10 +26,31 @@ public sealed class PurchasePlacesEndpointsTests(ApiTestFactory factory) : IClas
     private sealed record LoginBody(string Token);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record PurchasePlaceBody(Guid Id, string Name);
+    internal sealed record PlanListBody(Guid Id, string Name, bool IsDefault);
 
     private static async Task<Guid> CreatePurchasePlaceAsync(HttpClient client, string name)
     {
         var response = await client.PostAsJsonAsync("/purchase-places", new { name });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
+    private static async Task<Guid> CreateCategoryAsync(HttpClient client, string name, string icon)
+    {
+        var response = await client.PostAsJsonAsync("/categories", new { name, icon });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
+    private static async Task<Guid> GetDefaultPlanIdAsync(HttpClient client)
+    {
+        var plans = await (await client.GetAsync("/plans")).Content.ReadFromJsonAsync<List<PlanListBody>>();
+        return plans![0].Id;
+    }
+
+    private static async Task<Guid> CreateGoldTypeAsync(HttpClient client, string name)
+    {
+        var response = await client.PostAsJsonAsync("/gold-types", new { name });
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
     }
@@ -85,5 +106,53 @@ public sealed class PurchasePlacesEndpointsTests(ApiTestFactory factory) : IClas
         Guid mine = await CreatePurchasePlaceAsync(client, "Của tôi");
         HttpClient other = await CreateAuthenticatedClientAsync("place-other@example.com", "placeother");
         (await other.DeleteAsync($"/purchase-places/{mine}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Delete_Guards_WhenReferencedByTransactionOrAcquisition()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("place-inuse@example.com", "placeinuse");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi PlaceInUse", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Nhẫn placeinuse");
+
+        // Referenced by a transaction → 409; unlink then delete → 204.
+        Guid txPlace = await CreatePurchasePlaceAsync(client, "Chỗ mua giao dịch");
+        var createTx = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Mua vàng", creditAmount = 0m, debitAmount = 5_000_000m,
+            note = (string?)null, categoryId, planId, goldTypeId, goldQuantity = 0.5m, purchasePlaceId = txPlace
+        });
+        createTx.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid txId = (await createTx.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        (await client.DeleteAsync($"/purchase-places/{txPlace}")).StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        (await client.PutAsJsonAsync($"/transactions/{txId}", new
+        {
+            date = "2026-08-10", content = "Mua vàng", creditAmount = 0m, debitAmount = 5_000_000m,
+            note = (string?)null, categoryId, planId, goldTypeId, goldQuantity = 0.5m,
+            purchasePlaceId = (Guid?)null
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await client.DeleteAsync($"/purchase-places/{txPlace}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // Referenced by an acquisition → 409; unlink then delete → 204.
+        Guid acqPlace = await CreatePurchasePlaceAsync(client, "Chỗ mua sổ vàng");
+        var createAcq = await client.PostAsJsonAsync("/gold/acquisitions", new
+        {
+            goldTypeId, date = "2024-05-10", quantity = 1m, unitPrice = 5_000_000m, note = (string?)null,
+            purchasePlaceId = acqPlace
+        });
+        createAcq.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid acqId = (await createAcq.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        (await client.DeleteAsync($"/purchase-places/{acqPlace}")).StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        (await client.PutAsJsonAsync($"/gold/acquisitions/{acqId}", new
+        {
+            goldTypeId, date = "2024-05-10", quantity = 1m, unitPrice = 5_000_000m, note = (string?)null,
+            purchasePlaceId = (Guid?)null
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await client.DeleteAsync($"/purchase-places/{acqPlace}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
 }

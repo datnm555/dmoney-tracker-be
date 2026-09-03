@@ -23,8 +23,12 @@ public sealed class GoldAcquisition : AuditedEntity
 
     public string? Note { get; private set; }
 
+    /// <summary>Where the gold was acquired. Always optional.</summary>
+    public Guid? PurchasePlaceId { get; private set; }
+
     public static Result<GoldAcquisition> Create(
-        Guid userId, Guid goldTypeId, DateOnly date, decimal quantity, decimal unitPrice, string? note)
+        Guid userId, Guid goldTypeId, DateOnly date, decimal quantity, decimal unitPrice, string? note,
+        Guid? purchasePlaceId = null)
     {
         Result validation = Validate(date, quantity, unitPrice, note);
         if (validation.IsFailure)
@@ -40,11 +44,14 @@ public sealed class GoldAcquisition : AuditedEntity
             Date = date,
             Quantity = quantity,
             UnitPrice = unitPrice,
-            Note = Normalize(note)
+            Note = Normalize(note),
+            PurchasePlaceId = purchasePlaceId
         };
     }
 
-    public Result Update(Guid goldTypeId, DateOnly date, decimal quantity, decimal unitPrice, string? note)
+    public Result Update(
+        Guid goldTypeId, DateOnly date, decimal quantity, decimal unitPrice, string? note,
+        Guid? purchasePlaceId = null)
     {
         Result validation = Validate(date, quantity, unitPrice, note);
         if (validation.IsFailure)
@@ -57,6 +64,7 @@ public sealed class GoldAcquisition : AuditedEntity
         Quantity = quantity;
         UnitPrice = unitPrice;
         Note = Normalize(note);
+        PurchasePlaceId = purchasePlaceId;
         return Result.Success();
     }
 

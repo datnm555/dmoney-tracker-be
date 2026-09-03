@@ -33,6 +33,8 @@ public class GetTransactionsByMonthQueryHandlerTests
         _dbContext.Beneficiaries.Returns(beneficiariesDbSet);
         var goldTypesDbSet = new List<Domain.GoldTypes.GoldType>().BuildMockDbSet();
         _dbContext.GoldTypes.Returns(goldTypesDbSet);
+        var purchasePlacesDbSet = new List<Domain.PurchasePlaces.PurchasePlace>().BuildMockDbSet();
+        _dbContext.PurchasePlaces.Returns(purchasePlacesDbSet);
         var plansDbSet = new List<Domain.Plans.Plan> { Plan }.BuildMockDbSet();
         _dbContext.Plans.Returns(plansDbSet);
         return new GetTransactionsByMonthQueryHandler(_dbContext, _userContext);
