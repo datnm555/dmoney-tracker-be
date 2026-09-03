@@ -3,6 +3,7 @@ using Domain.Categories;
 using Domain.GoldAcquisitions;
 using Domain.GoldTypes;
 using Domain.Plans;
+using Domain.PurchasePlaces;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -25,6 +26,8 @@ public interface IApplicationDbContext
     DbSet<Beneficiary> Beneficiaries { get; }
 
     DbSet<GoldType> GoldTypes { get; }
+
+    DbSet<PurchasePlace> PurchasePlaces { get; }
 
     DbSet<GoldAcquisition> GoldAcquisitions { get; }
 
