@@ -287,6 +287,8 @@
   <data name="gold.sell" xml:space="preserve"><value>Sell</value></data>
   <data name="gold.pricePerChi" xml:space="preserve"><value>Price per chỉ</value></data>
   <data name="gold.empty" xml:space="preserve"><value>No gold transactions yet.</value></data>
+  <data name="gold.overview" xml:space="preserve"><value>Overview</value></data>
+  <data name="gold.byType" xml:space="preserve"><value>By gold type</value></data>
   <data name="goldTypes.title" xml:space="preserve"><value>Manage gold types</value></data>
   <data name="goldTypes.create" xml:space="preserve"><value>Add gold type</value></data>
   <data name="goldTypes.name" xml:space="preserve"><value>Gold type name</value></data>

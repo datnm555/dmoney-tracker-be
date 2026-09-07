@@ -287,6 +287,8 @@
   <data name="gold.sell" xml:space="preserve"><value>Bán</value></data>
   <data name="gold.pricePerChi" xml:space="preserve"><value>Giá/chỉ</value></data>
   <data name="gold.empty" xml:space="preserve"><value>Chưa có giao dịch vàng nào.</value></data>
+  <data name="gold.overview" xml:space="preserve"><value>Tổng quan</value></data>
+  <data name="gold.byType" xml:space="preserve"><value>Theo loại vàng</value></data>
   <data name="goldTypes.title" xml:space="preserve"><value>Quản lý loại vàng</value></data>
   <data name="goldTypes.create" xml:space="preserve"><value>Thêm loại vàng</value></data>
   <data name="goldTypes.name" xml:space="preserve"><value>Tên loại vàng</value></data>
