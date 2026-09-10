@@ -260,6 +260,10 @@
   <data name="PurchasePlaces.Duplicate" xml:space="preserve"><value>Nơi mua này đã tồn tại.</value></data>
   <data name="PurchasePlaces.NotFound" xml:space="preserve"><value>Không tìm thấy nơi mua.</value></data>
   <data name="PurchasePlaces.InUse" xml:space="preserve"><value>Nơi mua đang được dùng bởi các dòng vàng, không thể xóa.</value></data>
+  <data name="Banks.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên ngân hàng.</value></data>
+  <data name="Banks.NameTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
+  <data name="Banks.Duplicate" xml:space="preserve"><value>Ngân hàng này đã tồn tại.</value></data>
+  <data name="Banks.NotFound" xml:space="preserve"><value>Không tìm thấy ngân hàng.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>
@@ -317,6 +321,13 @@
   <data name="purchasePlaces.delete" xml:space="preserve"><value>Xóa nơi mua</value></data>
   <data name="purchasePlaces.deleteConfirm" xml:space="preserve"><value>Xóa nơi mua này?</value></data>
   <data name="form.purchasePlace" xml:space="preserve"><value>Nơi mua</value></data>
+  <data name="menu.banks" xml:space="preserve"><value>Ngân hàng</value></data>
+  <data name="banks.title" xml:space="preserve"><value>Quản lý ngân hàng</value></data>
+  <data name="banks.create" xml:space="preserve"><value>Thêm ngân hàng</value></data>
+  <data name="banks.name" xml:space="preserve"><value>Tên ngân hàng</value></data>
+  <data name="banks.rename" xml:space="preserve"><value>Đổi tên</value></data>
+  <data name="banks.delete" xml:space="preserve"><value>Xóa ngân hàng</value></data>
+  <data name="banks.deleteConfirm" xml:space="preserve"><value>Xóa ngân hàng này?</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Loại vàng</value></data>
   <data name="export.colGoldQuantity" xml:space="preserve"><value>Số chỉ</value></data>
   <data name="plans.title" xml:space="preserve"><value>Quản lý sổ</value></data>

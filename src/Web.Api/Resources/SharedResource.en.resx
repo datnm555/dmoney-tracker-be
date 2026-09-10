@@ -260,6 +260,10 @@
   <data name="PurchasePlaces.Duplicate" xml:space="preserve"><value>This purchase place already exists.</value></data>
   <data name="PurchasePlaces.NotFound" xml:space="preserve"><value>Purchase place not found.</value></data>
   <data name="PurchasePlaces.InUse" xml:space="preserve"><value>This purchase place is used by gold entries and cannot be deleted.</value></data>
+  <data name="Banks.NameRequired" xml:space="preserve"><value>Please enter a bank name.</value></data>
+  <data name="Banks.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
+  <data name="Banks.Duplicate" xml:space="preserve"><value>This bank already exists.</value></data>
+  <data name="Banks.NotFound" xml:space="preserve"><value>Bank not found.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>People</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Plans</value></data>
@@ -317,6 +321,13 @@
   <data name="purchasePlaces.delete" xml:space="preserve"><value>Delete purchase place</value></data>
   <data name="purchasePlaces.deleteConfirm" xml:space="preserve"><value>Delete this purchase place?</value></data>
   <data name="form.purchasePlace" xml:space="preserve"><value>Purchase place</value></data>
+  <data name="menu.banks" xml:space="preserve"><value>Banks</value></data>
+  <data name="banks.title" xml:space="preserve"><value>Manage banks</value></data>
+  <data name="banks.create" xml:space="preserve"><value>Add bank</value></data>
+  <data name="banks.name" xml:space="preserve"><value>Bank name</value></data>
+  <data name="banks.rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="banks.delete" xml:space="preserve"><value>Delete bank</value></data>
+  <data name="banks.deleteConfirm" xml:space="preserve"><value>Delete this bank?</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Gold type</value></data>
   <data name="export.colGoldQuantity" xml:space="preserve"><value>Gold (chỉ)</value></data>
   <data name="plans.title" xml:space="preserve"><value>Manage plans</value></data>
