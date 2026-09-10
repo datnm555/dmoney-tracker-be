@@ -1,4 +1,5 @@
 using Application.Abstractions.Data;
+using Domain.Banks;
 using Domain.Beneficiaries;
 using Domain.Categories;
 using Domain.GoldAcquisitions;
@@ -30,6 +31,8 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<GoldType> GoldTypes => Set<GoldType>();
 
     public DbSet<PurchasePlace> PurchasePlaces => Set<PurchasePlace>();
+
+    public DbSet<Bank> Banks => Set<Bank>();
 
     public DbSet<GoldAcquisition> GoldAcquisitions => Set<GoldAcquisition>();
 

@@ -1,3 +1,4 @@
+using Domain.Banks;
 using Domain.Beneficiaries;
 using Domain.Categories;
 using Domain.GoldAcquisitions;
@@ -28,6 +29,8 @@ public interface IApplicationDbContext
     DbSet<GoldType> GoldTypes { get; }
 
     DbSet<PurchasePlace> PurchasePlaces { get; }
+
+    DbSet<Bank> Banks { get; }
 
     DbSet<GoldAcquisition> GoldAcquisitions { get; }
 
