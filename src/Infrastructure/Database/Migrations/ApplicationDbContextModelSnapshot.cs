@@ -31,6 +31,9 @@ namespace Infrastructure.Database.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");
 

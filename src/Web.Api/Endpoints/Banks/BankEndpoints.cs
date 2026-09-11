@@ -65,6 +65,23 @@ internal sealed class UpdateBank : IEndpoint
     }
 }
 
+internal sealed class SetDefaultBank : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/banks/{id:guid}/default", async (
+            Guid id,
+            ICommandHandler<SetDefaultBankCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(new SetDefaultBankCommand(id), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
+
 internal sealed class DeleteBank : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)

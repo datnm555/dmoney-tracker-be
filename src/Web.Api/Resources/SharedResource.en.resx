@@ -328,6 +328,8 @@
   <data name="banks.rename" xml:space="preserve"><value>Rename</value></data>
   <data name="banks.delete" xml:space="preserve"><value>Delete bank</value></data>
   <data name="banks.deleteConfirm" xml:space="preserve"><value>Delete this bank?</value></data>
+  <data name="banks.default" xml:space="preserve"><value>Default</value></data>
+  <data name="banks.setDefault" xml:space="preserve"><value>Set default</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Gold type</value></data>
   <data name="export.colGoldQuantity" xml:space="preserve"><value>Gold (chỉ)</value></data>
   <data name="plans.title" xml:space="preserve"><value>Manage plans</value></data>

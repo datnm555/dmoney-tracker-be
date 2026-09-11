@@ -14,6 +14,8 @@ public sealed class Bank : AuditedEntity
 
     public string Name { get; private set; } = string.Empty;
 
+    public bool IsDefault { get; private set; }
+
     public static Result<Bank> Create(Guid userId, string name)
     {
         string trimmed = name?.Trim() ?? string.Empty;
@@ -34,6 +36,10 @@ public sealed class Bank : AuditedEntity
             Name = trimmed
         };
     }
+
+    public void MakeDefault() => IsDefault = true;
+
+    public void ClearDefault() => IsDefault = false;
 
     public Result Rename(string name)
     {

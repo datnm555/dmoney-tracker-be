@@ -25,7 +25,7 @@ public sealed class BanksEndpointsTests(ApiTestFactory factory) : IClassFixture<
 
     private sealed record LoginBody(string Token);
     internal sealed record CreatedBody(Guid Id);
-    internal sealed record BankBody(Guid Id, string Name);
+    internal sealed record BankBody(Guid Id, string Name, bool IsDefault);
     internal sealed record PlanListBody(Guid Id, string Name, bool IsDefault);
 
     private static async Task<Guid> CreateBankAsync(HttpClient client, string name)
@@ -86,6 +86,34 @@ public sealed class BanksEndpointsTests(ApiTestFactory factory) : IClassFixture<
 
         var list = await (await client.GetAsync("/banks")).Content.ReadFromJsonAsync<List<BankBody>>();
         list!.Select(b => b.Name).ShouldContain("MoMo Ví");
+    }
+
+    [Fact]
+    public async Task SetDefault_Switches_AndOrdersDefaultFirst()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("bank-default@example.com", "bankdefault");
+        Guid momo = await CreateBankAsync(client, "MoMo");
+        Guid vpb = await CreateBankAsync(client, "VPBank");
+
+        // No default until the user sets one.
+        var list = await (await client.GetAsync("/banks")).Content.ReadFromJsonAsync<List<BankBody>>();
+        list!.All(b => !b.IsDefault).ShouldBeTrue();
+
+        (await client.PutAsync($"/banks/{vpb}/default", null)).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        list = await (await client.GetAsync("/banks")).Content.ReadFromJsonAsync<List<BankBody>>();
+        list![0].Id.ShouldBe(vpb); // default sorts first
+        list[0].IsDefault.ShouldBeTrue();
+        list.Count(b => b.IsDefault).ShouldBe(1);
+
+        // Switching moves the flag, never duplicates it.
+        (await client.PutAsync($"/banks/{momo}/default", null)).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        list = await (await client.GetAsync("/banks")).Content.ReadFromJsonAsync<List<BankBody>>();
+        list![0].Id.ShouldBe(momo);
+        list.Count(b => b.IsDefault).ShouldBe(1);
+
+        // Foreign user's bank is a 404.
+        HttpClient other = await CreateAuthenticatedClientAsync("bank-default2@example.com", "bankdefault2");
+        (await other.PutAsync($"/banks/{momo}/default", null)).StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]

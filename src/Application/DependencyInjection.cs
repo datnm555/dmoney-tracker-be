@@ -68,6 +68,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CreateBankCommand, Guid>, CreateBankCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateBankCommand>, UpdateBankCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteBankCommand>, DeleteBankCommandHandler>();
+        services.AddScoped<ICommandHandler<SetDefaultBankCommand>, SetDefaultBankCommandHandler>();
         services.AddScoped<IQueryHandler<GetPurchasePlacesQuery, List<PurchasePlaceResponse>>, GetPurchasePlacesQueryHandler>();
         services.AddScoped<ICommandHandler<CreatePurchasePlaceCommand, Guid>, CreatePurchasePlaceCommandHandler>();
         services.AddScoped<ICommandHandler<UpdatePurchasePlaceCommand>, UpdatePurchasePlaceCommandHandler>();

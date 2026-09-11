@@ -328,6 +328,8 @@
   <data name="banks.rename" xml:space="preserve"><value>Đổi tên</value></data>
   <data name="banks.delete" xml:space="preserve"><value>Xóa ngân hàng</value></data>
   <data name="banks.deleteConfirm" xml:space="preserve"><value>Xóa ngân hàng này?</value></data>
+  <data name="banks.default" xml:space="preserve"><value>Mặc định</value></data>
+  <data name="banks.setDefault" xml:space="preserve"><value>Đặt mặc định</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Loại vàng</value></data>
   <data name="export.colGoldQuantity" xml:space="preserve"><value>Số chỉ</value></data>
   <data name="plans.title" xml:space="preserve"><value>Quản lý sổ</value></data>
