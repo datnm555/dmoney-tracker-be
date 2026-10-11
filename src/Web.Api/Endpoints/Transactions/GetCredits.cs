@@ -13,12 +13,13 @@ internal sealed class GetCredits : IEndpoint
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapGet("/transactions/credits", async (
+            Guid planId,
             IQueryHandler<GetCreditsQuery, List<CreditResponse>> handler,
             IStringLocalizer<SharedResource> localizer,
             CancellationToken cancellationToken) =>
         {
             Result<List<CreditResponse>> result = await handler.Handle(
-                new GetCreditsQuery(), cancellationToken);
+                new GetCreditsQuery(planId), cancellationToken);
 
             return result.ToHttpResult(localizer, Results.Ok);
         }).RequireAuthorization();

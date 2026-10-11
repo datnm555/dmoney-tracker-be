@@ -21,6 +21,9 @@ public sealed class Category : AuditedEntity
     /// </summary>
     public string? Code { get; private set; }
 
+    /// <summary>Which transaction direction this category applies to (CategoryKinds).</summary>
+    public string Kind { get; private set; } = CategoryKinds.Expense;
+
     /// <summary>Username of whoever created the category.</summary>
     public string CreatedBy { get; private set; } = string.Empty;
 
@@ -53,8 +56,15 @@ public sealed class Category : AuditedEntity
         return Result.Success();
     }
 
-    public static Result<Category> Create(string name, string icon, string createdBy, string? code = null)
+    public static Result<Category> Create(
+        string name, string icon, string createdBy, string? code = null, string? kind = null)
     {
+        string resolvedKind = string.IsNullOrWhiteSpace(kind) ? CategoryKinds.Expense : kind.Trim();
+        if (!CategoryKinds.IsValid(resolvedKind))
+        {
+            return Result.Failure<Category>(CategoryErrors.InvalidKind);
+        }
+
         string trimmedName = name?.Trim() ?? string.Empty;
         if (trimmedName.Length == 0)
         {
@@ -80,6 +90,7 @@ public sealed class Category : AuditedEntity
             Name = trimmedName,
             Icon = trimmedIcon,
             Code = string.IsNullOrWhiteSpace(code) ? null : code.Trim(),
+            Kind = resolvedKind,
             CreatedBy = trimmedCreatedBy,
             UpdatedBy = trimmedCreatedBy
         };

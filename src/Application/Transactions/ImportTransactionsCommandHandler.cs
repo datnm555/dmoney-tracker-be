@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.Plans;
 using Domain.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Domain.Users;
@@ -20,6 +21,13 @@ internal sealed class ImportTransactionsCommandHandler(
         if (userContext.UserId is not { } userId)
         {
             return Result.Failure<int>(UserErrors.Unauthenticated);
+        }
+
+        bool planExists = await dbContext.Plans.AnyAsync(
+            p => p.Id == command.PlanId && p.UserId == userId, cancellationToken);
+        if (!planExists)
+        {
+            return Result.Failure<int>(PlanErrors.NotFound);
         }
 
         if (command.Rows.Count == 0)
@@ -56,7 +64,7 @@ internal sealed class ImportTransactionsCommandHandler(
             }
 
             Result<Transaction> transaction = Transaction.Create(
-                userId, row.Date, row.Content, credit.Value, debit.Value, row.Note,
+                userId, command.PlanId, row.Date, row.Content, credit.Value, debit.Value, row.Note,
                 otherCategory);
             if (transaction.IsFailure)
             {

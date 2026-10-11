@@ -3,4 +3,4 @@ using Application.Transactions.Data;
 
 namespace Application.Transactions;
 
-public sealed record GetTransactionsByMonthQuery(string Month) : IQuery<MonthlySummaryResponse>;
+public sealed record GetTransactionsByMonthQuery(string Month, Guid PlanId) : IQuery<MonthlySummaryResponse>;

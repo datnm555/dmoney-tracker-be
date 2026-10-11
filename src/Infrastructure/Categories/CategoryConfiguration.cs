@@ -23,6 +23,11 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(c => c.Code)
             .HasMaxLength(CategoryConstants.CodeMaxLength);
 
+        builder.Property(c => c.Kind)
+            .HasMaxLength(CategoryKinds.MaxLength)
+            .HasDefaultValue(CategoryKinds.Expense)
+            .IsRequired();
+
         builder.Property(c => c.CreatedBy)
             .HasMaxLength(CategoryConstants.AuditNameMaxLength)
             .IsRequired();

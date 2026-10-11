@@ -3,6 +3,7 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Application.Transactions.Data;
+using Domain.Plans;
 using Domain.Transactions;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,13 @@ internal sealed class GetDashboardStatsQueryHandler(
             return Result.Failure<DashboardStatsResponse>(UserErrors.Unauthenticated);
         }
 
+        bool planExists = await dbContext.Plans.AnyAsync(
+            p => p.Id == query.PlanId && p.UserId == userId, cancellationToken);
+        if (!planExists)
+        {
+            return Result.Failure<DashboardStatsResponse>(PlanErrors.NotFound);
+        }
+
         if (!DateOnly.TryParseExact(
                 query.Month + "-01",
                 "yyyy-MM-dd",
@@ -37,14 +45,15 @@ internal sealed class GetDashboardStatsQueryHandler(
 
         DateOnly nextMonthStart = monthStart.AddMonths(1);
 
-        List<MonthlyStatResponse> monthly = await BuildMonthlyAsync(userId, cancellationToken);
-        List<DailyStatResponse> daily = await BuildDailyAsync(userId, monthStart, nextMonthStart, cancellationToken);
-        List<CategoryStatResponse> byCategory = await BuildByCategoryAsync(userId, monthStart, nextMonthStart, cancellationToken);
+        List<MonthlyStatResponse> monthly = await BuildMonthlyAsync(userId, query.PlanId, cancellationToken);
+        List<DailyStatResponse> daily = await BuildDailyAsync(userId, query.PlanId, monthStart, nextMonthStart, cancellationToken);
+        List<CategoryStatResponse> byCategory = await BuildByCategoryAsync(userId, query.PlanId, monthStart, nextMonthStart, cancellationToken);
 
         return new DashboardStatsResponse(monthly, daily, byCategory);
     }
 
-    private async Task<List<MonthlyStatResponse>> BuildMonthlyAsync(Guid userId, CancellationToken cancellationToken)
+    private async Task<List<MonthlyStatResponse>> BuildMonthlyAsync(
+        Guid userId, Guid planId, CancellationToken cancellationToken)
     {
         DateOnly today = DateOnly.FromDateTime(clock.UtcNow);
         var currentMonthStart = new DateOnly(today.Year, today.Month, 1);
@@ -52,7 +61,7 @@ internal sealed class GetDashboardStatsQueryHandler(
         DateOnly windowEnd = currentMonthStart.AddMonths(1);
 
         var rows = await dbContext.Transactions
-            .Where(t => t.UserId == userId && t.Date >= windowStart && t.Date < windowEnd)
+            .Where(t => t.UserId == userId && t.PlanId == planId && t.Date >= windowStart && t.Date < windowEnd)
             .GroupBy(t => new { t.Date.Year, t.Date.Month })
             .Select(g => new
             {
@@ -81,10 +90,10 @@ internal sealed class GetDashboardStatsQueryHandler(
     }
 
     private async Task<List<DailyStatResponse>> BuildDailyAsync(
-        Guid userId, DateOnly monthStart, DateOnly nextMonthStart, CancellationToken cancellationToken)
+        Guid userId, Guid planId, DateOnly monthStart, DateOnly nextMonthStart, CancellationToken cancellationToken)
     {
         var rows = await dbContext.Transactions
-            .Where(t => t.UserId == userId && t.Date >= monthStart && t.Date < nextMonthStart)
+            .Where(t => t.UserId == userId && t.PlanId == planId && t.Date >= monthStart && t.Date < nextMonthStart)
             .GroupBy(t => t.Date.Day)
             .Select(g => new { Day = g.Key, Debit = g.Sum(t => t.Debit.Amount) })
             .ToListAsync(cancellationToken);
@@ -97,10 +106,11 @@ internal sealed class GetDashboardStatsQueryHandler(
     }
 
     private async Task<List<CategoryStatResponse>> BuildByCategoryAsync(
-        Guid userId, DateOnly monthStart, DateOnly nextMonthStart, CancellationToken cancellationToken)
+        Guid userId, Guid planId, DateOnly monthStart, DateOnly nextMonthStart, CancellationToken cancellationToken)
     {
         var rows = await dbContext.Transactions
             .Where(t => t.UserId == userId
+                        && t.PlanId == planId
                         && t.Date >= monthStart
                         && t.Date < nextMonthStart
                         && t.Debit.Amount > 0m)

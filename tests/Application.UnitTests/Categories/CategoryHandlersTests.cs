@@ -113,7 +113,7 @@ public class CategoryHandlersTests
     {
         Category category = Category.Create("Du lịch", "plane", "tester").Value;
         Transaction usage = Transaction.Create(
-            UserId, new DateOnly(2026, 7, 1), "Vé máy bay",
+            UserId, Guid.NewGuid(), new DateOnly(2026, 7, 1), "Vé máy bay",
             Money.Zero(), Money.Create(2_000_000m).Value, null,
             category.Id).Value;
         var (_, _, delete) = CreateHandlers([category], [usage]);

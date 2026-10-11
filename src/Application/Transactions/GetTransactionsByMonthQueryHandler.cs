@@ -3,6 +3,7 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Application.Transactions.Data;
+using Domain.Plans;
 using Domain.Transactions;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,13 @@ internal sealed class GetTransactionsByMonthQueryHandler(
         if (userContext.UserId is not { } userId)
         {
             return Result.Failure<MonthlySummaryResponse>(UserErrors.Unauthenticated);
+        }
+
+        bool planExists = await dbContext.Plans.AnyAsync(
+            p => p.Id == query.PlanId && p.UserId == userId, cancellationToken);
+        if (!planExists)
+        {
+            return Result.Failure<MonthlySummaryResponse>(PlanErrors.NotFound);
         }
 
         DateOnly rangeStart;
@@ -50,7 +58,8 @@ internal sealed class GetTransactionsByMonthQueryHandler(
         }
 
         IQueryable<Transaction> monthScope = dbContext.Transactions
-            .Where(t => t.UserId == userId && t.Date >= rangeStart && t.Date < rangeEnd);
+            .Where(t => t.UserId == userId && t.PlanId == query.PlanId
+                        && t.Date >= rangeStart && t.Date < rangeEnd);
 
         List<TransactionResponse> items = await monthScope
             .OrderByDescending(t => t.Date)
@@ -80,6 +89,7 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                     .Where(s => s.Id == t.SubCategoryId)
                     .Select(s => s.Name)
                     .FirstOrDefault(),
+                t.PlanId,
                 t.ReimbursedByTransactionId))
             .ToListAsync(cancellationToken);
 

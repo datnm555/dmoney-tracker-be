@@ -2,6 +2,7 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Application.Transactions.Data;
+using Domain.Plans;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -24,8 +25,15 @@ internal sealed class GetCreditsQueryHandler(
             return Result.Failure<List<CreditResponse>>(UserErrors.Unauthenticated);
         }
 
+        bool planExists = await dbContext.Plans.AnyAsync(
+            p => p.Id == query.PlanId && p.UserId == userId, cancellationToken);
+        if (!planExists)
+        {
+            return Result.Failure<List<CreditResponse>>(PlanErrors.NotFound);
+        }
+
         List<CreditResponse> credits = await dbContext.Transactions
-            .Where(t => t.UserId == userId && t.Credit.Amount > 0m && !t.IsAdvance)
+            .Where(t => t.UserId == userId && t.PlanId == query.PlanId && t.Credit.Amount > 0m && !t.IsAdvance)
             .OrderByDescending(t => t.Date)
             .ThenByDescending(t => t.CreatedAt)
             .Take(MaxResults)

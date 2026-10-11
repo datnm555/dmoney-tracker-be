@@ -2,6 +2,7 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Categories;
+using Domain.Plans;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -22,12 +23,33 @@ internal sealed class UpdateTransactionCommandHandler(
             return Result.Failure(UserErrors.Unauthenticated);
         }
 
+        bool planExists = await dbContext.Plans.AnyAsync(
+            p => p.Id == command.PlanId && p.UserId == userId, cancellationToken);
+        if (!planExists)
+        {
+            return Result.Failure(PlanErrors.NotFound);
+        }
+
         Transaction? transaction = await dbContext.Transactions
             .FirstOrDefaultAsync(t => t.Id == command.Id && t.UserId == userId, cancellationToken);
 
         if (transaction is null)
         {
             return Result.Failure(TransactionErrors.NotFound);
+        }
+
+        if (transaction.PlanId != command.PlanId)
+        {
+            bool hasLinks = transaction.ReimbursedByTransactionId is not null
+                || transaction.PrepaidTransactionId is not null
+                || await dbContext.Transactions.AnyAsync(
+                    t => t.ReimbursedByTransactionId == transaction.Id
+                         || t.PrepaidTransactionId == transaction.Id,
+                    cancellationToken);
+            if (hasLinks)
+            {
+                return Result.Failure(TransactionErrors.PlanMoveLinked);
+            }
         }
 
         Result<Money> credit = Money.Create(command.CreditAmount);
@@ -46,7 +68,8 @@ internal sealed class UpdateTransactionCommandHandler(
         if (command.PrepaidTransactionId is { } prepaidId)
         {
             bool prepaidExists = await dbContext.Transactions.AnyAsync(
-                t => t.Id == prepaidId && t.UserId == userId && t.IsPrepaid, cancellationToken);
+                t => t.Id == prepaidId && t.UserId == userId && t.PlanId == command.PlanId && t.IsPrepaid,
+                cancellationToken);
             if (!prepaidExists)
             {
                 return Result.Failure(TransactionErrors.PrepaidNotFound);
@@ -81,7 +104,7 @@ internal sealed class UpdateTransactionCommandHandler(
         }
 
         Result updated = transaction.Update(
-            command.Date, command.Content, credit.Value, debit.Value,
+            command.PlanId, command.Date, command.Content, credit.Value, debit.Value,
             command.Note, command.CategoryId,
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
@@ -95,7 +118,8 @@ internal sealed class UpdateTransactionCommandHandler(
         if (transaction.IsAdvance && command.ReimbursedByTransactionId is { } reimbursedById)
         {
             bool creditValid = reimbursedById != transaction.Id && await dbContext.Transactions.AnyAsync(
-                t => t.Id == reimbursedById && t.UserId == userId && t.Credit.Amount > 0m && !t.IsAdvance,
+                t => t.Id == reimbursedById && t.UserId == userId && t.PlanId == command.PlanId
+                     && t.Credit.Amount > 0m && !t.IsAdvance,
                 cancellationToken);
             if (!creditValid)
             {
@@ -128,7 +152,8 @@ internal sealed class UpdateTransactionCommandHandler(
             }
 
             List<Transaction> advances = await dbContext.Transactions
-                .Where(t => requestedIds.Contains(t.Id) && t.UserId == userId && t.IsAdvance)
+                .Where(t => requestedIds.Contains(t.Id) && t.UserId == userId
+                            && t.PlanId == command.PlanId && t.IsAdvance)
                 .ToListAsync(cancellationToken);
             if (advances.Count != requestedIds.Count)
             {

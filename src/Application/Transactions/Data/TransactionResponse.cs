@@ -19,6 +19,7 @@ public sealed record TransactionResponse(
     Guid? PrepaidTransactionId,
     Guid? SubCategoryId,
     string? SubCategoryName,
+    Guid PlanId,
     Guid? ReimbursedByTransactionId = null,
     IReadOnlyList<LinkedTransactionResponse>? Links = null);
 

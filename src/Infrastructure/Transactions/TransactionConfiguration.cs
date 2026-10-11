@@ -49,6 +49,12 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
 
         builder.HasIndex(t => new { t.UserId, t.Date });
 
+        builder.HasIndex(t => new { t.UserId, t.PlanId });
+        builder.HasOne<Domain.Plans.Plan>()
+            .WithMany()
+            .HasForeignKey(t => t.PlanId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Ignore(t => t.DomainEvents);
 
         builder.HasOne<Domain.Categories.Category>()
