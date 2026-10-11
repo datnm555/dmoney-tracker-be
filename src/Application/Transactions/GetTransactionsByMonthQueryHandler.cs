@@ -107,7 +107,8 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                 dbContext.PurchasePlaces
                     .Where(p => p.Id == t.PurchasePlaceId)
                     .Select(p => p.Name)
-                    .FirstOrDefault()))
+                    .FirstOrDefault(),
+                t.SavingsBank))
             .ToListAsync(cancellationToken);
 
         items = await AttachLinksAsync(items, cancellationToken);

@@ -28,7 +28,8 @@ public sealed record TransactionResponse(
     string? GoldTypeName = null,
     decimal? GoldQuantity = null,
     Guid? PurchasePlaceId = null,
-    string? PurchasePlaceName = null);
+    string? PurchasePlaceName = null,
+    string? SavingsBank = null);
 
 public sealed record LinkedTransactionResponse(
     Guid Id,

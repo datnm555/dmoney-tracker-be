@@ -60,6 +60,9 @@ public sealed class Transaction : AuditedEntity
     /// <summary>Where the gold was bought/sold. Only valid alongside GoldTypeId.</summary>
     public Guid? PurchasePlaceId { get; private set; }
 
+    /// <summary>Where savings are held ("Nơi gửi"), distinct from Bank (the source account). Free text.</summary>
+    public string? SavingsBank { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         Guid planId,
@@ -81,7 +84,8 @@ public sealed class Transaction : AuditedEntity
         Guid? beneficiaryId = null,
         Guid? goldTypeId = null,
         decimal? goldQuantity = null,
-        Guid? purchasePlaceId = null)
+        Guid? purchasePlaceId = null,
+        string? savingsBank = null)
     {
         if (date == default)
         {
@@ -98,6 +102,7 @@ public sealed class Transaction : AuditedEntity
         string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
         string? normalizedCardType = Normalize(cardType);
         string? normalizedBank = Normalize(bank);
+        string? normalizedSavingsBank = Normalize(savingsBank);
 
         Result validation = Validate(
             content, credit, debit, note,
@@ -133,6 +138,11 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure<Transaction>(TransactionErrors.PurchasePlaceRequiresGold);
         }
 
+        if ((normalizedSavingsBank?.Length ?? 0) > TransactionConstants.SavingsBankMaxLength)
+        {
+            return Result.Failure<Transaction>(TransactionErrors.SavingsBankTooLong);
+        }
+
         var transaction = new Transaction
         {
             Id = Guid.CreateVersion7(),
@@ -156,7 +166,8 @@ public sealed class Transaction : AuditedEntity
             BeneficiaryId = beneficiaryId,
             GoldTypeId = goldTypeId,
             GoldQuantity = goldQuantity,
-            PurchasePlaceId = purchasePlaceId
+            PurchasePlaceId = purchasePlaceId,
+            SavingsBank = normalizedSavingsBank
         };
 
         return transaction;
@@ -182,7 +193,8 @@ public sealed class Transaction : AuditedEntity
         Guid? beneficiaryId = null,
         Guid? goldTypeId = null,
         decimal? goldQuantity = null,
-        Guid? purchasePlaceId = null)
+        Guid? purchasePlaceId = null,
+        string? savingsBank = null)
     {
         if (date == default)
         {
@@ -199,6 +211,7 @@ public sealed class Transaction : AuditedEntity
         string normalizedPaymentMethod = Normalize(paymentMethod) ?? PaymentMethods.Transfer;
         string? normalizedCardType = Normalize(cardType);
         string? normalizedBank = Normalize(bank);
+        string? normalizedSavingsBank = Normalize(savingsBank);
 
         Result validation = Validate(
             content, credit, debit, note,
@@ -234,6 +247,11 @@ public sealed class Transaction : AuditedEntity
             return Result.Failure(TransactionErrors.PurchasePlaceRequiresGold);
         }
 
+        if ((normalizedSavingsBank?.Length ?? 0) > TransactionConstants.SavingsBankMaxLength)
+        {
+            return Result.Failure(TransactionErrors.SavingsBankTooLong);
+        }
+
         PlanId = planId;
         Date = date;
         Content = content.Trim();
@@ -254,6 +272,7 @@ public sealed class Transaction : AuditedEntity
         GoldTypeId = goldTypeId;
         GoldQuantity = goldQuantity;
         PurchasePlaceId = purchasePlaceId;
+        SavingsBank = normalizedSavingsBank;
 
         return Result.Success();
     }

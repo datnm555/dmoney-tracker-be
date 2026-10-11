@@ -60,6 +60,10 @@ public static class TransactionErrors
         "Transactions.BankTooLong",
         $"Bank name must be at most {TransactionConstants.BankMaxLength} characters.");
 
+    public static readonly Error SavingsBankTooLong = Error.Validation(
+        "Transactions.SavingsBankTooLong",
+        $"Held-at name must be at most {TransactionConstants.SavingsBankMaxLength} characters.");
+
     public static readonly Error PrepaidOnlyOnCredit = Error.Validation(
         "Transactions.PrepaidOnlyOnCredit",
         "Prepaid only applies to money-in transactions.");

@@ -381,6 +381,10 @@ namespace Infrastructure.Database.Migrations
                     b.Property<Guid?>("ReimbursedByTransactionId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("SavingsBank")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<Guid?>("SubCategoryId")
                         .HasColumnType("uuid");
 

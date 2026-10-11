@@ -73,6 +73,9 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
         builder.Property(t => t.Bank)
             .HasMaxLength(TransactionConstants.BankMaxLength);
 
+        builder.Property(t => t.SavingsBank)
+            .HasMaxLength(TransactionConstants.SavingsBankMaxLength);
+
         builder.Property(t => t.IsAdvance)
             .HasDefaultValue(false);
 

@@ -1061,11 +1061,92 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         item.PurchasePlaceName.ShouldBe("Chỗ mua placeupd");
     }
 
+    [Fact]
+    public async Task SavingsBank_RoundTrips_AndNormalizes()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("savbank-tx@example.com", "savbanktx");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi SavBank", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Gửi tiết kiệm", creditAmount = 0m, debitAmount = 5_000_000m,
+            note = (string?)null, categoryId, planId, bank = "VPBank", savingsBank = "  Vietinbank  "
+        })).StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Gửi trắng", creditAmount = 0m, debitAmount = 1_000_000m,
+            note = (string?)null, categoryId, planId, savingsBank = "   "
+        })).StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        var summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        ItemBody saved = summary!.Items.Single(i => i.Content == "Gửi tiết kiệm");
+        saved.SavingsBank.ShouldBe("Vietinbank");
+        saved.Bank.ShouldBe("VPBank");
+        summary.Items.Single(i => i.Content == "Gửi trắng").SavingsBank.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task SavingsBank_TooLong_Returns400()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("savbank-long@example.com", "savbanklong");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi SavLong", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+
+        var response = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Quá dài", creditAmount = 0m, debitAmount = 1_000m,
+            note = (string?)null, categoryId, planId, savingsBank = new string('x', 101)
+        });
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync()).ShouldContain("Transactions.SavingsBankTooLong");
+    }
+
+    [Fact]
+    public async Task SavingsBank_UpdatePath_ThreadsField()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("savbank-upd@example.com", "savbankupd");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi SavUpd", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+
+        var create = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Chưa có nơi gửi", creditAmount = 0m, debitAmount = 2_000_000m,
+            note = (string?)null, categoryId, planId
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid transactionId = (await create.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        // PUT with the savings bank — guards the explicit request-DTO threading.
+        (await client.PutAsJsonAsync($"/transactions/{transactionId}", new
+        {
+            date = "2026-08-10", content = "Giờ có nơi gửi", creditAmount = 0m, debitAmount = 2_000_000m,
+            note = (string?)null, categoryId, planId, savingsBank = "Vietinbank"
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        var summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        summary!.Items.Single(i => i.Id == transactionId).SavingsBank.ShouldBe("Vietinbank");
+
+        // PUT with null clears it.
+        (await client.PutAsJsonAsync($"/transactions/{transactionId}", new
+        {
+            date = "2026-08-10", content = "Giờ có nơi gửi", creditAmount = 0m, debitAmount = 2_000_000m,
+            note = (string?)null, categoryId, planId, savingsBank = (string?)null
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        summary!.Items.Single(i => i.Id == transactionId).SavingsBank.ShouldBeNull();
+    }
+
     internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record MoneyBody(decimal Amount, string Currency);
     internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, Guid? CategoryId, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance, List<Guid> AdvanceTransactionIds, bool IsPrepaid, string? PrepaidFrom, string? PrepaidTo, Guid? PrepaidTransactionId, Guid? BeneficiaryId, string? BeneficiaryName,
-        Guid? GoldTypeId, string? GoldTypeName, decimal? GoldQuantity, Guid? PurchasePlaceId, string? PurchasePlaceName);
+        Guid? GoldTypeId, string? GoldTypeName, decimal? GoldQuantity, Guid? PurchasePlaceId, string? PurchasePlaceName, string? SavingsBank);
     internal sealed record SummaryBody(List<ItemBody> Items, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
 }

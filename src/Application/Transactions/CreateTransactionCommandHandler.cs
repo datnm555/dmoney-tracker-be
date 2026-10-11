@@ -117,7 +117,7 @@ internal sealed class CreateTransactionCommandHandler(
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
             command.PrepaidTransactionId, command.SubCategoryId, command.BeneficiaryId,
-            command.GoldTypeId, command.GoldQuantity, command.PurchasePlaceId);
+            command.GoldTypeId, command.GoldQuantity, command.PurchasePlaceId, command.SavingsBank);
         if (transaction.IsFailure)
         {
             return Result.Failure<Guid>(transaction.Error);
