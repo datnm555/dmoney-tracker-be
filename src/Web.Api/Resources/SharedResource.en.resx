@@ -289,6 +289,7 @@
   <data name="gold.totalReceived" xml:space="preserve"><value>Total received</value></data>
   <data name="gold.history" xml:space="preserve"><value>Trade history</value></data>
   <data name="gold.unit" xml:space="preserve"><value>chỉ</value></data>
+  <data name="gold.monthlyChart" xml:space="preserve"><value>Gold bought and sold by month</value></data>
   <data name="gold.buy" xml:space="preserve"><value>Buy</value></data>
   <data name="gold.sell" xml:space="preserve"><value>Sell</value></data>
   <data name="gold.pricePerChi" xml:space="preserve"><value>Price per chỉ</value></data>
