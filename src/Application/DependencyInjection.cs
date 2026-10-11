@@ -15,6 +15,8 @@ using Application.Plans;
 using Application.Plans.Data;
 using Application.PurchasePlaces;
 using Application.PurchasePlaces.Data;
+using Application.Savings;
+using Application.Savings.Data;
 using Application.SubCategories;
 using Application.SubCategories.Data;
 using Application.Transactions;
@@ -74,6 +76,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<UpdatePurchasePlaceCommand>, UpdatePurchasePlaceCommandHandler>();
         services.AddScoped<ICommandHandler<DeletePurchasePlaceCommand>, DeletePurchasePlaceCommandHandler>();
         services.AddScoped<IQueryHandler<GetGoldSummaryQuery, GoldSummaryResponse>, GetGoldSummaryQueryHandler>();
+        services.AddScoped<IQueryHandler<GetSavingsSummaryQuery, SavingsSummaryResponse>, GetSavingsSummaryQueryHandler>();
         services.AddScoped<IQueryHandler<GetGoldAcquisitionsQuery, List<GoldAcquisitionResponse>>, GetGoldAcquisitionsQueryHandler>();
         services.AddScoped<ICommandHandler<CreateGoldAcquisitionCommand, Guid>, CreateGoldAcquisitionCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateGoldAcquisitionCommand>, UpdateGoldAcquisitionCommandHandler>();

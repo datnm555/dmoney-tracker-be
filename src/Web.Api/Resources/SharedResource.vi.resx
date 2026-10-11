@@ -96,6 +96,7 @@
   <data name="Transactions.InvalidCardType" xml:space="preserve"><value>Loại thẻ không hợp lệ.</value></data>
   <data name="Transactions.CardDetailsNotAllowed" xml:space="preserve"><value>Thông tin thẻ chỉ áp dụng cho hình thức Thẻ.</value></data>
   <data name="Transactions.BankTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
+  <data name="Transactions.SavingsBankTooLong" xml:space="preserve"><value>Nơi gửi tối đa 100 ký tự.</value></data>
   <data name="menu.transactions" xml:space="preserve"><value>Giao dịch</value></data>
   <data name="menu.reports" xml:space="preserve"><value>Báo cáo</value></data>
   <data name="menu.settings" xml:space="preserve"><value>Cài đặt</value></data>
@@ -330,6 +331,20 @@
   <data name="banks.deleteConfirm" xml:space="preserve"><value>Xóa ngân hàng này?</value></data>
   <data name="banks.default" xml:space="preserve"><value>Mặc định</value></data>
   <data name="banks.setDefault" xml:space="preserve"><value>Đặt mặc định</value></data>
+  <data name="menu.savings" xml:space="preserve"><value>Tiết kiệm</value></data>
+  <data name="savings.title" xml:space="preserve"><value>Tiết kiệm</value></data>
+  <data name="savings.total" xml:space="preserve"><value>Tổng tiết kiệm</value></data>
+  <data name="savings.accounts" xml:space="preserve"><value>Nơi gửi</value></data>
+  <data name="savings.deposited" xml:space="preserve"><value>Đã gửi</value></data>
+  <data name="savings.withdrawn" xml:space="preserve"><value>Đã rút</value></data>
+  <data name="savings.unassigned" xml:space="preserve"><value>Chưa ghi nơi gửi</value></data>
+  <data name="savings.history" xml:space="preserve"><value>Lịch sử tiết kiệm</value></data>
+  <data name="savings.count" xml:space="preserve"><value>giao dịch</value></data>
+  <data name="savings.empty" xml:space="preserve"><value>Chưa có giao dịch tích luỹ nào.</value></data>
+  <data name="savings.filterAll" xml:space="preserve"><value>Tất cả nơi gửi</value></data>
+  <data name="savings.hint" xml:space="preserve"><value>Giao dịch danh mục Tích luỹ: ghi nợ = gửi vào, ghi có = rút ra.</value></data>
+  <data name="form.savingsBank" xml:space="preserve"><value>Nơi gửi</value></data>
+  <data name="export.colSavingsBank" xml:space="preserve"><value>Nơi gửi</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Loại vàng</value></data>
   <data name="export.colGoldQuantity" xml:space="preserve"><value>Số chỉ</value></data>
   <data name="plans.title" xml:space="preserve"><value>Quản lý sổ</value></data>
