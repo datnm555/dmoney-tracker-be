@@ -207,6 +207,7 @@
   <data name="Categories.NotFound" xml:space="preserve"><value>Category not found.</value></data>
   <data name="Categories.InUse" xml:space="preserve"><value>This category is used by transactions or sub-categories and cannot be deleted.</value></data>
   <data name="SubCategories.InvalidIcon" xml:space="preserve"><value>Invalid sub-category icon.</value></data>
+  <data name="SubCategories.SystemSubCategory" xml:space="preserve"><value>System sub-categories cannot be deleted.</value></data>
   <data name="menu.categories" xml:space="preserve"><value>Parent categories</value></data>
   <data name="menu.subcategories" xml:space="preserve"><value>Sub-categories</value></data>
   <data name="cat.title" xml:space="preserve"><value>Parent categories</value></data>
@@ -340,9 +341,14 @@
   <data name="savings.unassigned" xml:space="preserve"><value>No account set</value></data>
   <data name="savings.history" xml:space="preserve"><value>Savings history</value></data>
   <data name="savings.count" xml:space="preserve"><value>transactions</value></data>
-  <data name="savings.empty" xml:space="preserve"><value>No savings transactions yet.</value></data>
+  <data name="savings.empty" xml:space="preserve"><value>No savings-book transactions in the default ledger yet.</value></data>
   <data name="savings.filterAll" xml:space="preserve"><value>All accounts</value></data>
-  <data name="savings.hint" xml:space="preserve"><value>Savings category: debit = deposit, credit = withdrawal.</value></data>
+  <data name="savings.hint" xml:space="preserve"><value>Savings › Savings book in the default ledger: debit = deposit, credit = withdrawal.</value></data>
+  <data name="savings.plan" xml:space="preserve"><value>Ledger</value></data>
+  <data name="savings.thisMonth" xml:space="preserve"><value>Deposited this month</value></data>
+  <data name="savings.totalDeposited" xml:space="preserve"><value>Total deposited</value></data>
+  <data name="savings.totalWithdrawn" xml:space="preserve"><value>Total withdrawn</value></data>
+  <data name="savings.monthlyChart" xml:space="preserve"><value>Deposits and withdrawals by month</value></data>
   <data name="form.savingsBank" xml:space="preserve"><value>Held at</value></data>
   <data name="export.colSavingsBank" xml:space="preserve"><value>Held at</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Gold type</value></data>

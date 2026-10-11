@@ -3,5 +3,5 @@ using Application.Savings.Data;
 
 namespace Application.Savings;
 
-/// <summary>User-level savings overview across all plans (no planId).</summary>
+/// <summary>Savings overview of the user's default plan (no planId parameter).</summary>
 public sealed record GetSavingsSummaryQuery : IQuery<SavingsSummaryResponse>;

@@ -3,6 +3,8 @@ using Application.Transactions.Data;
 namespace Application.Savings.Data;
 
 public sealed record SavingsSummaryResponse(
+    Guid PlanId,
+    string PlanName,
     MoneyResponse TotalBalance,
     IReadOnlyList<SavingsAccountResponse> Accounts,
     IReadOnlyList<SavingsTransactionResponse> Transactions);

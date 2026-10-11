@@ -207,6 +207,7 @@
   <data name="Categories.NotFound" xml:space="preserve"><value>Không tìm thấy danh mục.</value></data>
   <data name="Categories.InUse" xml:space="preserve"><value>Danh mục đang được dùng bởi giao dịch hoặc danh mục con, không thể xóa.</value></data>
   <data name="SubCategories.InvalidIcon" xml:space="preserve"><value>Biểu tượng danh mục con không hợp lệ.</value></data>
+  <data name="SubCategories.SystemSubCategory" xml:space="preserve"><value>Không thể xóa danh mục con hệ thống.</value></data>
   <data name="menu.categories" xml:space="preserve"><value>Danh mục cha</value></data>
   <data name="menu.subcategories" xml:space="preserve"><value>Danh mục con</value></data>
   <data name="cat.title" xml:space="preserve"><value>Danh mục cha</value></data>
@@ -340,9 +341,14 @@
   <data name="savings.unassigned" xml:space="preserve"><value>Chưa ghi nơi gửi</value></data>
   <data name="savings.history" xml:space="preserve"><value>Lịch sử tiết kiệm</value></data>
   <data name="savings.count" xml:space="preserve"><value>giao dịch</value></data>
-  <data name="savings.empty" xml:space="preserve"><value>Chưa có giao dịch tích luỹ nào.</value></data>
+  <data name="savings.empty" xml:space="preserve"><value>Chưa có giao dịch sổ tiết kiệm nào trong sổ mặc định.</value></data>
   <data name="savings.filterAll" xml:space="preserve"><value>Tất cả nơi gửi</value></data>
-  <data name="savings.hint" xml:space="preserve"><value>Giao dịch danh mục Tích luỹ: ghi nợ = gửi vào, ghi có = rút ra.</value></data>
+  <data name="savings.hint" xml:space="preserve"><value>Danh mục Tích luỹ › Sổ tiết kiệm của sổ mặc định: ghi nợ = gửi vào, ghi có = rút ra.</value></data>
+  <data name="savings.plan" xml:space="preserve"><value>Sổ</value></data>
+  <data name="savings.thisMonth" xml:space="preserve"><value>Gửi tháng này</value></data>
+  <data name="savings.totalDeposited" xml:space="preserve"><value>Tổng đã gửi</value></data>
+  <data name="savings.totalWithdrawn" xml:space="preserve"><value>Tổng đã rút</value></data>
+  <data name="savings.monthlyChart" xml:space="preserve"><value>Gửi / rút theo tháng</value></data>
   <data name="form.savingsBank" xml:space="preserve"><value>Nơi gửi</value></data>
   <data name="export.colSavingsBank" xml:space="preserve"><value>Nơi gửi</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Loại vàng</value></data>
