@@ -5,4 +5,5 @@ public sealed record SubCategoryResponse(
     Guid CategoryId,
     string Name,
     bool IsDefault,
-    string? Icon = null);
+    string? Icon = null,
+    string? Code = null);

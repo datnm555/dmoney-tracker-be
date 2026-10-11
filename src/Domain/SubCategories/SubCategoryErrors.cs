@@ -31,4 +31,8 @@ public static class SubCategoryErrors
     public static readonly Error InvalidIcon = Error.Validation(
         "SubCategories.InvalidIcon",
         "Invalid sub-category icon.");
+
+    public static readonly Error SystemSubCategory = Error.Validation(
+        "SubCategories.SystemSubCategory",
+        "System sub-categories cannot be deleted.");
 }

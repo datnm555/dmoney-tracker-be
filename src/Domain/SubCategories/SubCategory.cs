@@ -21,6 +21,12 @@ public sealed class SubCategory : AuditedEntity
     /// <summary>Icon key from the frontend's built-in icon set (later a CDN url).</summary>
     public string? Icon { get; private set; }
 
+    /// <summary>
+    /// Built-in code for seeded system sub-categories (SubCategoryCodes); null for
+    /// user-created ones. Coded sub-categories can be renamed but not deleted.
+    /// </summary>
+    public string? Code { get; private set; }
+
     /// <summary>Username of whoever created the sub-category.</summary>
     public string CreatedBy { get; private set; } = string.Empty;
 
@@ -32,7 +38,8 @@ public sealed class SubCategory : AuditedEntity
         string name,
         string createdBy,
         bool isDefault = false,
-        string? icon = null)
+        string? icon = null,
+        string? code = null)
     {
         string trimmedName = name?.Trim() ?? string.Empty;
         if (trimmedName.Length == 0)
@@ -65,6 +72,7 @@ public sealed class SubCategory : AuditedEntity
             Name = trimmedName,
             IsDefault = isDefault,
             Icon = trimmedIcon,
+            Code = string.IsNullOrWhiteSpace(code) ? null : code.Trim(),
             CreatedBy = trimmedCreatedBy,
             UpdatedBy = trimmedCreatedBy
         };

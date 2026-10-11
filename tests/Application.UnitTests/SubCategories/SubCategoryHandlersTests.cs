@@ -173,6 +173,35 @@ public class SubCategoryHandlersTests
         oldDefault.IsDefault.ShouldBeFalse();
     }
 
+    [Fact]
+    public async Task Delete_CodedSubCategory_FailsWithSystemSubCategory()
+    {
+        SubCategory book = SubCategory.Create(
+            Bills.Id, "Sổ tiết kiệm", "system", code: SubCategoryCodes.SavingsBook).Value;
+        var (_, _) = CreateHandlers(book);
+        var delete = new DeleteSubCategoryCommandHandler(_dbContext, UserContextFor(UserId));
+
+        var result = await delete.Handle(new DeleteSubCategoryCommand(book.Id), CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(SubCategoryErrors.SystemSubCategory);
+        _dbContext.SubCategories.DidNotReceive().Remove(Arg.Any<SubCategory>());
+    }
+
+    [Fact]
+    public async Task Get_ReturnsCode()
+    {
+        SubCategory book = SubCategory.Create(
+            Bills.Id, "Sổ tiết kiệm", "system", code: SubCategoryCodes.SavingsBook).Value;
+        SubCategory plain = SubCategory.Create(Bills.Id, "Xăng", "tester").Value;
+        var (_, get) = CreateHandlers(book, plain);
+
+        var result = await get.Handle(new GetSubCategoriesQuery(null), CancellationToken.None);
+
+        result.Value.Single(s => s.Id == book.Id).Code.ShouldBe("savings_book");
+        result.Value.Single(s => s.Id == plain.Id).Code.ShouldBeNull();
+    }
+
     private static IUserContext UserContextFor(Guid id)
     {
         var userContext = Substitute.For<IUserContext>();

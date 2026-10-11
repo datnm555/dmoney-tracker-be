@@ -28,6 +28,11 @@ internal sealed class DeleteSubCategoryCommandHandler(
             return Result.Failure(SubCategoryErrors.NotFound);
         }
 
+        if (subCategory.Code is not null)
+        {
+            return Result.Failure(SubCategoryErrors.SystemSubCategory);
+        }
+
         dbContext.SubCategories.Remove(subCategory);
         await dbContext.SaveChangesAsync(cancellationToken);
 
