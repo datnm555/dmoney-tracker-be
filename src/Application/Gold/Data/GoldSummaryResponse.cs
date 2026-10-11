@@ -1,10 +1,12 @@
+using Application.GoldAcquisitions.Data;
 using Application.Transactions.Data;
 
 namespace Application.Gold.Data;
 
 public sealed record GoldSummaryResponse(
     IReadOnlyList<GoldTypeSummaryResponse> Types,
-    IReadOnlyList<GoldTransactionResponse> Transactions);
+    IReadOnlyList<GoldTransactionResponse> Transactions,
+    IReadOnlyList<GoldAcquisitionResponse> Acquisitions);
 
 public sealed record GoldTypeSummaryResponse(
     Guid GoldTypeId,
@@ -25,4 +27,6 @@ public sealed record GoldTransactionResponse(
     decimal GoldQuantity,
     MoneyResponse Credit,
     MoneyResponse Debit,
-    MoneyResponse PricePerChi);
+    MoneyResponse PricePerChi,
+    Guid? PurchasePlaceId = null,
+    string? PurchasePlaceName = null);

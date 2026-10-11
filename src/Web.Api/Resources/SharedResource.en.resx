@@ -96,6 +96,7 @@
   <data name="Transactions.InvalidCardType" xml:space="preserve"><value>Invalid card type.</value></data>
   <data name="Transactions.CardDetailsNotAllowed" xml:space="preserve"><value>Card details are only allowed for card payments.</value></data>
   <data name="Transactions.BankTooLong" xml:space="preserve"><value>Bank name must be at most 100 characters.</value></data>
+  <data name="Transactions.SavingsBankTooLong" xml:space="preserve"><value>Held-at name must be at most 100 characters.</value></data>
   <data name="menu.transactions" xml:space="preserve"><value>Transactions</value></data>
   <data name="menu.reports" xml:space="preserve"><value>Reports</value></data>
   <data name="menu.settings" xml:space="preserve"><value>Settings</value></data>
@@ -245,10 +246,25 @@
   <data name="GoldTypes.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
   <data name="GoldTypes.Duplicate" xml:space="preserve"><value>This gold type already exists.</value></data>
   <data name="GoldTypes.NotFound" xml:space="preserve"><value>Gold type not found.</value></data>
-  <data name="GoldTypes.InUse" xml:space="preserve"><value>This gold type is used by transactions and cannot be deleted.</value></data>
+  <data name="GoldTypes.InUse" xml:space="preserve"><value>This gold type is used by transactions or pre-owned gold entries and cannot be deleted.</value></data>
   <data name="Transactions.GoldPairRequired" xml:space="preserve"><value>Gold type and gold quantity must be provided together.</value></data>
   <data name="Transactions.GoldQuantityInvalid" xml:space="preserve"><value>Gold quantity must be greater than zero.</value></data>
   <data name="Transactions.GoldRequiresAmount" xml:space="preserve"><value>A gold transaction must have either money out (buy) or money in (sell).</value></data>
+  <data name="Transactions.PurchasePlaceRequiresGold" xml:space="preserve"><value>A purchase place only applies to gold transactions.</value></data>
+  <data name="GoldAcquisitions.DateRequired" xml:space="preserve"><value>Please choose a date.</value></data>
+  <data name="GoldAcquisitions.QuantityInvalid" xml:space="preserve"><value>Quantity must be greater than zero.</value></data>
+  <data name="GoldAcquisitions.UnitPriceInvalid" xml:space="preserve"><value>Unit price cannot be negative.</value></data>
+  <data name="GoldAcquisitions.NoteTooLong" xml:space="preserve"><value>Note must be at most 255 characters.</value></data>
+  <data name="GoldAcquisitions.NotFound" xml:space="preserve"><value>Pre-owned gold entry not found.</value></data>
+  <data name="PurchasePlaces.NameRequired" xml:space="preserve"><value>Please enter a name for the purchase place.</value></data>
+  <data name="PurchasePlaces.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
+  <data name="PurchasePlaces.Duplicate" xml:space="preserve"><value>This purchase place already exists.</value></data>
+  <data name="PurchasePlaces.NotFound" xml:space="preserve"><value>Purchase place not found.</value></data>
+  <data name="PurchasePlaces.InUse" xml:space="preserve"><value>This purchase place is used by gold entries and cannot be deleted.</value></data>
+  <data name="Banks.NameRequired" xml:space="preserve"><value>Please enter a bank name.</value></data>
+  <data name="Banks.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
+  <data name="Banks.Duplicate" xml:space="preserve"><value>This bank already exists.</value></data>
+  <data name="Banks.NotFound" xml:space="preserve"><value>Bank not found.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>People</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Plans</value></data>
@@ -276,6 +292,8 @@
   <data name="gold.sell" xml:space="preserve"><value>Sell</value></data>
   <data name="gold.pricePerChi" xml:space="preserve"><value>Price per chỉ</value></data>
   <data name="gold.empty" xml:space="preserve"><value>No gold transactions yet.</value></data>
+  <data name="gold.overview" xml:space="preserve"><value>Overview</value></data>
+  <data name="gold.byType" xml:space="preserve"><value>By gold type</value></data>
   <data name="goldTypes.title" xml:space="preserve"><value>Manage gold types</value></data>
   <data name="goldTypes.create" xml:space="preserve"><value>Add gold type</value></data>
   <data name="goldTypes.name" xml:space="preserve"><value>Gold type name</value></data>
@@ -288,6 +306,45 @@
   <data name="form.goldQuantity" xml:space="preserve"><value>Quantity (chỉ)</value></data>
   <data name="form.goldTypeRequired" xml:space="preserve"><value>Please choose a gold type.</value></data>
   <data name="form.goldQuantityRequired" xml:space="preserve"><value>Please enter a valid quantity.</value></data>
+  <data name="goldAcq.add" xml:space="preserve"><value>Add pre-owned gold</value></data>
+  <data name="goldAcq.edit" xml:space="preserve"><value>Edit pre-owned gold</value></data>
+  <data name="goldAcq.badge" xml:space="preserve"><value>Pre-owned</value></data>
+  <data name="goldAcq.date" xml:space="preserve"><value>Date</value></data>
+  <data name="goldAcq.quantity" xml:space="preserve"><value>Quantity (chỉ)</value></data>
+  <data name="goldAcq.unitPrice" xml:space="preserve"><value>Price per chỉ</value></data>
+  <data name="goldAcq.note" xml:space="preserve"><value>Note</value></data>
+  <data name="goldAcq.deleteConfirm" xml:space="preserve"><value>Delete this pre-owned gold entry?</value></data>
+  <data name="menu.purchasePlaces" xml:space="preserve"><value>Purchase places</value></data>
+  <data name="purchasePlaces.title" xml:space="preserve"><value>Manage purchase places</value></data>
+  <data name="purchasePlaces.create" xml:space="preserve"><value>Add purchase place</value></data>
+  <data name="purchasePlaces.name" xml:space="preserve"><value>Purchase place name</value></data>
+  <data name="purchasePlaces.rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="purchasePlaces.delete" xml:space="preserve"><value>Delete purchase place</value></data>
+  <data name="purchasePlaces.deleteConfirm" xml:space="preserve"><value>Delete this purchase place?</value></data>
+  <data name="form.purchasePlace" xml:space="preserve"><value>Purchase place</value></data>
+  <data name="menu.banks" xml:space="preserve"><value>Banks</value></data>
+  <data name="banks.title" xml:space="preserve"><value>Manage banks</value></data>
+  <data name="banks.create" xml:space="preserve"><value>Add bank</value></data>
+  <data name="banks.name" xml:space="preserve"><value>Bank name</value></data>
+  <data name="banks.rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="banks.delete" xml:space="preserve"><value>Delete bank</value></data>
+  <data name="banks.deleteConfirm" xml:space="preserve"><value>Delete this bank?</value></data>
+  <data name="banks.default" xml:space="preserve"><value>Default</value></data>
+  <data name="banks.setDefault" xml:space="preserve"><value>Set default</value></data>
+  <data name="menu.savings" xml:space="preserve"><value>Savings</value></data>
+  <data name="savings.title" xml:space="preserve"><value>Savings</value></data>
+  <data name="savings.total" xml:space="preserve"><value>Total savings</value></data>
+  <data name="savings.accounts" xml:space="preserve"><value>Accounts</value></data>
+  <data name="savings.deposited" xml:space="preserve"><value>Deposited</value></data>
+  <data name="savings.withdrawn" xml:space="preserve"><value>Withdrawn</value></data>
+  <data name="savings.unassigned" xml:space="preserve"><value>No account set</value></data>
+  <data name="savings.history" xml:space="preserve"><value>Savings history</value></data>
+  <data name="savings.count" xml:space="preserve"><value>transactions</value></data>
+  <data name="savings.empty" xml:space="preserve"><value>No savings transactions yet.</value></data>
+  <data name="savings.filterAll" xml:space="preserve"><value>All accounts</value></data>
+  <data name="savings.hint" xml:space="preserve"><value>Savings category: debit = deposit, credit = withdrawal.</value></data>
+  <data name="form.savingsBank" xml:space="preserve"><value>Held at</value></data>
+  <data name="export.colSavingsBank" xml:space="preserve"><value>Held at</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Gold type</value></data>
   <data name="export.colGoldQuantity" xml:space="preserve"><value>Gold (chỉ)</value></data>
   <data name="plans.title" xml:space="preserve"><value>Manage plans</value></data>

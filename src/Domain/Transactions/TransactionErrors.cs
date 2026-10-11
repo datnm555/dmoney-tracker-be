@@ -60,6 +60,10 @@ public static class TransactionErrors
         "Transactions.BankTooLong",
         $"Bank name must be at most {TransactionConstants.BankMaxLength} characters.");
 
+    public static readonly Error SavingsBankTooLong = Error.Validation(
+        "Transactions.SavingsBankTooLong",
+        $"Held-at name must be at most {TransactionConstants.SavingsBankMaxLength} characters.");
+
     public static readonly Error PrepaidOnlyOnCredit = Error.Validation(
         "Transactions.PrepaidOnlyOnCredit",
         "Prepaid only applies to money-in transactions.");
@@ -119,4 +123,8 @@ public static class TransactionErrors
     public static readonly Error GoldRequiresAmount = Error.Validation(
         "Transactions.GoldRequiresAmount",
         "A gold transaction must have either money out (buy) or money in (sell).");
+
+    public static readonly Error PurchasePlaceRequiresGold = Error.Validation(
+        "Transactions.PurchasePlaceRequiresGold",
+        "A purchase place only applies to gold transactions.");
 }

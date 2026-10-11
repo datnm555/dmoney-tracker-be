@@ -1,14 +1,22 @@
 using Application.Abstractions.Messaging;
+using Application.Banks;
+using Application.Banks.Data;
 using Application.Beneficiaries;
 using Application.Beneficiaries.Data;
 using Application.Categories;
 using Application.Categories.Data;
 using Application.Gold;
 using Application.Gold.Data;
+using Application.GoldAcquisitions;
+using Application.GoldAcquisitions.Data;
 using Application.GoldTypes;
 using Application.GoldTypes.Data;
 using Application.Plans;
 using Application.Plans.Data;
+using Application.PurchasePlaces;
+using Application.PurchasePlaces.Data;
+using Application.Savings;
+using Application.Savings.Data;
 using Application.SubCategories;
 using Application.SubCategories.Data;
 using Application.Transactions;
@@ -58,7 +66,21 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CreateGoldTypeCommand, Guid>, CreateGoldTypeCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateGoldTypeCommand>, UpdateGoldTypeCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteGoldTypeCommand>, DeleteGoldTypeCommandHandler>();
+        services.AddScoped<IQueryHandler<GetBanksQuery, List<BankResponse>>, GetBanksQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateBankCommand, Guid>, CreateBankCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateBankCommand>, UpdateBankCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteBankCommand>, DeleteBankCommandHandler>();
+        services.AddScoped<ICommandHandler<SetDefaultBankCommand>, SetDefaultBankCommandHandler>();
+        services.AddScoped<IQueryHandler<GetPurchasePlacesQuery, List<PurchasePlaceResponse>>, GetPurchasePlacesQueryHandler>();
+        services.AddScoped<ICommandHandler<CreatePurchasePlaceCommand, Guid>, CreatePurchasePlaceCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdatePurchasePlaceCommand>, UpdatePurchasePlaceCommandHandler>();
+        services.AddScoped<ICommandHandler<DeletePurchasePlaceCommand>, DeletePurchasePlaceCommandHandler>();
         services.AddScoped<IQueryHandler<GetGoldSummaryQuery, GoldSummaryResponse>, GetGoldSummaryQueryHandler>();
+        services.AddScoped<IQueryHandler<GetSavingsSummaryQuery, SavingsSummaryResponse>, GetSavingsSummaryQueryHandler>();
+        services.AddScoped<IQueryHandler<GetGoldAcquisitionsQuery, List<GoldAcquisitionResponse>>, GetGoldAcquisitionsQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateGoldAcquisitionCommand, Guid>, CreateGoldAcquisitionCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateGoldAcquisitionCommand>, UpdateGoldAcquisitionCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteGoldAcquisitionCommand>, DeleteGoldAcquisitionCommandHandler>();
         return services;
     }
 }

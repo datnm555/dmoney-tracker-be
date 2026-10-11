@@ -62,6 +62,13 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
     }
 
+    private static async Task<Guid> CreatePurchasePlaceAsync(HttpClient client, string name)
+    {
+        var response = await client.PostAsJsonAsync("/purchase-places", new { name });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
     internal sealed record PlanListBody(Guid Id, string Name, bool IsDefault);
 
     [Fact]
@@ -970,11 +977,176 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         })).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
+    [Fact]
+    public async Task PurchasePlace_RoundTrips_OnGoldTransaction()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("place-tx@example.com", "placetx");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi Place", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Nhẫn place");
+        Guid placeId = await CreatePurchasePlaceAsync(client, "SJC Trần Nhân Tông");
+
+        var create = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Mua có nơi mua", creditAmount = 0m, debitAmount = 20_000_000m,
+            note = (string?)null, categoryId, planId, goldTypeId, goldQuantity = 2m, purchasePlaceId = placeId
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        var summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        ItemBody item = summary!.Items.Single(i => i.Content == "Mua có nơi mua");
+        item.PurchasePlaceId.ShouldBe(placeId);
+        item.PurchasePlaceName.ShouldBe("SJC Trần Nhân Tông");
+    }
+
+    [Fact]
+    public async Task PurchasePlace_WithoutGold_Returns400()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("place-nogold@example.com", "placenogold");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi NoGold", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        Guid placeId = await CreatePurchasePlaceAsync(client, "PNJ");
+
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Không vàng", creditAmount = 0m, debitAmount = 100_000m,
+            note = (string?)null, categoryId, planId, purchasePlaceId = placeId
+        })).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task PurchasePlace_Unknown_Returns404()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("place-unknown@example.com", "placeunknown");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi Unknown", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Nhẫn unknown");
+
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Lạ", creditAmount = 0m, debitAmount = 100_000m,
+            note = (string?)null, categoryId, planId, goldTypeId, goldQuantity = 1m, purchasePlaceId = Guid.NewGuid()
+        })).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task PurchasePlace_UpdatePath_ThreadsField()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("place-upd@example.com", "placeupd");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi PlaceUpd", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Nhẫn placeupd");
+        Guid placeId = await CreatePurchasePlaceAsync(client, "Chỗ mua placeupd");
+
+        var create = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Chưa có nơi mua", creditAmount = 0m, debitAmount = 5_000_000m,
+            note = (string?)null, categoryId, planId, goldTypeId, goldQuantity = 0.5m
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid transactionId = (await create.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        // PUT with the place — guards the explicit request-DTO threading.
+        (await client.PutAsJsonAsync($"/transactions/{transactionId}", new
+        {
+            date = "2026-08-10", content = "Giờ có nơi mua", creditAmount = 0m, debitAmount = 5_000_000m,
+            note = (string?)null, categoryId, planId, goldTypeId, goldQuantity = 0.5m, purchasePlaceId = placeId
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        var summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        ItemBody item = summary!.Items.Single(i => i.Content == "Giờ có nơi mua");
+        item.PurchasePlaceId.ShouldBe(placeId);
+        item.PurchasePlaceName.ShouldBe("Chỗ mua placeupd");
+    }
+
+    [Fact]
+    public async Task SavingsBank_RoundTrips_AndNormalizes()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("savbank-tx@example.com", "savbanktx");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi SavBank", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Gửi tiết kiệm", creditAmount = 0m, debitAmount = 5_000_000m,
+            note = (string?)null, categoryId, planId, bank = "VPBank", savingsBank = "  Vietinbank  "
+        })).StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Gửi trắng", creditAmount = 0m, debitAmount = 1_000_000m,
+            note = (string?)null, categoryId, planId, savingsBank = "   "
+        })).StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        var summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        ItemBody saved = summary!.Items.Single(i => i.Content == "Gửi tiết kiệm");
+        saved.SavingsBank.ShouldBe("Vietinbank");
+        saved.Bank.ShouldBe("VPBank");
+        summary.Items.Single(i => i.Content == "Gửi trắng").SavingsBank.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task SavingsBank_TooLong_Returns400()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("savbank-long@example.com", "savbanklong");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi SavLong", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+
+        var response = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Quá dài", creditAmount = 0m, debitAmount = 1_000m,
+            note = (string?)null, categoryId, planId, savingsBank = new string('x', 101)
+        });
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync()).ShouldContain("Transactions.SavingsBankTooLong");
+    }
+
+    [Fact]
+    public async Task SavingsBank_UpdatePath_ThreadsField()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("savbank-upd@example.com", "savbankupd");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi SavUpd", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+
+        var create = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-10", content = "Chưa có nơi gửi", creditAmount = 0m, debitAmount = 2_000_000m,
+            note = (string?)null, categoryId, planId
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid transactionId = (await create.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        // PUT with the savings bank — guards the explicit request-DTO threading.
+        (await client.PutAsJsonAsync($"/transactions/{transactionId}", new
+        {
+            date = "2026-08-10", content = "Giờ có nơi gửi", creditAmount = 0m, debitAmount = 2_000_000m,
+            note = (string?)null, categoryId, planId, savingsBank = "Vietinbank"
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        var summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        summary!.Items.Single(i => i.Id == transactionId).SavingsBank.ShouldBe("Vietinbank");
+
+        // PUT with null clears it.
+        (await client.PutAsJsonAsync($"/transactions/{transactionId}", new
+        {
+            date = "2026-08-10", content = "Giờ có nơi gửi", creditAmount = 0m, debitAmount = 2_000_000m,
+            note = (string?)null, categoryId, planId, savingsBank = (string?)null
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        summary!.Items.Single(i => i.Id == transactionId).SavingsBank.ShouldBeNull();
+    }
+
     internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record MoneyBody(decimal Amount, string Currency);
     internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, Guid? CategoryId, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance, List<Guid> AdvanceTransactionIds, bool IsPrepaid, string? PrepaidFrom, string? PrepaidTo, Guid? PrepaidTransactionId, Guid? BeneficiaryId, string? BeneficiaryName,
-        Guid? GoldTypeId, string? GoldTypeName, decimal? GoldQuantity);
+        Guid? GoldTypeId, string? GoldTypeName, decimal? GoldQuantity, Guid? PurchasePlaceId, string? PurchasePlaceName, string? SavingsBank);
     internal sealed record SummaryBody(List<ItemBody> Items, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
 }

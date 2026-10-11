@@ -28,7 +28,9 @@ internal sealed class DeleteGoldTypeCommandHandler(
         }
 
         bool inUse = await dbContext.Transactions.AnyAsync(
-            t => t.GoldTypeId == goldType.Id, cancellationToken);
+            t => t.GoldTypeId == goldType.Id, cancellationToken)
+            || await dbContext.GoldAcquisitions.AnyAsync(
+                a => a.GoldTypeId == goldType.Id, cancellationToken);
         if (inUse)
         {
             return Result.Failure(GoldTypeErrors.InUse);

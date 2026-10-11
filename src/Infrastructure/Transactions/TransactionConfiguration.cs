@@ -73,6 +73,9 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
         builder.Property(t => t.Bank)
             .HasMaxLength(TransactionConstants.BankMaxLength);
 
+        builder.Property(t => t.SavingsBank)
+            .HasMaxLength(TransactionConstants.SavingsBankMaxLength);
+
         builder.Property(t => t.IsAdvance)
             .HasDefaultValue(false);
 
@@ -105,6 +108,11 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
         builder.HasOne<Domain.GoldTypes.GoldType>()
             .WithMany()
             .HasForeignKey(t => t.GoldTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<Domain.PurchasePlaces.PurchasePlace>()
+            .WithMany()
+            .HasForeignKey(t => t.PurchasePlaceId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

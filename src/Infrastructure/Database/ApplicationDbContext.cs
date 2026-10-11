@@ -1,8 +1,11 @@
 using Application.Abstractions.Data;
+using Domain.Banks;
 using Domain.Beneficiaries;
 using Domain.Categories;
+using Domain.GoldAcquisitions;
 using Domain.GoldTypes;
 using Domain.Plans;
+using Domain.PurchasePlaces;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -26,6 +29,12 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<Beneficiary> Beneficiaries => Set<Beneficiary>();
 
     public DbSet<GoldType> GoldTypes => Set<GoldType>();
+
+    public DbSet<PurchasePlace> PurchasePlaces => Set<PurchasePlace>();
+
+    public DbSet<Bank> Banks => Set<Bank>();
+
+    public DbSet<GoldAcquisition> GoldAcquisitions => Set<GoldAcquisition>();
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 

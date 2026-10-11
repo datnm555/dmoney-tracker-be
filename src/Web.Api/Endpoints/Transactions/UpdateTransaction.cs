@@ -30,7 +30,9 @@ internal sealed class UpdateTransaction : IEndpoint
         Guid? ReimbursedByTransactionId = null,
         Guid? BeneficiaryId = null,
         Guid? GoldTypeId = null,
-        decimal? GoldQuantity = null);
+        decimal? GoldQuantity = null,
+        Guid? PurchasePlaceId = null,
+        string? SavingsBank = null);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -63,7 +65,9 @@ internal sealed class UpdateTransaction : IEndpoint
                 request.ReimbursedByTransactionId,
                 request.BeneficiaryId,
                 request.GoldTypeId,
-                request.GoldQuantity);
+                request.GoldQuantity,
+                request.PurchasePlaceId,
+                request.SavingsBank);
 
             Result result = await handler.Handle(command, cancellationToken);
 

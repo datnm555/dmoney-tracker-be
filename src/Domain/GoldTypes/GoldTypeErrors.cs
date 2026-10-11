@@ -18,5 +18,5 @@ public static class GoldTypeErrors
         "GoldTypes.NotFound", "Gold type not found.");
 
     public static readonly Error InUse = Error.Conflict(
-        "GoldTypes.InUse", "This gold type is used by transactions and cannot be deleted.");
+        "GoldTypes.InUse", "This gold type is used by transactions or pre-owned gold entries and cannot be deleted.");
 }

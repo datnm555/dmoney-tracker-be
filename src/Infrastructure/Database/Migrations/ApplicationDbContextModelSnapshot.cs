@@ -22,6 +22,36 @@ namespace Infrastructure.Database.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Banks.Bank", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("banks", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Beneficiaries.Beneficiary", b =>
                 {
                     b.Property<Guid>("Id")
@@ -99,6 +129,50 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("categories", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.GoldAcquisitions.GoldAcquisition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("GoldTypeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PurchasePlaceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GoldTypeId");
+
+                    b.HasIndex("PurchasePlaceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("gold_acquisitions", (string)null);
+                });
+
             modelBuilder.Entity("Domain.GoldTypes.GoldType", b =>
                 {
                     b.Property<Guid>("Id")
@@ -154,6 +228,33 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("plans", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.PurchasePlaces.PurchasePlace", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("purchase_places", (string)null);
                 });
 
             modelBuilder.Entity("Domain.SubCategories.SubCategory", b =>
@@ -274,8 +375,15 @@ namespace Infrastructure.Database.Migrations
                     b.Property<Guid?>("PrepaidTransactionId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("PurchasePlaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("ReimbursedByTransactionId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("SavingsBank")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<Guid?>("SubCategoryId")
                         .HasColumnType("uuid");
@@ -294,6 +402,8 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("PlanId");
 
                     b.HasIndex("PrepaidTransactionId");
+
+                    b.HasIndex("PurchasePlaceId");
 
                     b.HasIndex("ReimbursedByTransactionId");
 
@@ -376,8 +486,37 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Banks.Bank", b =>
+                {
+                    b.HasOne("Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Beneficiaries.Beneficiary", b =>
                 {
+                    b.HasOne("Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.GoldAcquisitions.GoldAcquisition", b =>
+                {
+                    b.HasOne("Domain.GoldTypes.GoldType", null)
+                        .WithMany()
+                        .HasForeignKey("GoldTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.PurchasePlaces.PurchasePlace", null)
+                        .WithMany()
+                        .HasForeignKey("PurchasePlaceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Domain.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -395,6 +534,15 @@ namespace Infrastructure.Database.Migrations
                 });
 
             modelBuilder.Entity("Domain.Plans.Plan", b =>
+                {
+                    b.HasOne("Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.PurchasePlaces.PurchasePlace", b =>
                 {
                     b.HasOne("Domain.Users.User", null)
                         .WithMany()
@@ -439,6 +587,11 @@ namespace Infrastructure.Database.Migrations
                         .WithMany()
                         .HasForeignKey("PrepaidTransactionId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Domain.PurchasePlaces.PurchasePlace", null)
+                        .WithMany()
+                        .HasForeignKey("PurchasePlaceId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Domain.Transactions.Transaction", null)
                         .WithMany()

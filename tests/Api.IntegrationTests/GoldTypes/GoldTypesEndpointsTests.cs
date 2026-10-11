@@ -48,6 +48,16 @@ public sealed class GoldTypesEndpointsTests(ApiTestFactory factory) : IClassFixt
         return plans![0].Id;
     }
 
+    private static async Task<Guid> CreateAcquisitionAsync(HttpClient client, Guid goldTypeId)
+    {
+        var response = await client.PostAsJsonAsync("/gold/acquisitions", new
+        {
+            goldTypeId, date = "2024-05-10", quantity = 1m, unitPrice = 5_000_000m, note = (string?)null
+        });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
     [Fact]
     public async Task GetGoldTypes_WithoutToken_Returns401()
     {
@@ -126,6 +136,19 @@ public sealed class GoldTypesEndpointsTests(ApiTestFactory factory) : IClassFixt
         });
         update.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
+        (await client.DeleteAsync($"/gold-types/{goldTypeId}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task Delete_BlockedByAcquisition_ThenAllowed()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("gold-acqguard@example.com", "goldacqguard");
+        Guid goldTypeId = await CreateGoldTypeAsync(client, "Có acquisition");
+
+        Guid acquisitionId = await CreateAcquisitionAsync(client, goldTypeId);
+        (await client.DeleteAsync($"/gold-types/{goldTypeId}")).StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        (await client.DeleteAsync($"/gold/acquisitions/{acquisitionId}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
         (await client.DeleteAsync($"/gold-types/{goldTypeId}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
 }
