@@ -286,6 +286,7 @@
   <data name="gold.sold" xml:space="preserve"><value>Đã bán</value></data>
   <data name="gold.avgCost" xml:space="preserve"><value>Giá vốn TB/chỉ</value></data>
   <data name="gold.totalSpent" xml:space="preserve"><value>Tổng tiền mua</value></data>
+  <data name="gold.totalSaved" xml:space="preserve"><value>Tổng tiền tiết kiệm</value></data>
   <data name="gold.totalReceived" xml:space="preserve"><value>Tổng tiền bán</value></data>
   <data name="gold.history" xml:space="preserve"><value>Lịch sử mua bán</value></data>
   <data name="gold.unit" xml:space="preserve"><value>chỉ</value></data>

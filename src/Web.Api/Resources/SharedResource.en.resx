@@ -286,6 +286,7 @@
   <data name="gold.sold" xml:space="preserve"><value>Sold</value></data>
   <data name="gold.avgCost" xml:space="preserve"><value>Avg cost per chỉ</value></data>
   <data name="gold.totalSpent" xml:space="preserve"><value>Total spent</value></data>
+  <data name="gold.totalSaved" xml:space="preserve"><value>Total saved</value></data>
   <data name="gold.totalReceived" xml:space="preserve"><value>Total received</value></data>
   <data name="gold.history" xml:space="preserve"><value>Trade history</value></data>
   <data name="gold.unit" xml:space="preserve"><value>chỉ</value></data>
