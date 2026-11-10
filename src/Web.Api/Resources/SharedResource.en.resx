@@ -445,4 +445,31 @@
   <data name="accounts.dueIn" xml:space="preserve"><value>due in</value></data>
   <data name="accounts.overdue" xml:space="preserve"><value>overdue</value></data>
   <data name="accounts.deleteSnapshotConfirm" xml:space="preserve"><value>Delete this balance reading?</value></data>
+  <data name="menu.recurring" xml:space="preserve"><value>Payment schedule</value></data>
+  <data name="recurring.title" xml:space="preserve"><value>Payment schedule</value></data>
+  <data name="recurring.hint" xml:space="preserve"><value>Monthly payments — press Record to create a pre-filled transaction.</value></data>
+  <data name="recurring.total" xml:space="preserve"><value>Due this month</value></data>
+  <data name="recurring.paid" xml:space="preserve"><value>Paid</value></data>
+  <data name="recurring.remaining" xml:space="preserve"><value>Remaining</value></data>
+  <data name="recurring.record" xml:space="preserve"><value>Record</value></data>
+  <data name="recurring.markPaid" xml:space="preserve"><value>Mark paid</value></data>
+  <data name="recurring.undo" xml:space="preserve"><value>Undo</value></data>
+  <data name="recurring.history" xml:space="preserve"><value>History</value></data>
+  <data name="recurring.manage" xml:space="preserve"><value>Manage recurring items</value></data>
+  <data name="recurring.add" xml:space="preserve"><value>Add item</value></data>
+  <data name="recurring.edit" xml:space="preserve"><value>Edit item</value></data>
+  <data name="recurring.deleteConfirm" xml:space="preserve"><value>Delete this item and its payment history?</value></data>
+  <data name="recurring.name" xml:space="preserve"><value>Name</value></data>
+  <data name="recurring.amount" xml:space="preserve"><value>Amount</value></data>
+  <data name="recurring.isVariable" xml:space="preserve"><value>Amount varies monthly</value></data>
+  <data name="recurring.estimate" xml:space="preserve"><value>estimate</value></data>
+  <data name="recurring.dayOfMonth" xml:space="preserve"><value>Day of month</value></data>
+  <data name="recurring.isActive" xml:space="preserve"><value>Active</value></data>
+  <data name="recurring.dueDate" xml:space="preserve"><value>Due date</value></data>
+  <data name="recurring.paidOn" xml:space="preserve"><value>Paid on</value></data>
+  <data name="recurring.dueIn" xml:space="preserve"><value>due in</value></data>
+  <data name="recurring.statusUpcoming" xml:space="preserve"><value>Upcoming</value></data>
+  <data name="recurring.empty" xml:space="preserve"><value>No recurring items yet</value></data>
+  <data name="recurring.cardRow" xml:space="preserve"><value>Card statement</value></data>
+  <data name="recurring.enterAmount" xml:space="preserve"><value>Enter amount</value></data>
 </root>

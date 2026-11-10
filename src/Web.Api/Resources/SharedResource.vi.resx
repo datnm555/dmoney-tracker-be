@@ -445,4 +445,31 @@
   <data name="accounts.dueIn" xml:space="preserve"><value>đến hạn sau</value></data>
   <data name="accounts.overdue" xml:space="preserve"><value>quá hạn</value></data>
   <data name="accounts.deleteSnapshotConfirm" xml:space="preserve"><value>Xoá lần cập nhật số dư này?</value></data>
+  <data name="menu.recurring" xml:space="preserve"><value>Lịch thanh toán</value></data>
+  <data name="recurring.title" xml:space="preserve"><value>Lịch thanh toán</value></data>
+  <data name="recurring.hint" xml:space="preserve"><value>Các khoản trả hàng tháng — bấm Ghi nhận để tạo giao dịch đã điền sẵn.</value></data>
+  <data name="recurring.total" xml:space="preserve"><value>Phải trả tháng này</value></data>
+  <data name="recurring.paid" xml:space="preserve"><value>Đã trả</value></data>
+  <data name="recurring.remaining" xml:space="preserve"><value>Còn lại</value></data>
+  <data name="recurring.record" xml:space="preserve"><value>Ghi nhận</value></data>
+  <data name="recurring.markPaid" xml:space="preserve"><value>Đánh dấu đã trả</value></data>
+  <data name="recurring.undo" xml:space="preserve"><value>Hoàn tác</value></data>
+  <data name="recurring.history" xml:space="preserve"><value>Lịch sử</value></data>
+  <data name="recurring.manage" xml:space="preserve"><value>Quản lý khoản định kỳ</value></data>
+  <data name="recurring.add" xml:space="preserve"><value>Thêm khoản</value></data>
+  <data name="recurring.edit" xml:space="preserve"><value>Sửa khoản</value></data>
+  <data name="recurring.deleteConfirm" xml:space="preserve"><value>Xoá khoản này và lịch sử thanh toán của nó?</value></data>
+  <data name="recurring.name" xml:space="preserve"><value>Tên khoản</value></data>
+  <data name="recurring.amount" xml:space="preserve"><value>Số tiền</value></data>
+  <data name="recurring.isVariable" xml:space="preserve"><value>Số tiền thay đổi hàng tháng</value></data>
+  <data name="recurring.estimate" xml:space="preserve"><value>ước tính</value></data>
+  <data name="recurring.dayOfMonth" xml:space="preserve"><value>Ngày trả hàng tháng</value></data>
+  <data name="recurring.isActive" xml:space="preserve"><value>Đang dùng</value></data>
+  <data name="recurring.dueDate" xml:space="preserve"><value>Hạn trả</value></data>
+  <data name="recurring.paidOn" xml:space="preserve"><value>Trả ngày</value></data>
+  <data name="recurring.dueIn" xml:space="preserve"><value>đến hạn sau</value></data>
+  <data name="recurring.statusUpcoming" xml:space="preserve"><value>Chưa đến hạn</value></data>
+  <data name="recurring.empty" xml:space="preserve"><value>Chưa có khoản định kỳ nào</value></data>
+  <data name="recurring.cardRow" xml:space="preserve"><value>Sao kê thẻ</value></data>
+  <data name="recurring.enterAmount" xml:space="preserve"><value>Tự nhập</value></data>
 </root>

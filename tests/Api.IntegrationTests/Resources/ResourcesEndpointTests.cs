@@ -71,6 +71,33 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.dueTodayFull"].ShouldBe("đến hạn hôm nay");
         resources["accounts.overdue"].ShouldBe("quá hạn");
         resources["accounts.deleteSnapshotConfirm"].ShouldBe("Xoá lần cập nhật số dư này?");
+        resources["menu.recurring"].ShouldBe("Lịch thanh toán");
+        resources["recurring.title"].ShouldBe("Lịch thanh toán");
+        resources["recurring.hint"].ShouldBe("Các khoản trả hàng tháng — bấm Ghi nhận để tạo giao dịch đã điền sẵn.");
+        resources["recurring.total"].ShouldBe("Phải trả tháng này");
+        resources["recurring.paid"].ShouldBe("Đã trả");
+        resources["recurring.remaining"].ShouldBe("Còn lại");
+        resources["recurring.record"].ShouldBe("Ghi nhận");
+        resources["recurring.markPaid"].ShouldBe("Đánh dấu đã trả");
+        resources["recurring.undo"].ShouldBe("Hoàn tác");
+        resources["recurring.history"].ShouldBe("Lịch sử");
+        resources["recurring.manage"].ShouldBe("Quản lý khoản định kỳ");
+        resources["recurring.add"].ShouldBe("Thêm khoản");
+        resources["recurring.edit"].ShouldBe("Sửa khoản");
+        resources["recurring.deleteConfirm"].ShouldBe("Xoá khoản này và lịch sử thanh toán của nó?");
+        resources["recurring.name"].ShouldBe("Tên khoản");
+        resources["recurring.amount"].ShouldBe("Số tiền");
+        resources["recurring.isVariable"].ShouldBe("Số tiền thay đổi hàng tháng");
+        resources["recurring.estimate"].ShouldBe("ước tính");
+        resources["recurring.dayOfMonth"].ShouldBe("Ngày trả hàng tháng");
+        resources["recurring.isActive"].ShouldBe("Đang dùng");
+        resources["recurring.dueDate"].ShouldBe("Hạn trả");
+        resources["recurring.paidOn"].ShouldBe("Trả ngày");
+        resources["recurring.dueIn"].ShouldBe("đến hạn sau");
+        resources["recurring.statusUpcoming"].ShouldBe("Chưa đến hạn");
+        resources["recurring.empty"].ShouldBe("Chưa có khoản định kỳ nào");
+        resources["recurring.cardRow"].ShouldBe("Sao kê thẻ");
+        resources["recurring.enterAmount"].ShouldBe("Tự nhập");
     }
 
     [Fact]
@@ -134,6 +161,33 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.dueTodayFull"].ShouldBe("due today");
         resources["accounts.overdue"].ShouldBe("overdue");
         resources["accounts.deleteSnapshotConfirm"].ShouldBe("Delete this balance reading?");
+        resources["menu.recurring"].ShouldBe("Payment schedule");
+        resources["recurring.title"].ShouldBe("Payment schedule");
+        resources["recurring.hint"].ShouldBe("Monthly payments — press Record to create a pre-filled transaction.");
+        resources["recurring.total"].ShouldBe("Due this month");
+        resources["recurring.paid"].ShouldBe("Paid");
+        resources["recurring.remaining"].ShouldBe("Remaining");
+        resources["recurring.record"].ShouldBe("Record");
+        resources["recurring.markPaid"].ShouldBe("Mark paid");
+        resources["recurring.undo"].ShouldBe("Undo");
+        resources["recurring.history"].ShouldBe("History");
+        resources["recurring.manage"].ShouldBe("Manage recurring items");
+        resources["recurring.add"].ShouldBe("Add item");
+        resources["recurring.edit"].ShouldBe("Edit item");
+        resources["recurring.deleteConfirm"].ShouldBe("Delete this item and its payment history?");
+        resources["recurring.name"].ShouldBe("Name");
+        resources["recurring.amount"].ShouldBe("Amount");
+        resources["recurring.isVariable"].ShouldBe("Amount varies monthly");
+        resources["recurring.estimate"].ShouldBe("estimate");
+        resources["recurring.dayOfMonth"].ShouldBe("Day of month");
+        resources["recurring.isActive"].ShouldBe("Active");
+        resources["recurring.dueDate"].ShouldBe("Due date");
+        resources["recurring.paidOn"].ShouldBe("Paid on");
+        resources["recurring.dueIn"].ShouldBe("due in");
+        resources["recurring.statusUpcoming"].ShouldBe("Upcoming");
+        resources["recurring.empty"].ShouldBe("No recurring items yet");
+        resources["recurring.cardRow"].ShouldBe("Card statement");
+        resources["recurring.enterAmount"].ShouldBe("Enter amount");
     }
 
     [Fact]
