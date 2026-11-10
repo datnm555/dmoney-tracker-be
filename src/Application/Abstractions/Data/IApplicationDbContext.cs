@@ -1,3 +1,4 @@
+using Domain.Accounts;
 using Domain.Banks;
 using Domain.Beneficiaries;
 using Domain.Categories;
@@ -31,6 +32,10 @@ public interface IApplicationDbContext
     DbSet<PurchasePlace> PurchasePlaces { get; }
 
     DbSet<Bank> Banks { get; }
+
+    DbSet<Account> Accounts { get; }
+
+    DbSet<AccountSnapshot> AccountSnapshots { get; }
 
     DbSet<GoldAcquisition> GoldAcquisitions { get; }
 

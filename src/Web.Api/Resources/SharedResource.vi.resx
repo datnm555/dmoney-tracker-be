@@ -269,6 +269,16 @@
   <data name="Banks.NameTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
   <data name="Banks.Duplicate" xml:space="preserve"><value>Ngân hàng này đã tồn tại.</value></data>
   <data name="Banks.NotFound" xml:space="preserve"><value>Không tìm thấy ngân hàng.</value></data>
+  <data name="Accounts.NotFound" xml:space="preserve"><value>Không tìm thấy tài khoản.</value></data>
+  <data name="Accounts.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên tài khoản.</value></data>
+  <data name="Accounts.NameTooLong" xml:space="preserve"><value>Tên tối đa 100 ký tự.</value></data>
+  <data name="Accounts.InvalidType" xml:space="preserve"><value>Loại tài khoản không hợp lệ.</value></data>
+  <data name="Accounts.InvalidLastDigits" xml:space="preserve"><value>4 số cuối phải gồm đúng 4 chữ số.</value></data>
+  <data name="Accounts.InvalidDay" xml:space="preserve"><value>Ngày phải từ 1 đến 31.</value></data>
+  <data name="Accounts.NegativeAmount" xml:space="preserve"><value>Số tiền không được âm.</value></data>
+  <data name="Accounts.InvalidInterestRate" xml:space="preserve"><value>Lãi suất phải từ 0 đến 100.</value></data>
+  <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Không tìm thấy bản ghi số dư.</value></data>
+  <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 500 ký tự.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>

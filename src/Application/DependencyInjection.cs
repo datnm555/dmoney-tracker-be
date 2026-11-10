@@ -1,4 +1,6 @@
 using Application.Abstractions.Messaging;
+using Application.Accounts;
+using Application.Accounts.Data;
 using Application.Banks;
 using Application.Banks.Data;
 using Application.Beneficiaries;
@@ -71,6 +73,11 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<UpdateBankCommand>, UpdateBankCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteBankCommand>, DeleteBankCommandHandler>();
         services.AddScoped<ICommandHandler<SetDefaultBankCommand>, SetDefaultBankCommandHandler>();
+
+        services.AddScoped<IQueryHandler<GetAccountsQuery, List<AccountResponse>>, GetAccountsQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateAccountCommand, Guid>, CreateAccountCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateAccountCommand>, UpdateAccountCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteAccountCommand>, DeleteAccountCommandHandler>();
         services.AddScoped<IQueryHandler<GetPurchasePlacesQuery, List<PurchasePlaceResponse>>, GetPurchasePlacesQueryHandler>();
         services.AddScoped<ICommandHandler<CreatePurchasePlaceCommand, Guid>, CreatePurchasePlaceCommandHandler>();
         services.AddScoped<ICommandHandler<UpdatePurchasePlaceCommand>, UpdatePurchasePlaceCommandHandler>();

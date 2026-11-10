@@ -269,6 +269,16 @@
   <data name="Banks.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
   <data name="Banks.Duplicate" xml:space="preserve"><value>This bank already exists.</value></data>
   <data name="Banks.NotFound" xml:space="preserve"><value>Bank not found.</value></data>
+  <data name="Accounts.NotFound" xml:space="preserve"><value>Account not found.</value></data>
+  <data name="Accounts.NameRequired" xml:space="preserve"><value>Please enter an account name.</value></data>
+  <data name="Accounts.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
+  <data name="Accounts.InvalidType" xml:space="preserve"><value>Invalid account type.</value></data>
+  <data name="Accounts.InvalidLastDigits" xml:space="preserve"><value>Last digits must be exactly 4 digits.</value></data>
+  <data name="Accounts.InvalidDay" xml:space="preserve"><value>Day must be between 1 and 31.</value></data>
+  <data name="Accounts.NegativeAmount" xml:space="preserve"><value>Amount must not be negative.</value></data>
+  <data name="Accounts.InvalidInterestRate" xml:space="preserve"><value>Interest rate must be between 0 and 100.</value></data>
+  <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Balance entry not found.</value></data>
+  <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Note must be at most 500 characters.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>People</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Plans</value></data>

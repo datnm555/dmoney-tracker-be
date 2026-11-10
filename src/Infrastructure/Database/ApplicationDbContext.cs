@@ -1,4 +1,5 @@
 using Application.Abstractions.Data;
+using Domain.Accounts;
 using Domain.Banks;
 using Domain.Beneficiaries;
 using Domain.Categories;
@@ -33,6 +34,10 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<PurchasePlace> PurchasePlaces => Set<PurchasePlace>();
 
     public DbSet<Bank> Banks => Set<Bank>();
+
+    public DbSet<Account> Accounts => Set<Account>();
+
+    public DbSet<AccountSnapshot> AccountSnapshots => Set<AccountSnapshot>();
 
     public DbSet<GoldAcquisition> GoldAcquisitions => Set<GoldAcquisition>();
 
