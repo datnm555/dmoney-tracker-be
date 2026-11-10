@@ -269,6 +269,31 @@
   <data name="Banks.NameTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
   <data name="Banks.Duplicate" xml:space="preserve"><value>Ngân hàng này đã tồn tại.</value></data>
   <data name="Banks.NotFound" xml:space="preserve"><value>Không tìm thấy ngân hàng.</value></data>
+  <data name="Accounts.NotFound" xml:space="preserve"><value>Không tìm thấy tài khoản.</value></data>
+  <data name="Accounts.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên tài khoản.</value></data>
+  <data name="Accounts.NameTooLong" xml:space="preserve"><value>Tên tối đa 100 ký tự.</value></data>
+  <data name="Accounts.InvalidType" xml:space="preserve"><value>Loại tài khoản không hợp lệ.</value></data>
+  <data name="Accounts.InvalidLastDigits" xml:space="preserve"><value>4 số cuối phải gồm đúng 4 chữ số.</value></data>
+  <data name="Accounts.InvalidDay" xml:space="preserve"><value>Ngày phải từ 1 đến 31.</value></data>
+  <data name="Accounts.NegativeAmount" xml:space="preserve"><value>Số tiền không được âm.</value></data>
+  <data name="Accounts.InvalidInterestRate" xml:space="preserve"><value>Lãi suất phải từ 0 đến 100.</value></data>
+  <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Không tìm thấy bản ghi số dư.</value></data>
+  <data name="Accounts.BankNameTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
+  <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 500 ký tự.</value></data>
+  <data name="RecurringPayments.NotFound" xml:space="preserve"><value>Không tìm thấy khoản định kỳ.</value></data>
+  <data name="RecurringPayments.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên khoản.</value></data>
+  <data name="RecurringPayments.NameTooLong" xml:space="preserve"><value>Tên tối đa 100 ký tự.</value></data>
+  <data name="RecurringPayments.NegativeAmount" xml:space="preserve"><value>Số tiền không được âm.</value></data>
+  <data name="RecurringPayments.InvalidDay" xml:space="preserve"><value>Ngày phải từ 1 đến 31.</value></data>
+  <data name="RecurringPayments.InvalidCategory" xml:space="preserve"><value>Danh mục không tồn tại.</value></data>
+  <data name="RecurringPayments.InvalidSubCategory" xml:space="preserve"><value>Danh mục con không tồn tại hoặc không thuộc danh mục đã chọn.</value></data>
+  <data name="RecurringPayments.InvalidPaymentMethod" xml:space="preserve"><value>Phương thức thanh toán không hợp lệ.</value></data>
+  <data name="RecurringPayments.BankTooLong" xml:space="preserve"><value>Ngân hàng tối đa 100 ký tự.</value></data>
+  <data name="RecurringPayments.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 500 ký tự.</value></data>
+  <data name="RecurringPayments.InvalidPeriod" xml:space="preserve"><value>Kỳ phải có dạng YYYY-MM.</value></data>
+  <data name="RecurringPayments.AlreadyPaid" xml:space="preserve"><value>Khoản này đã được ghi nhận là đã trả cho tháng đó.</value></data>
+  <data name="RecurringPayments.RecordNotFound" xml:space="preserve"><value>Không tìm thấy bản ghi thanh toán.</value></data>
+  <data name="RecurringPayments.InvalidTransaction" xml:space="preserve"><value>Giao dịch không tồn tại.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>
@@ -370,4 +395,88 @@
   <data name="plans.created" xml:space="preserve"><value>Đã tạo sổ và chuyển sang sổ mới.</value></data>
   <data name="plans.form" xml:space="preserve"><value>Sổ</value></data>
   <data name="import.targetPlan" xml:space="preserve"><value>Nhập vào sổ</value></data>
+  <data name="menu.accounts" xml:space="preserve"><value>Tài khoản &amp; Nợ</value></data>
+  <data name="accounts.title" xml:space="preserve"><value>Tài khoản &amp; Nợ</value></data>
+  <data name="accounts.hint" xml:space="preserve"><value>Số dư nhập tay theo app ngân hàng — không tính từ giao dịch.</value></data>
+  <data name="accounts.cashTotal" xml:space="preserve"><value>Tiền đang có</value></data>
+  <data name="accounts.debtTotal" xml:space="preserve"><value>Tổng nợ</value></data>
+  <data name="accounts.availableCredit" xml:space="preserve"><value>Hạn mức còn dùng được</value></data>
+  <data name="accounts.monthlyInterest" xml:space="preserve"><value>Lãi thấu chi ước tính / tháng</value></data>
+  <data name="accounts.upcoming" xml:space="preserve"><value>Sắp đến hạn</value></data>
+  <data name="accounts.left" xml:space="preserve"><value>còn</value></data>
+  <data name="accounts.days" xml:space="preserve"><value>ngày</value></data>
+  <data name="accounts.dueToday" xml:space="preserve"><value>hôm nay</value></data>
+  <data name="accounts.dueTodayFull" xml:space="preserve"><value>đến hạn hôm nay</value></data>
+  <data name="accounts.markPaid" xml:space="preserve"><value>Đã trả</value></data>
+  <data name="accounts.groupMoney" xml:space="preserve"><value>Tiền</value></data>
+  <data name="accounts.groupOverdraft" xml:space="preserve"><value>Thấu chi</value></data>
+  <data name="accounts.groupCredit" xml:space="preserve"><value>Thẻ tín dụng</value></data>
+  <data name="accounts.add" xml:space="preserve"><value>Thêm tài khoản</value></data>
+  <data name="accounts.edit" xml:space="preserve"><value>Sửa tài khoản</value></data>
+  <data name="accounts.deleteConfirm" xml:space="preserve"><value>Xoá tài khoản này và toàn bộ lịch sử số dư?</value></data>
+  <data name="accounts.name" xml:space="preserve"><value>Tên</value></data>
+  <data name="accounts.type" xml:space="preserve"><value>Loại</value></data>
+  <data name="accounts.type.checking" xml:space="preserve"><value>Thanh toán</value></data>
+  <data name="accounts.type.overdraft" xml:space="preserve"><value>Thấu chi</value></data>
+  <data name="accounts.type.credit_card" xml:space="preserve"><value>Thẻ tín dụng</value></data>
+  <data name="accounts.type.ewallet" xml:space="preserve"><value>Ví điện tử</value></data>
+  <data name="accounts.type.cash" xml:space="preserve"><value>Tiền mặt</value></data>
+  <data name="accounts.bank" xml:space="preserve"><value>Ngân hàng</value></data>
+  <data name="accounts.noBank" xml:space="preserve"><value>Khác</value></data>
+  <data name="accounts.lastDigits" xml:space="preserve"><value>4 số cuối</value></data>
+  <data name="accounts.creditLimit" xml:space="preserve"><value>Hạn mức</value></data>
+  <data name="accounts.statementDay" xml:space="preserve"><value>Ngày sao kê</value></data>
+  <data name="accounts.dueDay" xml:space="preserve"><value>Ngày đến hạn</value></data>
+  <data name="accounts.interestRate" xml:space="preserve"><value>Lãi suất (%/năm)</value></data>
+  <data name="accounts.updateBalance" xml:space="preserve"><value>Cập nhật số dư</value></data>
+  <data name="accounts.history" xml:space="preserve"><value>Lịch sử số dư</value></data>
+  <data name="accounts.date" xml:space="preserve"><value>Ngày</value></data>
+  <data name="accounts.balance" xml:space="preserve"><value>Số dư</value></data>
+  <data name="accounts.owed" xml:space="preserve"><value>Dư nợ</value></data>
+  <data name="accounts.available" xml:space="preserve"><value>Khả dụng</value></data>
+  <data name="accounts.statementAmount" xml:space="preserve"><value>Phải trả kỳ này</value></data>
+  <data name="accounts.dueDate" xml:space="preserve"><value>Hạn thanh toán</value></data>
+  <data name="accounts.installmentRemaining" xml:space="preserve"><value>Trả góp còn lại</value></data>
+  <data name="accounts.statementPaid" xml:space="preserve"><value>Đã thanh toán kỳ này</value></data>
+  <data name="accounts.note" xml:space="preserve"><value>Ghi chú</value></data>
+  <data name="accounts.lastUpdated" xml:space="preserve"><value>Cập nhật</value></data>
+  <data name="accounts.empty" xml:space="preserve"><value>Chưa có tài khoản nào</value></data>
+  <data name="accounts.noSnapshot" xml:space="preserve"><value>Chưa cập nhật số dư</value></data>
+  <data name="accounts.dueIn" xml:space="preserve"><value>đến hạn sau</value></data>
+  <data name="accounts.overdue" xml:space="preserve"><value>quá hạn</value></data>
+  <data name="accounts.deleteSnapshotConfirm" xml:space="preserve"><value>Xoá lần cập nhật số dư này?</value></data>
+  <data name="menu.recurring" xml:space="preserve"><value>Lịch thanh toán</value></data>
+  <data name="recurring.title" xml:space="preserve"><value>Lịch thanh toán</value></data>
+  <data name="recurring.hint" xml:space="preserve"><value>Các khoản trả hàng tháng — bấm Ghi nhận để tạo giao dịch đã điền sẵn.</value></data>
+  <data name="recurring.total" xml:space="preserve"><value>Phải trả tháng này</value></data>
+  <data name="recurring.paid" xml:space="preserve"><value>Đã trả</value></data>
+  <data name="recurring.remaining" xml:space="preserve"><value>Còn lại</value></data>
+  <data name="recurring.record" xml:space="preserve"><value>Ghi nhận</value></data>
+  <data name="recurring.markPaid" xml:space="preserve"><value>Đánh dấu đã trả</value></data>
+  <data name="recurring.undo" xml:space="preserve"><value>Hoàn tác</value></data>
+  <data name="recurring.history" xml:space="preserve"><value>Lịch sử</value></data>
+  <data name="recurring.manage" xml:space="preserve"><value>Quản lý khoản định kỳ</value></data>
+  <data name="recurring.add" xml:space="preserve"><value>Thêm khoản</value></data>
+  <data name="recurring.edit" xml:space="preserve"><value>Sửa khoản</value></data>
+  <data name="recurring.deleteConfirm" xml:space="preserve"><value>Xoá khoản này và lịch sử thanh toán của nó?</value></data>
+  <data name="recurring.name" xml:space="preserve"><value>Tên khoản</value></data>
+  <data name="recurring.amount" xml:space="preserve"><value>Số tiền</value></data>
+  <data name="recurring.isVariable" xml:space="preserve"><value>Số tiền thay đổi hàng tháng</value></data>
+  <data name="recurring.estimate" xml:space="preserve"><value>ước tính</value></data>
+  <data name="recurring.dayOfMonth" xml:space="preserve"><value>Ngày trả hàng tháng</value></data>
+  <data name="recurring.isActive" xml:space="preserve"><value>Đang dùng</value></data>
+  <data name="recurring.dueDate" xml:space="preserve"><value>Hạn trả</value></data>
+  <data name="recurring.paidOn" xml:space="preserve"><value>Trả ngày</value></data>
+  <data name="recurring.dueIn" xml:space="preserve"><value>đến hạn sau</value></data>
+  <data name="recurring.statusUpcoming" xml:space="preserve"><value>Chưa đến hạn</value></data>
+  <data name="recurring.empty" xml:space="preserve"><value>Chưa có khoản định kỳ nào</value></data>
+  <data name="recurring.cardRow" xml:space="preserve"><value>Sao kê thẻ</value></data>
+  <data name="recurring.enterAmount" xml:space="preserve"><value>Tự nhập</value></data>
+  <data name="form.moreOptions" xml:space="preserve"><value>Tuỳ chọn khác</value></data>
+  <data name="form.payWith" xml:space="preserve"><value>Trả bằng</value></data>
+  <data name="form.payWithOther" xml:space="preserve"><value>Khác</value></data>
+  <data name="form.cashChip" xml:space="preserve"><value>Tiền mặt</value></data>
+  <data name="form.today" xml:space="preserve"><value>Hôm nay</value></data>
+  <data name="form.yesterday" xml:space="preserve"><value>Hôm qua</value></data>
+  <data name="form.suggestions" xml:space="preserve"><value>Gợi ý từ giao dịch cũ</value></data>
 </root>

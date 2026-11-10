@@ -269,6 +269,31 @@
   <data name="Banks.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
   <data name="Banks.Duplicate" xml:space="preserve"><value>This bank already exists.</value></data>
   <data name="Banks.NotFound" xml:space="preserve"><value>Bank not found.</value></data>
+  <data name="Accounts.NotFound" xml:space="preserve"><value>Account not found.</value></data>
+  <data name="Accounts.NameRequired" xml:space="preserve"><value>Please enter an account name.</value></data>
+  <data name="Accounts.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
+  <data name="Accounts.InvalidType" xml:space="preserve"><value>Invalid account type.</value></data>
+  <data name="Accounts.InvalidLastDigits" xml:space="preserve"><value>Last digits must be exactly 4 digits.</value></data>
+  <data name="Accounts.InvalidDay" xml:space="preserve"><value>Day must be between 1 and 31.</value></data>
+  <data name="Accounts.NegativeAmount" xml:space="preserve"><value>Amount must not be negative.</value></data>
+  <data name="Accounts.InvalidInterestRate" xml:space="preserve"><value>Interest rate must be between 0 and 100.</value></data>
+  <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Balance entry not found.</value></data>
+  <data name="Accounts.BankNameTooLong" xml:space="preserve"><value>Bank name must be at most 100 characters.</value></data>
+  <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Note must be at most 500 characters.</value></data>
+  <data name="RecurringPayments.NotFound" xml:space="preserve"><value>Recurring payment not found.</value></data>
+  <data name="RecurringPayments.NameRequired" xml:space="preserve"><value>Please enter a name.</value></data>
+  <data name="RecurringPayments.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
+  <data name="RecurringPayments.NegativeAmount" xml:space="preserve"><value>Amount must not be negative.</value></data>
+  <data name="RecurringPayments.InvalidDay" xml:space="preserve"><value>Day must be between 1 and 31.</value></data>
+  <data name="RecurringPayments.InvalidCategory" xml:space="preserve"><value>Category does not exist.</value></data>
+  <data name="RecurringPayments.InvalidSubCategory" xml:space="preserve"><value>Sub-category does not exist or does not belong to the category.</value></data>
+  <data name="RecurringPayments.InvalidPaymentMethod" xml:space="preserve"><value>Invalid payment method.</value></data>
+  <data name="RecurringPayments.BankTooLong" xml:space="preserve"><value>Bank must be at most 100 characters.</value></data>
+  <data name="RecurringPayments.NoteTooLong" xml:space="preserve"><value>Note must be at most 500 characters.</value></data>
+  <data name="RecurringPayments.InvalidPeriod" xml:space="preserve"><value>Period must be in the format YYYY-MM.</value></data>
+  <data name="RecurringPayments.AlreadyPaid" xml:space="preserve"><value>This item is already recorded as paid for that month.</value></data>
+  <data name="RecurringPayments.RecordNotFound" xml:space="preserve"><value>Payment record not found.</value></data>
+  <data name="RecurringPayments.InvalidTransaction" xml:space="preserve"><value>Transaction does not exist.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>People</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Plans</value></data>
@@ -370,4 +395,88 @@
   <data name="plans.created" xml:space="preserve"><value>Plan created and selected.</value></data>
   <data name="plans.form" xml:space="preserve"><value>Plan</value></data>
   <data name="import.targetPlan" xml:space="preserve"><value>Import into plan</value></data>
+  <data name="menu.accounts" xml:space="preserve"><value>Accounts &amp; Debt</value></data>
+  <data name="accounts.title" xml:space="preserve"><value>Accounts &amp; Debt</value></data>
+  <data name="accounts.hint" xml:space="preserve"><value>Balances are entered from your bank app — not computed from transactions.</value></data>
+  <data name="accounts.cashTotal" xml:space="preserve"><value>Cash on hand</value></data>
+  <data name="accounts.debtTotal" xml:space="preserve"><value>Total debt</value></data>
+  <data name="accounts.availableCredit" xml:space="preserve"><value>Available credit</value></data>
+  <data name="accounts.monthlyInterest" xml:space="preserve"><value>Est. overdraft interest / month</value></data>
+  <data name="accounts.upcoming" xml:space="preserve"><value>Due soon</value></data>
+  <data name="accounts.left" xml:space="preserve"><value>in</value></data>
+  <data name="accounts.days" xml:space="preserve"><value>days</value></data>
+  <data name="accounts.dueToday" xml:space="preserve"><value>today</value></data>
+  <data name="accounts.dueTodayFull" xml:space="preserve"><value>due today</value></data>
+  <data name="accounts.markPaid" xml:space="preserve"><value>Mark paid</value></data>
+  <data name="accounts.groupMoney" xml:space="preserve"><value>Money</value></data>
+  <data name="accounts.groupOverdraft" xml:space="preserve"><value>Overdraft</value></data>
+  <data name="accounts.groupCredit" xml:space="preserve"><value>Credit cards</value></data>
+  <data name="accounts.add" xml:space="preserve"><value>Add account</value></data>
+  <data name="accounts.edit" xml:space="preserve"><value>Edit account</value></data>
+  <data name="accounts.deleteConfirm" xml:space="preserve"><value>Delete this account and its balance history?</value></data>
+  <data name="accounts.name" xml:space="preserve"><value>Name</value></data>
+  <data name="accounts.type" xml:space="preserve"><value>Type</value></data>
+  <data name="accounts.type.checking" xml:space="preserve"><value>Checking</value></data>
+  <data name="accounts.type.overdraft" xml:space="preserve"><value>Overdraft</value></data>
+  <data name="accounts.type.credit_card" xml:space="preserve"><value>Credit card</value></data>
+  <data name="accounts.type.ewallet" xml:space="preserve"><value>E-wallet</value></data>
+  <data name="accounts.type.cash" xml:space="preserve"><value>Cash</value></data>
+  <data name="accounts.bank" xml:space="preserve"><value>Bank</value></data>
+  <data name="accounts.noBank" xml:space="preserve"><value>Other</value></data>
+  <data name="accounts.lastDigits" xml:space="preserve"><value>Last 4 digits</value></data>
+  <data name="accounts.creditLimit" xml:space="preserve"><value>Credit limit</value></data>
+  <data name="accounts.statementDay" xml:space="preserve"><value>Statement day</value></data>
+  <data name="accounts.dueDay" xml:space="preserve"><value>Due day</value></data>
+  <data name="accounts.interestRate" xml:space="preserve"><value>Interest rate (%/yr)</value></data>
+  <data name="accounts.updateBalance" xml:space="preserve"><value>Update balance</value></data>
+  <data name="accounts.history" xml:space="preserve"><value>Balance history</value></data>
+  <data name="accounts.date" xml:space="preserve"><value>Date</value></data>
+  <data name="accounts.balance" xml:space="preserve"><value>Balance</value></data>
+  <data name="accounts.owed" xml:space="preserve"><value>Amount owed</value></data>
+  <data name="accounts.available" xml:space="preserve"><value>Available</value></data>
+  <data name="accounts.statementAmount" xml:space="preserve"><value>Statement amount</value></data>
+  <data name="accounts.dueDate" xml:space="preserve"><value>Due date</value></data>
+  <data name="accounts.installmentRemaining" xml:space="preserve"><value>Installments remaining</value></data>
+  <data name="accounts.statementPaid" xml:space="preserve"><value>Statement paid</value></data>
+  <data name="accounts.note" xml:space="preserve"><value>Note</value></data>
+  <data name="accounts.lastUpdated" xml:space="preserve"><value>Updated</value></data>
+  <data name="accounts.empty" xml:space="preserve"><value>No accounts yet</value></data>
+  <data name="accounts.noSnapshot" xml:space="preserve"><value>No balance yet</value></data>
+  <data name="accounts.dueIn" xml:space="preserve"><value>due in</value></data>
+  <data name="accounts.overdue" xml:space="preserve"><value>overdue</value></data>
+  <data name="accounts.deleteSnapshotConfirm" xml:space="preserve"><value>Delete this balance reading?</value></data>
+  <data name="menu.recurring" xml:space="preserve"><value>Payment schedule</value></data>
+  <data name="recurring.title" xml:space="preserve"><value>Payment schedule</value></data>
+  <data name="recurring.hint" xml:space="preserve"><value>Monthly payments — press Record to create a pre-filled transaction.</value></data>
+  <data name="recurring.total" xml:space="preserve"><value>Due this month</value></data>
+  <data name="recurring.paid" xml:space="preserve"><value>Paid</value></data>
+  <data name="recurring.remaining" xml:space="preserve"><value>Remaining</value></data>
+  <data name="recurring.record" xml:space="preserve"><value>Record</value></data>
+  <data name="recurring.markPaid" xml:space="preserve"><value>Mark paid</value></data>
+  <data name="recurring.undo" xml:space="preserve"><value>Undo</value></data>
+  <data name="recurring.history" xml:space="preserve"><value>History</value></data>
+  <data name="recurring.manage" xml:space="preserve"><value>Manage recurring items</value></data>
+  <data name="recurring.add" xml:space="preserve"><value>Add item</value></data>
+  <data name="recurring.edit" xml:space="preserve"><value>Edit item</value></data>
+  <data name="recurring.deleteConfirm" xml:space="preserve"><value>Delete this item and its payment history?</value></data>
+  <data name="recurring.name" xml:space="preserve"><value>Name</value></data>
+  <data name="recurring.amount" xml:space="preserve"><value>Amount</value></data>
+  <data name="recurring.isVariable" xml:space="preserve"><value>Amount varies monthly</value></data>
+  <data name="recurring.estimate" xml:space="preserve"><value>estimate</value></data>
+  <data name="recurring.dayOfMonth" xml:space="preserve"><value>Day of month</value></data>
+  <data name="recurring.isActive" xml:space="preserve"><value>Active</value></data>
+  <data name="recurring.dueDate" xml:space="preserve"><value>Due date</value></data>
+  <data name="recurring.paidOn" xml:space="preserve"><value>Paid on</value></data>
+  <data name="recurring.dueIn" xml:space="preserve"><value>due in</value></data>
+  <data name="recurring.statusUpcoming" xml:space="preserve"><value>Upcoming</value></data>
+  <data name="recurring.empty" xml:space="preserve"><value>No recurring items yet</value></data>
+  <data name="recurring.cardRow" xml:space="preserve"><value>Card statement</value></data>
+  <data name="recurring.enterAmount" xml:space="preserve"><value>Enter amount</value></data>
+  <data name="form.moreOptions" xml:space="preserve"><value>More options</value></data>
+  <data name="form.payWith" xml:space="preserve"><value>Pay with</value></data>
+  <data name="form.payWithOther" xml:space="preserve"><value>Other</value></data>
+  <data name="form.cashChip" xml:space="preserve"><value>Cash</value></data>
+  <data name="form.today" xml:space="preserve"><value>Today</value></data>
+  <data name="form.yesterday" xml:space="preserve"><value>Yesterday</value></data>
+  <data name="form.suggestions" xml:space="preserve"><value>Suggestions from past transactions</value></data>
 </root>

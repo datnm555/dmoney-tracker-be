@@ -1,4 +1,8 @@
 using Application.Abstractions.Messaging;
+using Application.Accounts;
+using Application.Accounts.Data;
+using Application.RecurringPayments;
+using Application.RecurringPayments.Data;
 using Application.Banks;
 using Application.Banks.Data;
 using Application.Beneficiaries;
@@ -39,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<ImportTransactionsCommand, int>, ImportTransactionsCommandHandler>();
         services.AddScoped<IQueryHandler<GetTransactionsByMonthQuery, MonthlySummaryResponse>, GetTransactionsByMonthQueryHandler>();
         services.AddScoped<IQueryHandler<GetOpenAdvancesQuery, List<AdvanceResponse>>, GetOpenAdvancesQueryHandler>();
+        services.AddScoped<IQueryHandler<GetTransactionSuggestionsQuery, List<TransactionSuggestionResponse>>, GetTransactionSuggestionsQueryHandler>();
         services.AddScoped<IQueryHandler<GetPrepaidCreditsQuery, List<PrepaidCreditResponse>>, GetPrepaidCreditsQueryHandler>();
         services.AddScoped<ICommandHandler<RefreshTokenCommand, LoginResponse>, RefreshTokenCommandHandler>();
         services.AddScoped<ICommandHandler<LogoutCommand>, LogoutCommandHandler>();
@@ -71,6 +76,23 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<UpdateBankCommand>, UpdateBankCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteBankCommand>, DeleteBankCommandHandler>();
         services.AddScoped<ICommandHandler<SetDefaultBankCommand>, SetDefaultBankCommandHandler>();
+
+        services.AddScoped<IQueryHandler<GetAccountsQuery, List<AccountResponse>>, GetAccountsQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateAccountCommand, Guid>, CreateAccountCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateAccountCommand>, UpdateAccountCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteAccountCommand>, DeleteAccountCommandHandler>();
+        services.AddScoped<IQueryHandler<GetAccountSnapshotsQuery, List<AccountSnapshotResponse>>, GetAccountSnapshotsQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateAccountSnapshotCommand, Guid>, CreateAccountSnapshotCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateAccountSnapshotCommand>, UpdateAccountSnapshotCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteAccountSnapshotCommand>, DeleteAccountSnapshotCommandHandler>();
+        services.AddScoped<IQueryHandler<GetRecurringPaymentsQuery, List<RecurringPaymentResponse>>, GetRecurringPaymentsQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateRecurringPaymentCommand, Guid>, CreateRecurringPaymentCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateRecurringPaymentCommand>, UpdateRecurringPaymentCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteRecurringPaymentCommand>, DeleteRecurringPaymentCommandHandler>();
+        services.AddScoped<IQueryHandler<GetRecurringScheduleQuery, List<RecurringScheduleItemResponse>>, GetRecurringScheduleQueryHandler>();
+        services.AddScoped<IQueryHandler<GetRecurringPaymentRecordsQuery, List<RecurringPaymentRecordResponse>>, GetRecurringPaymentRecordsQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateRecurringPaymentRecordCommand, Guid>, CreateRecurringPaymentRecordCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteRecurringPaymentRecordCommand>, DeleteRecurringPaymentRecordCommandHandler>();
         services.AddScoped<IQueryHandler<GetPurchasePlacesQuery, List<PurchasePlaceResponse>>, GetPurchasePlacesQueryHandler>();
         services.AddScoped<ICommandHandler<CreatePurchasePlaceCommand, Guid>, CreatePurchasePlaceCommandHandler>();
         services.AddScoped<ICommandHandler<UpdatePurchasePlaceCommand>, UpdatePurchasePlaceCommandHandler>();
