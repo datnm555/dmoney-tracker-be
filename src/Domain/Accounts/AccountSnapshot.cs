@@ -36,28 +36,65 @@ public sealed class AccountSnapshot : AuditedEntity
         bool statementPaid = false,
         string? note = null)
     {
+        var snapshot = new AccountSnapshot { Id = Guid.CreateVersion7(), AccountId = accountId };
+        Result applied = snapshot.Apply(date, balance, statementAmount, dueDate, installmentRemaining, statementPaid, note);
+        return applied.IsFailure ? Result.Failure<AccountSnapshot>(applied.Error) : snapshot;
+    }
+
+    public Result Update(
+        DateOnly date,
+        decimal balance,
+        decimal? statementAmount = null,
+        DateOnly? dueDate = null,
+        decimal? installmentRemaining = null,
+        bool statementPaid = false,
+        string? note = null)
+    {
+        // Validate on a scratch copy so a failed update leaves the tracked entity untouched.
+        var scratch = new AccountSnapshot();
+        Result validated = scratch.Apply(date, balance, statementAmount, dueDate, installmentRemaining, statementPaid, note);
+        if (validated.IsFailure)
+        {
+            return validated;
+        }
+
+        Date = scratch.Date;
+        Balance = scratch.Balance;
+        StatementAmount = scratch.StatementAmount;
+        DueDate = scratch.DueDate;
+        InstallmentRemaining = scratch.InstallmentRemaining;
+        StatementPaid = scratch.StatementPaid;
+        Note = scratch.Note;
+        return Result.Success();
+    }
+
+    private Result Apply(
+        DateOnly date,
+        decimal balance,
+        decimal? statementAmount,
+        DateOnly? dueDate,
+        decimal? installmentRemaining,
+        bool statementPaid,
+        string? note)
+    {
         if (balance < 0 || statementAmount is < 0 || installmentRemaining is < 0)
         {
-            return Result.Failure<AccountSnapshot>(AccountErrors.NegativeAmount);
+            return Result.Failure(AccountErrors.NegativeAmount);
         }
 
         string? trimmedNote = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
         if (trimmedNote is { Length: > AccountConstants.NoteMaxLength })
         {
-            return Result.Failure<AccountSnapshot>(AccountErrors.NoteTooLong);
+            return Result.Failure(AccountErrors.NoteTooLong);
         }
 
-        return new AccountSnapshot
-        {
-            Id = Guid.CreateVersion7(),
-            AccountId = accountId,
-            Date = date,
-            Balance = balance,
-            StatementAmount = statementAmount,
-            DueDate = dueDate,
-            InstallmentRemaining = installmentRemaining,
-            StatementPaid = statementPaid,
-            Note = trimmedNote
-        };
+        Date = date;
+        Balance = balance;
+        StatementAmount = statementAmount;
+        DueDate = dueDate;
+        InstallmentRemaining = installmentRemaining;
+        StatementPaid = statementPaid;
+        Note = trimmedNote;
+        return Result.Success();
     }
 }

@@ -29,6 +29,16 @@ internal sealed class GetAccountsQueryHandler(
             .Where(a => a.UserId == userId)
             .ToListAsync(cancellationToken);
 
+        var accountIds = accounts.Select(a => a.Id).ToList();
+        List<AccountSnapshot> snapshots = await dbContext.AccountSnapshots
+            .Where(s => accountIds.Contains(s.AccountId))
+            .ToListAsync(cancellationToken);
+        Dictionary<Guid, AccountSnapshot> latest = snapshots
+            .GroupBy(s => s.AccountId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(s => s.Date).ThenByDescending(s => s.CreatedAt).First());
+
         // The type group order lives in AccountTypes.All, so sort in memory (a handful of rows per user).
         return accounts
             .OrderBy(a => IndexOfType(a.Type))
@@ -42,7 +52,7 @@ internal sealed class GetAccountsQueryHandler(
                 a.StatementDay,
                 a.DueDay,
                 a.InterestRatePercent,
-                null))
+                latest.TryGetValue(a.Id, out AccountSnapshot? snapshot) ? snapshot.ToResponse() : null))
             .ToList();
     }
 
