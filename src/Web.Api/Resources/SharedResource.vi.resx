@@ -391,6 +391,7 @@
   <data name="accounts.left" xml:space="preserve"><value>còn</value></data>
   <data name="accounts.days" xml:space="preserve"><value>ngày</value></data>
   <data name="accounts.dueToday" xml:space="preserve"><value>hôm nay</value></data>
+  <data name="accounts.dueTodayFull" xml:space="preserve"><value>đến hạn hôm nay</value></data>
   <data name="accounts.markPaid" xml:space="preserve"><value>Đã trả</value></data>
   <data name="accounts.groupMoney" xml:space="preserve"><value>Tiền</value></data>
   <data name="accounts.groupOverdraft" xml:space="preserve"><value>Thấu chi</value></data>
@@ -425,4 +426,6 @@
   <data name="accounts.empty" xml:space="preserve"><value>Chưa có tài khoản nào</value></data>
   <data name="accounts.noSnapshot" xml:space="preserve"><value>Chưa cập nhật số dư</value></data>
   <data name="accounts.dueIn" xml:space="preserve"><value>đến hạn sau</value></data>
+  <data name="accounts.overdue" xml:space="preserve"><value>quá hạn</value></data>
+  <data name="accounts.deleteSnapshotConfirm" xml:space="preserve"><value>Xoá lần cập nhật số dư này?</value></data>
 </root>

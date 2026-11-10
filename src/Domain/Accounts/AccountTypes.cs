@@ -1,7 +1,7 @@
 namespace Domain.Accounts;
 
 /// <summary>
-/// Account type codes. Comment-synced with the web repo (src/utils/accounts.ts).
+/// Account type codes. Comment-synced with the web repo (src/api/types.ts, the AccountType union).
 /// <see cref="All"/> is also the display order: money types, then overdraft, then credit card.
 /// </summary>
 public static class AccountTypes

@@ -391,6 +391,7 @@
   <data name="accounts.left" xml:space="preserve"><value>in</value></data>
   <data name="accounts.days" xml:space="preserve"><value>days</value></data>
   <data name="accounts.dueToday" xml:space="preserve"><value>today</value></data>
+  <data name="accounts.dueTodayFull" xml:space="preserve"><value>due today</value></data>
   <data name="accounts.markPaid" xml:space="preserve"><value>Mark paid</value></data>
   <data name="accounts.groupMoney" xml:space="preserve"><value>Money</value></data>
   <data name="accounts.groupOverdraft" xml:space="preserve"><value>Overdraft</value></data>
@@ -425,4 +426,6 @@
   <data name="accounts.empty" xml:space="preserve"><value>No accounts yet</value></data>
   <data name="accounts.noSnapshot" xml:space="preserve"><value>No balance yet</value></data>
   <data name="accounts.dueIn" xml:space="preserve"><value>due in</value></data>
+  <data name="accounts.overdue" xml:space="preserve"><value>overdue</value></data>
+  <data name="accounts.deleteSnapshotConfirm" xml:space="preserve"><value>Delete this balance reading?</value></data>
 </root>

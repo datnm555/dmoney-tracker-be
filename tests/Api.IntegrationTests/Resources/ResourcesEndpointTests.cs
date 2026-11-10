@@ -66,6 +66,9 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.empty"].ShouldBe("Chưa có tài khoản nào");
         resources["accounts.noSnapshot"].ShouldBe("Chưa cập nhật số dư");
         resources["accounts.dueIn"].ShouldBe("đến hạn sau");
+        resources["accounts.dueTodayFull"].ShouldBe("đến hạn hôm nay");
+        resources["accounts.overdue"].ShouldBe("quá hạn");
+        resources["accounts.deleteSnapshotConfirm"].ShouldBe("Xoá lần cập nhật số dư này?");
     }
 
     [Fact]
@@ -124,6 +127,9 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.empty"].ShouldBe("No accounts yet");
         resources["accounts.noSnapshot"].ShouldBe("No balance yet");
         resources["accounts.dueIn"].ShouldBe("due in");
+        resources["accounts.dueTodayFull"].ShouldBe("due today");
+        resources["accounts.overdue"].ShouldBe("overdue");
+        resources["accounts.deleteSnapshotConfirm"].ShouldBe("Delete this balance reading?");
     }
 
     [Fact]
