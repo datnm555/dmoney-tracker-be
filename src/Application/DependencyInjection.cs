@@ -1,6 +1,8 @@
 using Application.Abstractions.Messaging;
 using Application.Accounts;
 using Application.Accounts.Data;
+using Application.RecurringPayments;
+using Application.RecurringPayments.Data;
 using Application.Banks;
 using Application.Banks.Data;
 using Application.Beneficiaries;
@@ -82,6 +84,10 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CreateAccountSnapshotCommand, Guid>, CreateAccountSnapshotCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateAccountSnapshotCommand>, UpdateAccountSnapshotCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteAccountSnapshotCommand>, DeleteAccountSnapshotCommandHandler>();
+        services.AddScoped<IQueryHandler<GetRecurringPaymentsQuery, List<RecurringPaymentResponse>>, GetRecurringPaymentsQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateRecurringPaymentCommand, Guid>, CreateRecurringPaymentCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateRecurringPaymentCommand>, UpdateRecurringPaymentCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteRecurringPaymentCommand>, DeleteRecurringPaymentCommandHandler>();
         services.AddScoped<IQueryHandler<GetPurchasePlacesQuery, List<PurchasePlaceResponse>>, GetPurchasePlacesQueryHandler>();
         services.AddScoped<ICommandHandler<CreatePurchasePlaceCommand, Guid>, CreatePurchasePlaceCommandHandler>();
         services.AddScoped<ICommandHandler<UpdatePurchasePlaceCommand>, UpdatePurchasePlaceCommandHandler>();

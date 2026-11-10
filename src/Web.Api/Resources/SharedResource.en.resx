@@ -280,6 +280,20 @@
   <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Balance entry not found.</value></data>
   <data name="Accounts.BankNameTooLong" xml:space="preserve"><value>Bank name must be at most 100 characters.</value></data>
   <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Note must be at most 500 characters.</value></data>
+  <data name="RecurringPayments.NotFound" xml:space="preserve"><value>Recurring payment not found.</value></data>
+  <data name="RecurringPayments.NameRequired" xml:space="preserve"><value>Please enter a name.</value></data>
+  <data name="RecurringPayments.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
+  <data name="RecurringPayments.NegativeAmount" xml:space="preserve"><value>Amount must not be negative.</value></data>
+  <data name="RecurringPayments.InvalidDay" xml:space="preserve"><value>Day must be between 1 and 31.</value></data>
+  <data name="RecurringPayments.InvalidCategory" xml:space="preserve"><value>Category does not exist.</value></data>
+  <data name="RecurringPayments.InvalidSubCategory" xml:space="preserve"><value>Sub-category does not exist or does not belong to the category.</value></data>
+  <data name="RecurringPayments.InvalidPaymentMethod" xml:space="preserve"><value>Invalid payment method.</value></data>
+  <data name="RecurringPayments.BankTooLong" xml:space="preserve"><value>Bank must be at most 100 characters.</value></data>
+  <data name="RecurringPayments.NoteTooLong" xml:space="preserve"><value>Note must be at most 500 characters.</value></data>
+  <data name="RecurringPayments.InvalidPeriod" xml:space="preserve"><value>Period must be in the format YYYY-MM.</value></data>
+  <data name="RecurringPayments.AlreadyPaid" xml:space="preserve"><value>This item is already recorded as paid for that month.</value></data>
+  <data name="RecurringPayments.RecordNotFound" xml:space="preserve"><value>Payment record not found.</value></data>
+  <data name="RecurringPayments.InvalidTransaction" xml:space="preserve"><value>Transaction does not exist.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>People</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Plans</value></data>

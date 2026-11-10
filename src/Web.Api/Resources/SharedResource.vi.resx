@@ -280,6 +280,20 @@
   <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Không tìm thấy bản ghi số dư.</value></data>
   <data name="Accounts.BankNameTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
   <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 500 ký tự.</value></data>
+  <data name="RecurringPayments.NotFound" xml:space="preserve"><value>Không tìm thấy khoản định kỳ.</value></data>
+  <data name="RecurringPayments.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên khoản.</value></data>
+  <data name="RecurringPayments.NameTooLong" xml:space="preserve"><value>Tên tối đa 100 ký tự.</value></data>
+  <data name="RecurringPayments.NegativeAmount" xml:space="preserve"><value>Số tiền không được âm.</value></data>
+  <data name="RecurringPayments.InvalidDay" xml:space="preserve"><value>Ngày phải từ 1 đến 31.</value></data>
+  <data name="RecurringPayments.InvalidCategory" xml:space="preserve"><value>Danh mục không tồn tại.</value></data>
+  <data name="RecurringPayments.InvalidSubCategory" xml:space="preserve"><value>Danh mục con không tồn tại hoặc không thuộc danh mục đã chọn.</value></data>
+  <data name="RecurringPayments.InvalidPaymentMethod" xml:space="preserve"><value>Phương thức thanh toán không hợp lệ.</value></data>
+  <data name="RecurringPayments.BankTooLong" xml:space="preserve"><value>Ngân hàng tối đa 100 ký tự.</value></data>
+  <data name="RecurringPayments.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 500 ký tự.</value></data>
+  <data name="RecurringPayments.InvalidPeriod" xml:space="preserve"><value>Kỳ phải có dạng YYYY-MM.</value></data>
+  <data name="RecurringPayments.AlreadyPaid" xml:space="preserve"><value>Khoản này đã được ghi nhận là đã trả cho tháng đó.</value></data>
+  <data name="RecurringPayments.RecordNotFound" xml:space="preserve"><value>Không tìm thấy bản ghi thanh toán.</value></data>
+  <data name="RecurringPayments.InvalidTransaction" xml:space="preserve"><value>Giao dịch không tồn tại.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>Đối tượng</value></data>
   <data name="menu.plans" xml:space="preserve"><value>Sổ</value></data>
