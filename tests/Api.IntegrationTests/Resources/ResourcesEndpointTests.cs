@@ -19,6 +19,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources.ShouldNotBeNull();
         resources["menu.summary"].ShouldBe("Tổng hợp");
         resources["Transactions.EmptyAmount"].ShouldBe("Cần ít nhất một số tiền lớn hơn 0.");
+        resources["cat.excludeFromStats"].ShouldBe("Không tính vào thống kê");
+        resources["summary.excludedBadge"].ShouldBe("Không tính");
     }
 
     [Fact]
@@ -30,6 +32,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         var resources = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
         resources.ShouldNotBeNull();
         resources["menu.summary"].ShouldBe("Summary");
+        resources["cat.excludeFromStats"].ShouldBe("Exclude from stats");
+        resources["summary.excludedBadge"].ShouldBe("Not counted");
     }
 
     [Fact]
