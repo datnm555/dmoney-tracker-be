@@ -23,6 +23,8 @@ public class GetDashboardStatsQueryHandlerTests
     private IUserContext _userContext = null!;
     private IDateTimeProvider _clock = null!;
 
+    private List<Domain.Categories.Category> _categories = [];
+
     private GetDashboardStatsQueryHandler CreateHandler(params Transaction[] transactions)
     {
         _dbContext = Substitute.For<IApplicationDbContext>();
@@ -35,6 +37,10 @@ public class GetDashboardStatsQueryHandlerTests
         _dbContext.Transactions.Returns(transactionsDbSet);
         var plansDbSet = new List<Domain.Plans.Plan> { Plan }.BuildMockDbSet();
         _dbContext.Plans.Returns(plansDbSet);
+        var categoriesDbSet = _categories.BuildMockDbSet();
+        _dbContext.Categories.Returns(categoriesDbSet);
+        var subCategoriesDbSet = new List<Domain.SubCategories.SubCategory>().BuildMockDbSet();
+        _dbContext.SubCategories.Returns(subCategoriesDbSet);
         return new GetDashboardStatsQueryHandler(_dbContext, _userContext, _clock);
     }
 
@@ -103,6 +109,29 @@ public class GetDashboardStatsQueryHandlerTests
         result.Value.ByCategory[0].Debit.Amount.ShouldBe(290_000m);
         result.Value.ByCategory[1].CategoryId.ShouldBeNull();
         result.Value.ByCategory[1].Debit.Amount.ShouldBe(50_000m);
+    }
+
+    [Fact]
+    public async Task Handle_LeavesOutTransactionsOfExcludedFromStatsCategory()
+    {
+        Domain.Categories.Category transfer = Domain.Categories.Category.Create(
+            "Chuyển tiền nội bộ", "repeat", "tester", excludeFromStats: true).Value;
+        Domain.Categories.Category food = Domain.Categories.Category.Create("Ăn hàng", "utensils", "tester").Value;
+        _categories = [transfer, food];
+        var handler = CreateHandler(
+            Tx(UserId, new DateOnly(2026, 7, 5), 0m, 100_000m, food.Id),
+            Tx(UserId, new DateOnly(2026, 7, 6), 0m, 9_000_000m, transfer.Id),
+            Tx(UserId, new DateOnly(2026, 7, 6), 9_000_000m, 0m, transfer.Id));
+
+        var result = await handler.Handle(new GetDashboardStatsQuery("2026-07", Plan.Id), CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Monthly[11].TotalCredit.Amount.ShouldBe(0m);
+        result.Value.Monthly[11].TotalDebit.Amount.ShouldBe(100_000m);
+        result.Value.Daily.Count.ShouldBe(1);
+        result.Value.Daily[0].Day.ShouldBe(5);
+        result.Value.ByCategory.Count.ShouldBe(1);
+        result.Value.ByCategory[0].CategoryId.ShouldBe(food.Id);
     }
 
     [Fact]

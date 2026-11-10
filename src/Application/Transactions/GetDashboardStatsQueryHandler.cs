@@ -62,6 +62,7 @@ internal sealed class GetDashboardStatsQueryHandler(
 
         var rows = await dbContext.Transactions
             .Where(t => t.UserId == userId && t.PlanId == planId && t.Date >= windowStart && t.Date < windowEnd)
+            .CountedInStats(dbContext)
             .GroupBy(t => new { t.Date.Year, t.Date.Month })
             .Select(g => new
             {
@@ -94,6 +95,7 @@ internal sealed class GetDashboardStatsQueryHandler(
     {
         var rows = await dbContext.Transactions
             .Where(t => t.UserId == userId && t.PlanId == planId && t.Date >= monthStart && t.Date < nextMonthStart)
+            .CountedInStats(dbContext)
             .GroupBy(t => t.Date.Day)
             .Select(g => new { Day = g.Key, Debit = g.Sum(t => t.Debit.Amount) })
             .ToListAsync(cancellationToken);
@@ -114,6 +116,7 @@ internal sealed class GetDashboardStatsQueryHandler(
                         && t.Date >= monthStart
                         && t.Date < nextMonthStart
                         && t.Debit.Amount > 0m)
+            .CountedInStats(dbContext)
             .GroupBy(t => t.CategoryId)
             .Select(g => new { CategoryId = g.Key, Debit = g.Sum(t => t.Debit.Amount) })
             .ToListAsync(cancellationToken);

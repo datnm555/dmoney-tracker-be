@@ -112,15 +112,40 @@ internal sealed class GetTransactionsByMonthQueryHandler(
             .ToListAsync(cancellationToken);
 
         items = await AttachLinksAsync(items, cancellationToken);
+        items = await FlagExcludedAsync(monthScope, items, cancellationToken);
 
-        decimal totalCredit = await monthScope.SumAsync(t => t.Credit.Amount, cancellationToken);
-        decimal totalDebit = await monthScope.SumAsync(t => t.Debit.Amount, cancellationToken);
+        // Totals skip excluded-from-stats rows; the items list above stays complete.
+        IQueryable<Transaction> countedScope = monthScope.CountedInStats(dbContext);
+        decimal totalCredit = await countedScope.SumAsync(t => t.Credit.Amount, cancellationToken);
+        decimal totalDebit = await countedScope.SumAsync(t => t.Debit.Amount, cancellationToken);
 
         return new MonthlySummaryResponse(
             items,
             new MoneyResponse(totalCredit, Money.DefaultCurrency),
             new MoneyResponse(totalDebit, Money.DefaultCurrency),
             new MoneyResponse(totalCredit - totalDebit, Money.DefaultCurrency));
+    }
+
+    /// <summary>Marks items whose category or sub-category is excluded from stats.</summary>
+    private async Task<List<TransactionResponse>> FlagExcludedAsync(
+        IQueryable<Transaction> monthScope,
+        List<TransactionResponse> items,
+        CancellationToken cancellationToken)
+    {
+        if (items.Count == 0)
+        {
+            return items;
+        }
+
+        var excludedIds = (await monthScope
+                .ExcludedFromStats(dbContext)
+                .Select(t => t.Id)
+                .ToListAsync(cancellationToken))
+            .ToHashSet();
+
+        return excludedIds.Count == 0
+            ? items
+            : items.Select(i => excludedIds.Contains(i.Id) ? i with { ExcludedFromStats = true } : i).ToList();
     }
 
     /// <summary>Attaches related transactions (advance/prepaid links, both directions).</summary>
