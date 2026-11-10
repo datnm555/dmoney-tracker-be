@@ -472,4 +472,11 @@
   <data name="recurring.empty" xml:space="preserve"><value>Chưa có khoản định kỳ nào</value></data>
   <data name="recurring.cardRow" xml:space="preserve"><value>Sao kê thẻ</value></data>
   <data name="recurring.enterAmount" xml:space="preserve"><value>Tự nhập</value></data>
+  <data name="form.moreOptions" xml:space="preserve"><value>Tuỳ chọn khác</value></data>
+  <data name="form.payWith" xml:space="preserve"><value>Trả bằng</value></data>
+  <data name="form.payWithOther" xml:space="preserve"><value>Khác</value></data>
+  <data name="form.cashChip" xml:space="preserve"><value>Tiền mặt</value></data>
+  <data name="form.today" xml:space="preserve"><value>Hôm nay</value></data>
+  <data name="form.yesterday" xml:space="preserve"><value>Hôm qua</value></data>
+  <data name="form.suggestions" xml:space="preserve"><value>Gợi ý từ giao dịch cũ</value></data>
 </root>

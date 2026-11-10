@@ -98,6 +98,13 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["recurring.empty"].ShouldBe("Chưa có khoản định kỳ nào");
         resources["recurring.cardRow"].ShouldBe("Sao kê thẻ");
         resources["recurring.enterAmount"].ShouldBe("Tự nhập");
+        resources["form.moreOptions"].ShouldBe("Tuỳ chọn khác");
+        resources["form.payWith"].ShouldBe("Trả bằng");
+        resources["form.payWithOther"].ShouldBe("Khác");
+        resources["form.cashChip"].ShouldBe("Tiền mặt");
+        resources["form.today"].ShouldBe("Hôm nay");
+        resources["form.yesterday"].ShouldBe("Hôm qua");
+        resources["form.suggestions"].ShouldBe("Gợi ý từ giao dịch cũ");
     }
 
     [Fact]
@@ -188,6 +195,13 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["recurring.empty"].ShouldBe("No recurring items yet");
         resources["recurring.cardRow"].ShouldBe("Card statement");
         resources["recurring.enterAmount"].ShouldBe("Enter amount");
+        resources["form.moreOptions"].ShouldBe("More options");
+        resources["form.payWith"].ShouldBe("Pay with");
+        resources["form.payWithOther"].ShouldBe("Other");
+        resources["form.cashChip"].ShouldBe("Cash");
+        resources["form.today"].ShouldBe("Today");
+        resources["form.yesterday"].ShouldBe("Yesterday");
+        resources["form.suggestions"].ShouldBe("Suggestions from past transactions");
     }
 
     [Fact]

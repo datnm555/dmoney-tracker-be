@@ -43,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<ImportTransactionsCommand, int>, ImportTransactionsCommandHandler>();
         services.AddScoped<IQueryHandler<GetTransactionsByMonthQuery, MonthlySummaryResponse>, GetTransactionsByMonthQueryHandler>();
         services.AddScoped<IQueryHandler<GetOpenAdvancesQuery, List<AdvanceResponse>>, GetOpenAdvancesQueryHandler>();
+        services.AddScoped<IQueryHandler<GetTransactionSuggestionsQuery, List<TransactionSuggestionResponse>>, GetTransactionSuggestionsQueryHandler>();
         services.AddScoped<IQueryHandler<GetPrepaidCreditsQuery, List<PrepaidCreditResponse>>, GetPrepaidCreditsQueryHandler>();
         services.AddScoped<ICommandHandler<RefreshTokenCommand, LoginResponse>, RefreshTokenCommandHandler>();
         services.AddScoped<ICommandHandler<LogoutCommand>, LogoutCommandHandler>();
