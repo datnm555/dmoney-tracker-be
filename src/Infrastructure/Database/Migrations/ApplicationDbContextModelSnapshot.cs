@@ -100,6 +100,11 @@ namespace Infrastructure.Database.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
+                    b.Property<bool>("ExcludeFromStats")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("Icon")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -277,6 +282,11 @@ namespace Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
+
+                    b.Property<bool>("ExcludeFromStats")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Icon")
                         .HasMaxLength(30)

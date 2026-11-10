@@ -32,7 +32,12 @@ internal sealed class CreateSubCategoryCommandHandler(
         }
 
         Result<SubCategory> subCategory = SubCategory.Create(
-            command.CategoryId, command.Name, username, command.IsDefault, command.Icon);
+            command.CategoryId,
+            command.Name,
+            username,
+            command.IsDefault,
+            command.Icon,
+            excludeFromStats: command.ExcludeFromStats);
         if (subCategory.IsFailure)
         {
             return Result.Failure<Guid>(subCategory.Error);

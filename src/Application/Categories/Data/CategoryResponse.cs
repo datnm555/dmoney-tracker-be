@@ -5,4 +5,5 @@ public sealed record CategoryResponse(
     string Name,
     string Icon,
     string? Code = null,
-    string Kind = "expense");
+    string Kind = "expense",
+    bool ExcludeFromStats = false);

@@ -27,6 +27,12 @@ public sealed class SubCategory : AuditedEntity
     /// </summary>
     public string? Code { get; private set; }
 
+    /// <summary>
+    /// When true, transactions with this sub-category still list but are left out of
+    /// income/expense totals and charts (e.g. loan principal).
+    /// </summary>
+    public bool ExcludeFromStats { get; private set; }
+
     /// <summary>Username of whoever created the sub-category.</summary>
     public string CreatedBy { get; private set; } = string.Empty;
 
@@ -39,7 +45,8 @@ public sealed class SubCategory : AuditedEntity
         string createdBy,
         bool isDefault = false,
         string? icon = null,
-        string? code = null)
+        string? code = null,
+        bool excludeFromStats = false)
     {
         string trimmedName = name?.Trim() ?? string.Empty;
         if (trimmedName.Length == 0)
@@ -73,12 +80,14 @@ public sealed class SubCategory : AuditedEntity
             IsDefault = isDefault,
             Icon = trimmedIcon,
             Code = string.IsNullOrWhiteSpace(code) ? null : code.Trim(),
+            ExcludeFromStats = excludeFromStats,
             CreatedBy = trimmedCreatedBy,
             UpdatedBy = trimmedCreatedBy
         };
     }
 
-    public Result Update(string name, bool isDefault, string? icon, string updatedBy)
+    public Result Update(
+        string name, bool isDefault, string? icon, string updatedBy, bool excludeFromStats = false)
     {
         string trimmedName = name?.Trim() ?? string.Empty;
         if (trimmedName.Length == 0)
@@ -100,6 +109,7 @@ public sealed class SubCategory : AuditedEntity
         Name = trimmedName;
         IsDefault = isDefault;
         Icon = trimmedIcon;
+        ExcludeFromStats = excludeFromStats;
         UpdatedBy = updatedBy?.Trim() ?? string.Empty;
 
         return Result.Success();

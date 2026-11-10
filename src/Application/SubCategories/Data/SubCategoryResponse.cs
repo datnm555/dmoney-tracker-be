@@ -6,4 +6,5 @@ public sealed record SubCategoryResponse(
     string Name,
     bool IsDefault,
     string? Icon = null,
-    string? Code = null);
+    string? Code = null,
+    bool ExcludeFromStats = false);

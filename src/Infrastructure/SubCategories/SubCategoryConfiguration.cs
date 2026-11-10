@@ -25,6 +25,9 @@ internal sealed class SubCategoryConfiguration : IEntityTypeConfiguration<SubCat
         builder.Property(s => s.Code)
             .HasMaxLength(SubCategoryConstants.CodeMaxLength);
 
+        builder.Property(s => s.ExcludeFromStats)
+            .HasDefaultValue(false);
+
         builder.Property(s => s.CreatedBy)
             .HasMaxLength(Domain.Categories.CategoryConstants.AuditNameMaxLength)
             .IsRequired();

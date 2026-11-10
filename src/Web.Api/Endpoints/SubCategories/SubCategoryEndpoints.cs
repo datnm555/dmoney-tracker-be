@@ -47,7 +47,8 @@ internal sealed class GetSubCategories : IEndpoint
 
 internal sealed class UpdateSubCategory : IEndpoint
 {
-    internal sealed record UpdateSubCategoryRequest(string Name, bool IsDefault = false, string? Icon = null);
+    internal sealed record UpdateSubCategoryRequest(
+        string Name, bool IsDefault = false, string? Icon = null, bool ExcludeFromStats = false);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -59,7 +60,8 @@ internal sealed class UpdateSubCategory : IEndpoint
             CancellationToken cancellationToken) =>
         {
             Result result = await handler.Handle(
-                new UpdateSubCategoryCommand(id, request.Name, request.IsDefault, request.Icon),
+                new UpdateSubCategoryCommand(
+                    id, request.Name, request.IsDefault, request.Icon, request.ExcludeFromStats),
                 cancellationToken);
 
             return result.ToHttpResult(localizer);

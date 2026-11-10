@@ -24,13 +24,19 @@ public sealed class Category : AuditedEntity
     /// <summary>Which transaction direction this category applies to (CategoryKinds).</summary>
     public string Kind { get; private set; } = CategoryKinds.Expense;
 
+    /// <summary>
+    /// When true, transactions in this category still list but are left out of
+    /// income/expense totals and charts (e.g. internal transfers).
+    /// </summary>
+    public bool ExcludeFromStats { get; private set; }
+
     /// <summary>Username of whoever created the category.</summary>
     public string CreatedBy { get; private set; } = string.Empty;
 
     /// <summary>Username of whoever last changed the category.</summary>
     public string? UpdatedBy { get; private set; }
 
-    public Result Update(string name, string icon, string updatedBy)
+    public Result Update(string name, string icon, string updatedBy, bool excludeFromStats = false)
     {
         string trimmedName = name?.Trim() ?? string.Empty;
         if (trimmedName.Length == 0)
@@ -51,13 +57,19 @@ public sealed class Category : AuditedEntity
 
         Name = trimmedName;
         Icon = trimmedIcon;
+        ExcludeFromStats = excludeFromStats;
         UpdatedBy = updatedBy?.Trim() ?? string.Empty;
 
         return Result.Success();
     }
 
     public static Result<Category> Create(
-        string name, string icon, string createdBy, string? code = null, string? kind = null)
+        string name,
+        string icon,
+        string createdBy,
+        string? code = null,
+        string? kind = null,
+        bool excludeFromStats = false)
     {
         string resolvedKind = string.IsNullOrWhiteSpace(kind) ? CategoryKinds.Expense : kind.Trim();
         if (!CategoryKinds.IsValid(resolvedKind))
@@ -91,6 +103,7 @@ public sealed class Category : AuditedEntity
             Icon = trimmedIcon,
             Code = string.IsNullOrWhiteSpace(code) ? null : code.Trim(),
             Kind = resolvedKind,
+            ExcludeFromStats = excludeFromStats,
             CreatedBy = trimmedCreatedBy,
             UpdatedBy = trimmedCreatedBy
         };

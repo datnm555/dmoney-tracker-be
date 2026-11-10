@@ -44,7 +44,8 @@ internal sealed class UpdateCategoryCommandHandler(
             return Result.Failure(CategoryErrors.Duplicate);
         }
 
-        Result updated = category.Update(command.Name!, command.Icon!, username);
+        Result updated = category.Update(
+            command.Name!, command.Icon!, username, command.ExcludeFromStats);
         if (updated.IsFailure)
         {
             return updated;
