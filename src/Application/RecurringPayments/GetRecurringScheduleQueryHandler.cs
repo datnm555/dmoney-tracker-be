@@ -1,3 +1,4 @@
+using System.Globalization;
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
@@ -14,6 +15,10 @@ internal sealed class GetRecurringScheduleQueryHandler(
     IUserContext userContext)
     : IQueryHandler<GetRecurringScheduleQuery, List<RecurringScheduleItemResponse>>
 {
+    // Fixed culture so ordering does not depend on the server's current culture.
+    private static readonly StringComparer NameComparer =
+        StringComparer.Create(new CultureInfo("vi-VN"), ignoreCase: true);
+
     public async Task<Result<List<RecurringScheduleItemResponse>>> Handle(
         GetRecurringScheduleQuery query,
         CancellationToken cancellationToken)
@@ -45,7 +50,7 @@ internal sealed class GetRecurringScheduleQueryHandler(
                 new DateOnly(monthStart.Year, monthStart.Month, Math.Min(item.DayOfMonth, daysInMonth)),
                 records.TryGetValue(item.Id, out RecurringPaymentRecord? record) ? record.ToResponse() : null))
             .OrderBy(r => r.DueDate)
-            .ThenBy(r => r.Item.Name, StringComparer.CurrentCultureIgnoreCase)
+            .ThenBy(r => r.Item.Name, NameComparer)
             .ToList();
     }
 }

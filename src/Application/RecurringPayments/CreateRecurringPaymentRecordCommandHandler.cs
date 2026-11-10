@@ -44,15 +44,37 @@ internal sealed class CreateRecurringPaymentRecordCommandHandler(
         }
 
         // Explicit check for a friendly 409; the unique (item, period) index stays as the backstop.
-        if (await dbContext.RecurringPaymentRecords.AnyAsync(
-                r => r.RecurringPaymentId == command.RecurringPaymentId && r.Period == command.Period,
-                cancellationToken))
+        if (await AlreadyRecordedAsync(command, cancellationToken))
         {
             return Result.Failure<Guid>(RecurringPaymentErrors.AlreadyPaid);
         }
 
         dbContext.RecurringPaymentRecords.Add(created.Value);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException)
+        {
+            // A concurrent request may have won the race past the check above; the unique
+            // index rejected us. Application cannot see Npgsql, so confirm by re-querying.
+            if (await AlreadyRecordedAsync(command, cancellationToken))
+            {
+                return Result.Failure<Guid>(RecurringPaymentErrors.AlreadyPaid);
+            }
+
+            throw;
+        }
+
         return created.Value.Id;
     }
+
+    private Task<bool> AlreadyRecordedAsync(
+        CreateRecurringPaymentRecordCommand command,
+        CancellationToken cancellationToken) =>
+        dbContext.RecurringPaymentRecords
+            .AsNoTracking()
+            .AnyAsync(
+                r => r.RecurringPaymentId == command.RecurringPaymentId && r.Period == command.Period,
+                cancellationToken);
 }

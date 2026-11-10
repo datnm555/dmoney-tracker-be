@@ -149,6 +149,20 @@ public sealed class RecurringScheduleEndpointsTests(ApiTestFactory factory) : IC
         (await RecordsAsync(client, id)).Count.ShouldBe(1);
     }
 
+    [Fact]
+    public async Task CreateRecord_ConcurrentSamePeriod_OneCreatedRestConflict_NeverServerError()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("rs-race@example.com", "rsrace");
+        Guid id = await CreateItemAsync(client, "X", 5);
+
+        HttpResponseMessage[] responses = await Task.WhenAll(
+            Enumerable.Range(0, 8).Select(_ => PostRecordAsync(client, id)));
+
+        responses.Count(r => r.StatusCode == HttpStatusCode.Created).ShouldBe(1);
+        responses.Count(r => r.StatusCode == HttpStatusCode.Conflict).ShouldBe(7);
+        (await RecordsAsync(client, id)).Count.ShouldBe(1);
+    }
+
     [Theory]
     [InlineData("2026-13")]
     [InlineData("nope")]
