@@ -58,7 +58,8 @@ internal sealed class UpdateSubCategoryCommandHandler(
             }
         }
 
-        Result updated = subCategory.Update(command.Name!, command.IsDefault, command.Icon, username);
+        Result updated = subCategory.Update(
+            command.Name!, command.IsDefault, command.Icon, username, command.ExcludeFromStats);
         if (updated.IsFailure)
         {
             return updated;

@@ -31,7 +31,8 @@ internal sealed class CreateCategoryCommandHandler(
             return Result.Failure<Guid>(UserErrors.Unauthenticated);
         }
 
-        Result<Category> category = Category.Create(command.Name, command.Icon, username);
+        Result<Category> category = Category.Create(
+            command.Name, command.Icon, username, excludeFromStats: command.ExcludeFromStats);
         if (category.IsFailure)
         {
             return Result.Failure<Guid>(category.Error);

@@ -28,6 +28,9 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasDefaultValue(CategoryKinds.Expense)
             .IsRequired();
 
+        builder.Property(c => c.ExcludeFromStats)
+            .HasDefaultValue(false);
+
         builder.Property(c => c.CreatedBy)
             .HasMaxLength(CategoryConstants.AuditNameMaxLength)
             .IsRequired();

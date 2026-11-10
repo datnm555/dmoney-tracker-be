@@ -46,7 +46,7 @@ internal sealed class GetCategories : IEndpoint
 
 internal sealed class UpdateCategory : IEndpoint
 {
-    internal sealed record UpdateCategoryRequest(string Name, string Icon);
+    internal sealed record UpdateCategoryRequest(string Name, string Icon, bool ExcludeFromStats = false);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -58,7 +58,8 @@ internal sealed class UpdateCategory : IEndpoint
             CancellationToken cancellationToken) =>
         {
             Result result = await handler.Handle(
-                new UpdateCategoryCommand(id, request.Name, request.Icon), cancellationToken);
+                new UpdateCategoryCommand(id, request.Name, request.Icon, request.ExcludeFromStats),
+                cancellationToken);
 
             return result.ToHttpResult(localizer);
         }).RequireAuthorization();
