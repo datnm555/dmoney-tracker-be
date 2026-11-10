@@ -27,11 +27,11 @@ internal sealed class GetRecurringPaymentsQueryHandler(
             .Where(r => r.UserId == userId)
             .ToListAsync(cancellationToken);
 
-        // Name sorts in memory (culture-aware, a handful of rows per user).
+        // Name sorts in memory (fixed vi-VN culture, a handful of rows per user).
         return items
             .OrderByDescending(r => r.IsActive)
             .ThenBy(r => r.DayOfMonth)
-            .ThenBy(r => r.Name, StringComparer.CurrentCultureIgnoreCase)
+            .ThenBy(r => r.Name, RecurringPaymentConstants.NameComparer)
             .Select(r => r.ToResponse())
             .ToList();
     }

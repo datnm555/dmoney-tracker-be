@@ -239,6 +239,24 @@ public sealed class RecurringPaymentsEndpointsTests(ApiTestFactory factory) : IC
     }
 
     [Fact]
+    public async Task Update_WithUnknownCategory_Returns400_AndItemUnchanged()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("rp-updcat@example.com", "rpupdcat");
+        Guid id = await CreateAsync(client, Valid());
+
+        await ShouldFailWithAsync(
+            await client.PutAsJsonAsync($"/recurring-payments/{id}",
+                new { name = "Changed", amount = 999m, dayOfMonth = 20, categoryId = Guid.NewGuid() }),
+            HttpStatusCode.BadRequest, "RecurringPayments.InvalidCategory");
+
+        ItemBody item = (await ListAsync(client)).Single();
+        item.Name.ShouldBe("Tiền điện");
+        item.Amount.Amount.ShouldBe(100m);
+        item.DayOfMonth.ShouldBe(5);
+        item.CategoryId.ShouldBeNull();
+    }
+
+    [Fact]
     public async Task OtherUsersItem_Returns404_AndIsAbsentFromList()
     {
         HttpClient owner = await CreateAuthenticatedClientAsync("rp-owner@example.com", "rpowner");

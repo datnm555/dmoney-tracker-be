@@ -30,6 +30,11 @@ internal sealed class UpdateRecurringPaymentCommandHandler(
         Result references = await RecurringPaymentReferences.ValidateAsync(
             dbContext, command.CategoryId, command.SubCategoryId, cancellationToken);
 
+        if (references.IsFailure)
+        {
+            return references;
+        }
+
         Result updated = item.Update(
             command.Name,
             command.CategoryId,
@@ -44,13 +49,6 @@ internal sealed class UpdateRecurringPaymentCommandHandler(
         if (updated.IsFailure)
         {
             return updated;
-        }
-
-        if (references.IsFailure)
-        {
-            // Update already mutated the tracked entity; reload is unnecessary because nothing is saved
-            // and the scope ends with this request.
-            return references;
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
