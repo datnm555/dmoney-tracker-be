@@ -3,13 +3,18 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Api.IntegrationTests.Infrastructure;
+using Domain.Transactions;
+using global::Infrastructure.Database;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace Api.IntegrationTests.Transactions;
 
 public sealed class TransactionSuggestionsEndpointTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
-    private async Task<HttpClient> CreateAuthenticatedClientAsync()
+    private async Task<HttpClient> CreateAuthenticatedClientAsync() => (await CreateClientWithUserAsync()).Client;
+
+    private async Task<(HttpClient Client, Guid UserId)> CreateClientWithUserAsync()
     {
         string tag = Guid.NewGuid().ToString("N")[..12];
         string email = $"sugg-{tag}@example.com";
@@ -22,7 +27,7 @@ public sealed class TransactionSuggestionsEndpointTests(ApiTestFactory factory) 
         login.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await login.Content.ReadFromJsonAsync<LoginBody>();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", body!.Token);
-        return client;
+        return (client, body.UserId);
     }
 
     private static async Task<Guid> DefaultPlanAsync(HttpClient client)
@@ -119,6 +124,34 @@ public sealed class TransactionSuggestionsEndpointTests(ApiTestFactory factory) 
     }
 
     [Fact]
+    public async Task Suggestions_ManyRepeatsOfOneContentDoNotHideOlderDistinctContents()
+    {
+        (HttpClient client, Guid userId) = await CreateClientWithUserAsync();
+        Guid plan = await DefaultPlanAsync(client);
+        Guid categoryId = await CategoryFor(client);
+        using (IServiceScope scope = factory.Services.CreateScope())
+        {
+            ApplicationDbContext db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            void Seed(string date, string content) => db.Transactions.Add(Transaction.Create(
+                userId, plan, DateOnly.Parse(date, CultureInfo.InvariantCulture), content,
+                Money.Zero(), Money.Create(10000m).Value, null, categoryId).Value);
+            Seed("2026-01-01", "Ăn sáng");
+            Seed("2026-01-02", "Ăn tối");
+            Seed("2026-01-03", "Ăn vặt");
+            for (int i = 0; i < 210; i++)
+            {
+                Seed("2026-02-01", "Ăn trưa");
+            }
+
+            await db.SaveChangesAsync();
+        }
+
+        var result = await QueryAsync(client, "q=ăn");
+
+        result.Select(r => r.Content).ShouldBe(["Ăn trưa", "Ăn vặt", "Ăn tối", "Ăn sáng"]);
+    }
+
+    [Fact]
     public async Task Suggestions_OrderedByDateDescending()
     {
         HttpClient client = await CreateAuthenticatedClientAsync();
@@ -184,6 +217,10 @@ public sealed class TransactionSuggestionsEndpointTests(ApiTestFactory factory) 
         income.Type.ShouldBe("in");
         income.Amount.Amount.ShouldBe(20000000m);
         income.PaymentMethod.ShouldBe("transfer");
+        income.CategoryId.ShouldBe(await CategoryFor(client));
+        income.SubCategoryId.ShouldBeNull();
+        income.CardType.ShouldBeNull();
+        income.Bank.ShouldBeNull();
 
         var expense = (await QueryAsync(client, "q=tiền ăn")).Single();
         expense.Type.ShouldBe("out");
