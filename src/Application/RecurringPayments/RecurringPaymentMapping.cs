@@ -19,4 +19,12 @@ internal static class RecurringPaymentMapping
         item.Bank,
         item.Note,
         item.IsActive);
+
+    public static RecurringPaymentRecordResponse ToResponse(this RecurringPaymentRecord record) => new(
+        record.Id,
+        record.RecurringPaymentId,
+        record.Period,
+        new MoneyResponse(record.Amount, Money.DefaultCurrency),
+        record.PaidDate,
+        record.TransactionId);
 }

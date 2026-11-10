@@ -88,6 +88,10 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CreateRecurringPaymentCommand, Guid>, CreateRecurringPaymentCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateRecurringPaymentCommand>, UpdateRecurringPaymentCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteRecurringPaymentCommand>, DeleteRecurringPaymentCommandHandler>();
+        services.AddScoped<IQueryHandler<GetRecurringScheduleQuery, List<RecurringScheduleItemResponse>>, GetRecurringScheduleQueryHandler>();
+        services.AddScoped<IQueryHandler<GetRecurringPaymentRecordsQuery, List<RecurringPaymentRecordResponse>>, GetRecurringPaymentRecordsQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateRecurringPaymentRecordCommand, Guid>, CreateRecurringPaymentRecordCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteRecurringPaymentRecordCommand>, DeleteRecurringPaymentRecordCommandHandler>();
         services.AddScoped<IQueryHandler<GetPurchasePlacesQuery, List<PurchasePlaceResponse>>, GetPurchasePlacesQueryHandler>();
         services.AddScoped<ICommandHandler<CreatePurchasePlaceCommand, Guid>, CreatePurchasePlaceCommandHandler>();
         services.AddScoped<ICommandHandler<UpdatePurchasePlaceCommand>, UpdatePurchasePlaceCommandHandler>();

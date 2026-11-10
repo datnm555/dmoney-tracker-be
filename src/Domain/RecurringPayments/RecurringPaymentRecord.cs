@@ -1,3 +1,4 @@
+using System.Globalization;
 using SharedKernel;
 
 namespace Domain.RecurringPayments;
@@ -19,6 +20,15 @@ public sealed class RecurringPaymentRecord : AuditedEntity
 
     public Guid? TransactionId { get; private set; }
 
+    /// <summary>Parses a YYYY-MM period into the first day of that month.</summary>
+    public static bool TryParsePeriod(string? period, out DateOnly monthStart) =>
+        DateOnly.TryParseExact(
+            period + "-01",
+            "yyyy-MM-dd",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out monthStart);
+
     public static Result<RecurringPaymentRecord> Create(
         Guid recurringPaymentId,
         string period,
@@ -26,6 +36,11 @@ public sealed class RecurringPaymentRecord : AuditedEntity
         DateOnly paidDate,
         Guid? transactionId)
     {
+        if (!TryParsePeriod(period, out _))
+        {
+            return Result.Failure<RecurringPaymentRecord>(RecurringPaymentErrors.InvalidPeriod);
+        }
+
         if (amount < 0)
         {
             return Result.Failure<RecurringPaymentRecord>(RecurringPaymentErrors.NegativeAmount);
