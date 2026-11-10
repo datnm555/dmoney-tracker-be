@@ -26,6 +26,9 @@ public sealed class Account : AuditedEntity
 
     public decimal? InterestRatePercent { get; private set; }
 
+    /// <summary>Free-text bank name used to group accounts; no FK to the banks catalog.</summary>
+    public string? BankName { get; private set; }
+
     public static Result<Account> Create(
         Guid userId,
         string name,
@@ -34,10 +37,11 @@ public sealed class Account : AuditedEntity
         decimal? creditLimit = null,
         int? statementDay = null,
         int? dueDay = null,
-        decimal? interestRatePercent = null)
+        decimal? interestRatePercent = null,
+        string? bankName = null)
     {
         var account = new Account { Id = Guid.CreateVersion7(), UserId = userId };
-        Result applied = account.Apply(name, type, lastDigits, creditLimit, statementDay, dueDay, interestRatePercent);
+        Result applied = account.Apply(name, type, lastDigits, creditLimit, statementDay, dueDay, interestRatePercent, bankName);
         return applied.IsFailure ? Result.Failure<Account>(applied.Error) : account;
     }
 
@@ -48,11 +52,12 @@ public sealed class Account : AuditedEntity
         decimal? creditLimit = null,
         int? statementDay = null,
         int? dueDay = null,
-        decimal? interestRatePercent = null)
+        decimal? interestRatePercent = null,
+        string? bankName = null)
     {
         // Validate on a scratch copy so a failed update leaves the tracked entity untouched.
         var scratch = new Account();
-        Result validated = scratch.Apply(name, type, lastDigits, creditLimit, statementDay, dueDay, interestRatePercent);
+        Result validated = scratch.Apply(name, type, lastDigits, creditLimit, statementDay, dueDay, interestRatePercent, bankName);
         if (validated.IsFailure)
         {
             return validated;
@@ -65,6 +70,7 @@ public sealed class Account : AuditedEntity
         StatementDay = scratch.StatementDay;
         DueDay = scratch.DueDay;
         InterestRatePercent = scratch.InterestRatePercent;
+        BankName = scratch.BankName;
         return Result.Success();
     }
 
@@ -75,7 +81,8 @@ public sealed class Account : AuditedEntity
         decimal? creditLimit,
         int? statementDay,
         int? dueDay,
-        decimal? interestRatePercent)
+        decimal? interestRatePercent,
+        string? bankName)
     {
         string trimmed = name?.Trim() ?? string.Empty;
         if (trimmed.Length == 0)
@@ -115,8 +122,15 @@ public sealed class Account : AuditedEntity
             return Result.Failure(AccountErrors.InvalidInterestRate);
         }
 
+        string? bank = string.IsNullOrWhiteSpace(bankName) ? null : bankName.Trim();
+        if (bank is { Length: > AccountConstants.BankNameMaxLength })
+        {
+            return Result.Failure(AccountErrors.BankNameTooLong);
+        }
+
         Name = trimmed;
         Type = type;
+        BankName = bank;
         LastDigits = digits;
         CreditLimit = creditLimit;
         StatementDay = statementDay;

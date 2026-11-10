@@ -34,7 +34,8 @@ internal sealed class UpdateAccountCommandHandler(
             command.CreditLimit,
             command.StatementDay,
             command.DueDay,
-            command.InterestRatePercent);
+            command.InterestRatePercent,
+            command.BankName);
         if (updated.IsFailure)
         {
             return updated;

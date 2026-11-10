@@ -31,6 +31,10 @@ public static class AccountErrors
     public static readonly Error InvalidInterestRate = Error.Validation(
         "Accounts.InvalidInterestRate", "Interest rate must be between 0 and 100.");
 
+    public static readonly Error BankNameTooLong = Error.Validation(
+        "Accounts.BankNameTooLong",
+        $"Bank name must be at most {AccountConstants.BankNameMaxLength} characters.");
+
     public static readonly Error SnapshotNotFound = Error.NotFound(
         "Accounts.SnapshotNotFound", "Balance entry not found.");
 

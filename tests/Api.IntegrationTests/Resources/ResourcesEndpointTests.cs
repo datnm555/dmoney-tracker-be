@@ -46,6 +46,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.type.credit_card"].ShouldBe("Thẻ tín dụng");
         resources["accounts.type.ewallet"].ShouldBe("Ví điện tử");
         resources["accounts.type.cash"].ShouldBe("Tiền mặt");
+        resources["accounts.bank"].ShouldBe("Ngân hàng");
+        resources["accounts.noBank"].ShouldBe("Khác");
         resources["accounts.lastDigits"].ShouldBe("4 số cuối");
         resources["accounts.creditLimit"].ShouldBe("Hạn mức");
         resources["accounts.statementDay"].ShouldBe("Ngày sao kê");
@@ -107,6 +109,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.type.credit_card"].ShouldBe("Credit card");
         resources["accounts.type.ewallet"].ShouldBe("E-wallet");
         resources["accounts.type.cash"].ShouldBe("Cash");
+        resources["accounts.bank"].ShouldBe("Bank");
+        resources["accounts.noBank"].ShouldBe("Other");
         resources["accounts.lastDigits"].ShouldBe("Last 4 digits");
         resources["accounts.creditLimit"].ShouldBe("Credit limit");
         resources["accounts.statementDay"].ShouldBe("Statement day");

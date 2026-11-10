@@ -278,6 +278,7 @@
   <data name="Accounts.NegativeAmount" xml:space="preserve"><value>Số tiền không được âm.</value></data>
   <data name="Accounts.InvalidInterestRate" xml:space="preserve"><value>Lãi suất phải từ 0 đến 100.</value></data>
   <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Không tìm thấy bản ghi số dư.</value></data>
+  <data name="Accounts.BankNameTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
   <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 500 ký tự.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>Giao dịch đang liên kết tạm ứng/trả trước nên không thể chuyển sang sổ khác.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>Đối tượng</value></data>
@@ -406,6 +407,8 @@
   <data name="accounts.type.credit_card" xml:space="preserve"><value>Thẻ tín dụng</value></data>
   <data name="accounts.type.ewallet" xml:space="preserve"><value>Ví điện tử</value></data>
   <data name="accounts.type.cash" xml:space="preserve"><value>Tiền mặt</value></data>
+  <data name="accounts.bank" xml:space="preserve"><value>Ngân hàng</value></data>
+  <data name="accounts.noBank" xml:space="preserve"><value>Khác</value></data>
   <data name="accounts.lastDigits" xml:space="preserve"><value>4 số cuối</value></data>
   <data name="accounts.creditLimit" xml:space="preserve"><value>Hạn mức</value></data>
   <data name="accounts.statementDay" xml:space="preserve"><value>Ngày sao kê</value></data>

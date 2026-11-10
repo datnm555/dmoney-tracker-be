@@ -29,7 +29,8 @@ public sealed class AccountsEndpointsTests(ApiTestFactory factory) : IClassFixtu
     private sealed record MoneyBody(decimal Amount, string Currency);
     private sealed record AccountBody(
         Guid Id, string Name, string Type, string? LastDigits, MoneyBody? CreditLimit,
-        int? StatementDay, int? DueDay, decimal? InterestRatePercent, JsonElement? LatestSnapshot);
+        int? StatementDay, int? DueDay, decimal? InterestRatePercent, JsonElement? LatestSnapshot,
+        string? BankName = null);
 
     private static async Task<Guid> CreateAsync(HttpClient client, object body)
     {
@@ -130,6 +131,30 @@ public sealed class AccountsEndpointsTests(ApiTestFactory factory) : IClassFixtu
     }
 
     [Fact]
+    public async Task BankName_CreateUpdateClear_RoundTrips()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("acc-bank@example.com", "accbank");
+        Guid id = await CreateAsync(client, new { name = "Lương", type = "checking", bankName = "  Techcombank " });
+        (await ListAsync(client)).Single().BankName.ShouldBe("Techcombank");
+
+        (await client.PutAsJsonAsync($"/accounts/{id}", new { name = "Lương", type = "checking", bankName = "VPBank" }))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ListAsync(client)).Single().BankName.ShouldBe("VPBank");
+
+        (await client.PutAsJsonAsync($"/accounts/{id}", new { name = "Lương", type = "checking", bankName = (string?)null }))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ListAsync(client)).Single().BankName.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task BankName_Whitespace_StoresNull()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("acc-bankws@example.com", "accbankws");
+        await CreateAsync(client, new { name = "Ví", type = "ewallet", bankName = "   " });
+        (await ListAsync(client)).Single().BankName.ShouldBeNull();
+    }
+
+    [Fact]
     public async Task Delete_RemovesAccount()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("acc-delete@example.com", "accdelete");
@@ -167,7 +192,8 @@ public sealed class AccountsEndpointsTests(ApiTestFactory factory) : IClassFixtu
         { new { name = "A", type = "cash", dueDay = 32 }, "Accounts.InvalidDay" },
         { new { name = "A", type = "cash", creditLimit = -1m }, "Accounts.NegativeAmount" },
         { new { name = "A", type = "cash", interestRatePercent = -1m }, "Accounts.InvalidInterestRate" },
-        { new { name = "A", type = "cash", interestRatePercent = 101m }, "Accounts.InvalidInterestRate" }
+        { new { name = "A", type = "cash", interestRatePercent = 101m }, "Accounts.InvalidInterestRate" },
+        { new { name = "A", type = "cash", bankName = new string('x', 101) }, "Accounts.BankNameTooLong" }
     };
 
     [Theory]

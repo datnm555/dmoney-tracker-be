@@ -9,7 +9,8 @@ public sealed record CreateAccountCommand(
     decimal? CreditLimit = null,
     int? StatementDay = null,
     int? DueDay = null,
-    decimal? InterestRatePercent = null) : ICommand<Guid>;
+    decimal? InterestRatePercent = null,
+    string? BankName = null) : ICommand<Guid>;
 
 public sealed record UpdateAccountCommand(
     Guid Id,
@@ -19,6 +20,7 @@ public sealed record UpdateAccountCommand(
     decimal? CreditLimit = null,
     int? StatementDay = null,
     int? DueDay = null,
-    decimal? InterestRatePercent = null) : ICommand;
+    decimal? InterestRatePercent = null,
+    string? BankName = null) : ICommand;
 
 public sealed record DeleteAccountCommand(Guid Id) : ICommand;

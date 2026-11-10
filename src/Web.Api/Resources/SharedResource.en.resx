@@ -278,6 +278,7 @@
   <data name="Accounts.NegativeAmount" xml:space="preserve"><value>Amount must not be negative.</value></data>
   <data name="Accounts.InvalidInterestRate" xml:space="preserve"><value>Interest rate must be between 0 and 100.</value></data>
   <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Balance entry not found.</value></data>
+  <data name="Accounts.BankNameTooLong" xml:space="preserve"><value>Bank name must be at most 100 characters.</value></data>
   <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Note must be at most 500 characters.</value></data>
   <data name="Transactions.PlanMoveLinked" xml:space="preserve"><value>This transaction has advance/prepaid links and cannot move to another plan.</value></data>
   <data name="menu.beneficiaries" xml:space="preserve"><value>People</value></data>
@@ -406,6 +407,8 @@
   <data name="accounts.type.credit_card" xml:space="preserve"><value>Credit card</value></data>
   <data name="accounts.type.ewallet" xml:space="preserve"><value>E-wallet</value></data>
   <data name="accounts.type.cash" xml:space="preserve"><value>Cash</value></data>
+  <data name="accounts.bank" xml:space="preserve"><value>Bank</value></data>
+  <data name="accounts.noBank" xml:space="preserve"><value>Other</value></data>
   <data name="accounts.lastDigits" xml:space="preserve"><value>Last 4 digits</value></data>
   <data name="accounts.creditLimit" xml:space="preserve"><value>Credit limit</value></data>
   <data name="accounts.statementDay" xml:space="preserve"><value>Statement day</value></data>

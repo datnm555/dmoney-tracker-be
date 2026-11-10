@@ -27,7 +27,8 @@ internal sealed class CreateAccountCommandHandler(
             command.CreditLimit,
             command.StatementDay,
             command.DueDay,
-            command.InterestRatePercent);
+            command.InterestRatePercent,
+            command.BankName);
         if (account.IsFailure)
         {
             return Result.Failure<Guid>(account.Error);
