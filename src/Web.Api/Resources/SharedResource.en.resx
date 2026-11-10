@@ -380,4 +380,49 @@
   <data name="plans.created" xml:space="preserve"><value>Plan created and selected.</value></data>
   <data name="plans.form" xml:space="preserve"><value>Plan</value></data>
   <data name="import.targetPlan" xml:space="preserve"><value>Import into plan</value></data>
+  <data name="menu.accounts" xml:space="preserve"><value>Accounts &amp; Debt</value></data>
+  <data name="accounts.title" xml:space="preserve"><value>Accounts &amp; Debt</value></data>
+  <data name="accounts.hint" xml:space="preserve"><value>Balances are entered from your bank app — not computed from transactions.</value></data>
+  <data name="accounts.cashTotal" xml:space="preserve"><value>Cash on hand</value></data>
+  <data name="accounts.debtTotal" xml:space="preserve"><value>Total debt</value></data>
+  <data name="accounts.availableCredit" xml:space="preserve"><value>Available credit</value></data>
+  <data name="accounts.monthlyInterest" xml:space="preserve"><value>Est. overdraft interest / month</value></data>
+  <data name="accounts.upcoming" xml:space="preserve"><value>Due soon</value></data>
+  <data name="accounts.left" xml:space="preserve"><value>in</value></data>
+  <data name="accounts.days" xml:space="preserve"><value>days</value></data>
+  <data name="accounts.dueToday" xml:space="preserve"><value>today</value></data>
+  <data name="accounts.markPaid" xml:space="preserve"><value>Mark paid</value></data>
+  <data name="accounts.groupMoney" xml:space="preserve"><value>Money</value></data>
+  <data name="accounts.groupOverdraft" xml:space="preserve"><value>Overdraft</value></data>
+  <data name="accounts.groupCredit" xml:space="preserve"><value>Credit cards</value></data>
+  <data name="accounts.add" xml:space="preserve"><value>Add account</value></data>
+  <data name="accounts.edit" xml:space="preserve"><value>Edit account</value></data>
+  <data name="accounts.deleteConfirm" xml:space="preserve"><value>Delete this account and its balance history?</value></data>
+  <data name="accounts.name" xml:space="preserve"><value>Name</value></data>
+  <data name="accounts.type" xml:space="preserve"><value>Type</value></data>
+  <data name="accounts.type.checking" xml:space="preserve"><value>Checking</value></data>
+  <data name="accounts.type.overdraft" xml:space="preserve"><value>Overdraft</value></data>
+  <data name="accounts.type.credit_card" xml:space="preserve"><value>Credit card</value></data>
+  <data name="accounts.type.ewallet" xml:space="preserve"><value>E-wallet</value></data>
+  <data name="accounts.type.cash" xml:space="preserve"><value>Cash</value></data>
+  <data name="accounts.lastDigits" xml:space="preserve"><value>Last 4 digits</value></data>
+  <data name="accounts.creditLimit" xml:space="preserve"><value>Credit limit</value></data>
+  <data name="accounts.statementDay" xml:space="preserve"><value>Statement day</value></data>
+  <data name="accounts.dueDay" xml:space="preserve"><value>Due day</value></data>
+  <data name="accounts.interestRate" xml:space="preserve"><value>Interest rate (%/yr)</value></data>
+  <data name="accounts.updateBalance" xml:space="preserve"><value>Update balance</value></data>
+  <data name="accounts.history" xml:space="preserve"><value>Balance history</value></data>
+  <data name="accounts.date" xml:space="preserve"><value>Date</value></data>
+  <data name="accounts.balance" xml:space="preserve"><value>Balance</value></data>
+  <data name="accounts.owed" xml:space="preserve"><value>Amount owed</value></data>
+  <data name="accounts.available" xml:space="preserve"><value>Available</value></data>
+  <data name="accounts.statementAmount" xml:space="preserve"><value>Statement amount</value></data>
+  <data name="accounts.dueDate" xml:space="preserve"><value>Due date</value></data>
+  <data name="accounts.installmentRemaining" xml:space="preserve"><value>Installments remaining</value></data>
+  <data name="accounts.statementPaid" xml:space="preserve"><value>Statement paid</value></data>
+  <data name="accounts.note" xml:space="preserve"><value>Note</value></data>
+  <data name="accounts.lastUpdated" xml:space="preserve"><value>Updated</value></data>
+  <data name="accounts.empty" xml:space="preserve"><value>No accounts yet</value></data>
+  <data name="accounts.noSnapshot" xml:space="preserve"><value>No balance yet</value></data>
+  <data name="accounts.dueIn" xml:space="preserve"><value>due in</value></data>
 </root>
