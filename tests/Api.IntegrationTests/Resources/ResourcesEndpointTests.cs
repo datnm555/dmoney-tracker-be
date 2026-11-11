@@ -66,6 +66,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.statementUntracked"].ShouldBe("Sao kê gồm chi tiêu chưa ghi giao dịch");
         resources["accounts.payFrom"].ShouldBe("Trả từ tài khoản");
         resources["accounts.payFromNone"].ShouldBe("Không cập nhật tài khoản khác");
+        resources["accounts.closeMonth"].ShouldBe("Chốt tháng");
+        resources["accounts.spent"].ShouldBe("Đã chi trong kỳ");
         resources["Accounts.InvalidPaymentAmount"].ShouldBe("Số tiền trả phải lớn hơn 0.");
         resources["Accounts.NoBalance"].ShouldBe("Hãy cập nhật số dư thẻ trước khi trả sao kê.");
         resources["accounts.note"].ShouldBe("Ghi chú");
@@ -169,6 +171,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.statementUntracked"].ShouldBe("Statement includes spending not recorded as transactions");
         resources["accounts.payFrom"].ShouldBe("Pay from account");
         resources["accounts.payFromNone"].ShouldBe("Don't update another account");
+        resources["accounts.closeMonth"].ShouldBe("Close month");
+        resources["accounts.spent"].ShouldBe("Spent this period");
         resources["Accounts.InvalidPaymentAmount"].ShouldBe("Payment amount must be greater than zero.");
         resources["Accounts.NoBalance"].ShouldBe("Update the card balance before paying its statement.");
         resources["accounts.note"].ShouldBe("Note");

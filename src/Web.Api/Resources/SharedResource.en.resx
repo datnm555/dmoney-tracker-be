@@ -445,6 +445,15 @@
   <data name="accounts.statementUntracked" xml:space="preserve"><value>Statement includes spending not recorded as transactions</value></data>
   <data name="accounts.payFrom" xml:space="preserve"><value>Pay from account</value></data>
   <data name="accounts.payFromNone" xml:space="preserve"><value>Don't update another account</value></data>
+  <data name="accounts.closeMonth" xml:space="preserve"><value>Close month</value></data>
+  <data name="accounts.closeMonthHint" xml:space="preserve"><value>Enter the closing balance — the difference is recorded as one combined transaction.</value></data>
+  <data name="accounts.openingBalance" xml:space="preserve"><value>Opening balance</value></data>
+  <data name="accounts.closingBalance" xml:space="preserve"><value>Closing balance</value></data>
+  <data name="accounts.topUps" xml:space="preserve"><value>Money added this period</value></data>
+  <data name="accounts.spent" xml:space="preserve"><value>Spent this period</value></data>
+  <data name="accounts.received" xml:space="preserve"><value>Received this period</value></data>
+  <data name="accounts.closeContent" xml:space="preserve"><value>Summary</value></data>
+  <data name="accounts.continue" xml:space="preserve"><value>Continue</value></data>
   <data name="accounts.note" xml:space="preserve"><value>Note</value></data>
   <data name="accounts.lastUpdated" xml:space="preserve"><value>Updated</value></data>
   <data name="accounts.empty" xml:space="preserve"><value>No accounts yet</value></data>
