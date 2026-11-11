@@ -204,4 +204,54 @@ public class GetTransactionsByMonthQueryHandlerTests
         consumerItem.Links.ShouldNotBeNull();
         consumerItem.Links.Single().Relation.ShouldBe("coveredBy");
     }
+    [Fact]
+    public async Task Handle_WithDayRange_ReturnsInclusiveRangeAndIgnoresMonth()
+    {
+        var handler = CreateHandler(
+            Tx(UserId, new DateOnly(2026, 11, 4), 1m, 0m),              // before
+            Tx(UserId, new DateOnly(2026, 11, 5), 0m, 200m),            // first day
+            Tx(UserId, new DateOnly(2026, 11, 20), 1_000m, 0m),         // last day
+            Tx(UserId, new DateOnly(2026, 11, 21), 3m, 0m),             // after
+            Tx(OtherUserId, new DateOnly(2026, 11, 10), 555m, 0m));     // other user
+
+        var result = await handler.Handle(
+            new GetTransactionsByMonthQuery("2026-01", Plan.Id, "2026-11-05", "2026-11-20"),
+            CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Items.Count.ShouldBe(2);
+        result.Value.TotalCredit.Amount.ShouldBe(1_000m);
+        result.Value.TotalDebit.Amount.ShouldBe(200m);
+    }
+
+    [Theory]
+    [InlineData("2026-11-20", "2026-11-05")]
+    [InlineData("2026-11-05", null)]
+    [InlineData(null, "2026-11-05")]
+    [InlineData("2026-11-5", "2026-11-20")]
+    [InlineData("garbage", "2026-11-20")]
+    public async Task Handle_WithInvalidDayRange_Fails(string? from, string? to)
+    {
+        var handler = CreateHandler();
+
+        var result = await handler.Handle(
+            new GetTransactionsByMonthQuery("2026-11", Plan.Id, from, to), CancellationToken.None);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(TransactionErrors.InvalidDateRange);
+    }
+
+    [Fact]
+    public async Task Handle_WithDayRangeOver366Days_Fails()
+    {
+        var handler = CreateHandler();
+
+        var tooLong = await handler.Handle(
+            new GetTransactionsByMonthQuery("2026-11", Plan.Id, "2025-01-01", "2026-01-02"), CancellationToken.None);
+        var leapYear = await handler.Handle(
+            new GetTransactionsByMonthQuery("2026-11", Plan.Id, "2024-01-01", "2024-12-31"), CancellationToken.None);
+
+        tooLong.Error.ShouldBe(TransactionErrors.DateRangeTooLong);
+        leapYear.IsSuccess.ShouldBeTrue();
+    }
 }

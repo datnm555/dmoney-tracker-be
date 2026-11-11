@@ -32,30 +32,15 @@ internal sealed class GetTransactionsByMonthQueryHandler(
             return Result.Failure<MonthlySummaryResponse>(PlanErrors.NotFound);
         }
 
-        DateOnly rangeStart;
-        DateOnly rangeEnd;
-        if (query.Month.Length == 4
-            && int.TryParse(query.Month, NumberStyles.None, CultureInfo.InvariantCulture, out int year)
-            && year is >= 1 and <= 9999)
+        Result<(DateOnly Start, DateOnly EndExclusive)> range = query.From is not null || query.To is not null
+            ? ParseDayRange(query.From, query.To)
+            : ParseMonth(query.Month);
+        if (range.IsFailure)
         {
-            // A bare year selects January through December of that year.
-            rangeStart = new DateOnly(year, 1, 1);
-            rangeEnd = rangeStart.AddYears(1);
+            return Result.Failure<MonthlySummaryResponse>(range.Error);
         }
-        else if (DateOnly.TryParseExact(
-                query.Month + "-01",
-                "yyyy-MM-dd",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out DateOnly monthStart))
-        {
-            rangeStart = monthStart;
-            rangeEnd = monthStart.AddMonths(1);
-        }
-        else
-        {
-            return Result.Failure<MonthlySummaryResponse>(TransactionErrors.InvalidMonth);
-        }
+
+        (DateOnly rangeStart, DateOnly rangeEnd) = range.Value;
 
         IQueryable<Transaction> monthScope = dbContext.Transactions
             .Where(t => t.UserId == userId && t.PlanId == query.PlanId
@@ -125,6 +110,52 @@ internal sealed class GetTransactionsByMonthQueryHandler(
             new MoneyResponse(totalDebit, Money.DefaultCurrency),
             new MoneyResponse(totalCredit - totalDebit, Money.DefaultCurrency));
     }
+
+    /// <summary>Longest inclusive day range a single request may ask for (a leap year).</summary>
+    internal const int MaxRangeDays = 366;
+
+    /// <summary>A bare year selects January through December; <c>YYYY-MM</c> selects that month.</summary>
+    private static Result<(DateOnly Start, DateOnly EndExclusive)> ParseMonth(string month)
+    {
+        if (month.Length == 4
+            && int.TryParse(month, NumberStyles.None, CultureInfo.InvariantCulture, out int year)
+            && year is >= 1 and <= 9999)
+        {
+            var yearStart = new DateOnly(year, 1, 1);
+            return (yearStart, yearStart.AddYears(1));
+        }
+
+        if (DateOnly.TryParseExact(
+                month + "-01",
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateOnly monthStart))
+        {
+            return (monthStart, monthStart.AddMonths(1));
+        }
+
+        return Result.Failure<(DateOnly, DateOnly)>(TransactionErrors.InvalidMonth);
+    }
+
+    /// <summary>Inclusive <c>from</c>..<c>to</c> day range; both ends are required.</summary>
+    private static Result<(DateOnly Start, DateOnly EndExclusive)> ParseDayRange(string? from, string? to)
+    {
+        if (!TryParseDay(from, out DateOnly start) || !TryParseDay(to, out DateOnly end) || start > end)
+        {
+            return Result.Failure<(DateOnly, DateOnly)>(TransactionErrors.InvalidDateRange);
+        }
+
+        if (end.DayNumber - start.DayNumber + 1 > MaxRangeDays)
+        {
+            return Result.Failure<(DateOnly, DateOnly)>(TransactionErrors.DateRangeTooLong);
+        }
+
+        return (start, end.AddDays(1));
+    }
+
+    private static bool TryParseDay(string? value, out DateOnly day) =>
+        DateOnly.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out day);
 
     /// <summary>Marks items whose category or sub-category is excluded from stats.</summary>
     private async Task<List<TransactionResponse>> FlagExcludedAsync(

@@ -15,17 +15,20 @@ internal sealed class GetTransactionsByMonth : IEndpoint
     {
         app.MapGet("/transactions", async (
             string? month,
+            string? from,
+            string? to,
             Guid planId,
             IQueryHandler<GetTransactionsByMonthQuery, MonthlySummaryResponse> handler,
             IStringLocalizer<SharedResource> localizer,
             CancellationToken cancellationToken) =>
         {
-            // The frontend always sends ?month=; this fallback covers direct API use.
+            // ?from=&to= (YYYY-MM-DD, inclusive) select a day range and take precedence over ?month=.
+            // Without a range the frontend sends ?month=; this fallback covers direct API use.
             string effectiveMonth = month
                 ?? DateTime.UtcNow.ToString("yyyy-MM", CultureInfo.InvariantCulture);
 
             Result<MonthlySummaryResponse> result = await handler.Handle(
-                new GetTransactionsByMonthQuery(effectiveMonth, planId),
+                new GetTransactionsByMonthQuery(effectiveMonth, planId, from, to),
                 cancellationToken);
 
             return result.ToHttpResult(localizer);

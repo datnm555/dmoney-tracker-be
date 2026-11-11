@@ -62,6 +62,8 @@
   <data name="Transactions.NoteTooLong" xml:space="preserve"><value>Note must be at most 1000 characters.</value></data>
   <data name="Transactions.EmptyAmount" xml:space="preserve"><value>At least one amount must be greater than 0.</value></data>
   <data name="Transactions.InvalidMonth" xml:space="preserve"><value>Invalid month (expected format YYYY or YYYY-MM).</value></data>
+  <data name="Transactions.InvalidDateRange" xml:space="preserve"><value>Invalid date range (expected YYYY-MM-DD, start on or before end).</value></data>
+  <data name="Transactions.DateRangeTooLong" xml:space="preserve"><value>A date range can span at most 366 days.</value></data>
   <data name="Money.NegativeAmount" xml:space="preserve"><value>Amount must not be negative.</value></data>
   <data name="Money.UnsupportedCurrency" xml:space="preserve"><value>This currency is not supported.</value></data>
   <data name="category.food" xml:space="preserve"><value>Eating out</value></data>
@@ -144,6 +146,15 @@
   <data name="plans.setDefault" xml:space="preserve"><value>Set as default</value></data>
   <data name="filters.expand" xml:space="preserve"><value>Expand filters</value></data>
   <data name="filters.collapse" xml:space="preserve"><value>Collapse filters</value></data>
+  <data name="filters.dateRange" xml:space="preserve"><value>Date range</value></data>
+  <data name="filters.pickRange" xml:space="preserve"><value>Pick a date range</value></data>
+  <data name="filters.thisMonth" xml:space="preserve"><value>This month</value></data>
+  <data name="filters.lastMonth" xml:space="preserve"><value>Last month</value></data>
+  <data name="filters.apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="calendar.prevMonth" xml:space="preserve"><value>Previous month</value></data>
+  <data name="calendar.nextMonth" xml:space="preserve"><value>Next month</value></data>
+  <data name="calendar.prevYear" xml:space="preserve"><value>Previous year</value></data>
+  <data name="calendar.nextYear" xml:space="preserve"><value>Next year</value></data>
   <data name="dashboard.cashflowSub" xml:space="preserve"><value>Cash flow</value></data>
   <data name="dashboard.legendIn" xml:space="preserve"><value>In</value></data>
   <data name="dashboard.legendOut" xml:space="preserve"><value>Out</value></data>
