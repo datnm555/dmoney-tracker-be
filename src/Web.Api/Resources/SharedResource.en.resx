@@ -443,6 +443,8 @@
   <data name="accounts.installmentRemaining" xml:space="preserve"><value>Installments remaining</value></data>
   <data name="accounts.statementPaid" xml:space="preserve"><value>Statement paid</value></data>
   <data name="accounts.statementUntracked" xml:space="preserve"><value>Statement includes spending not recorded as transactions</value></data>
+  <data name="accounts.payFrom" xml:space="preserve"><value>Pay from account</value></data>
+  <data name="accounts.payFromNone" xml:space="preserve"><value>Don't update another account</value></data>
   <data name="accounts.note" xml:space="preserve"><value>Note</value></data>
   <data name="accounts.lastUpdated" xml:space="preserve"><value>Updated</value></data>
   <data name="accounts.empty" xml:space="preserve"><value>No accounts yet</value></data>
