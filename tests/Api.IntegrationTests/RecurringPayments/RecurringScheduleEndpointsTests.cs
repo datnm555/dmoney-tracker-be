@@ -92,6 +92,20 @@ public sealed class RecurringScheduleEndpointsTests(ApiTestFactory factory) : IC
     }
 
     [Fact]
+    public async Task Schedule_HidesItemBeforeItsStartPeriod()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("rs-start@example.com", "rsstart");
+        await CreateItemAsync(client, "Always", 3);
+        var response = await client.PostAsJsonAsync("/recurring-payments",
+            new { name = "From Dec", amount = 100m, dayOfMonth = 5, startPeriod = "2026-12" });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        (await ScheduleAsync(client, "2026-11")).Select(r => r.Item.Name).ShouldBe(["Always"]);
+        (await ScheduleAsync(client, "2026-12")).Select(r => r.Item.Name).ShouldBe(["Always", "From Dec"]);
+        (await ScheduleAsync(client, "2027-01")).Select(r => r.Item.Name).ShouldBe(["Always", "From Dec"]);
+    }
+
+    [Fact]
     public async Task Schedule_Day31_ClampsToMonthEnd()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("rs-clamp@example.com", "rsclamp");

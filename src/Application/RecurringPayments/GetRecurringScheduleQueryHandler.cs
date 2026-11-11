@@ -39,7 +39,10 @@ internal sealed class GetRecurringScheduleQueryHandler(
 
         int daysInMonth = DateTime.DaysInMonth(monthStart.Year, monthStart.Month);
 
+        // Period strings are YYYY-MM, so ordinal comparison is chronological.
         return items
+            .Where(item => item.StartPeriod is null
+                || string.CompareOrdinal(item.StartPeriod, query.Month) <= 0)
             .Select(item => new RecurringScheduleItemResponse(
                 item.ToResponse(),
                 new DateOnly(monthStart.Year, monthStart.Month, Math.Min(item.DayOfMonth, daysInMonth)),
