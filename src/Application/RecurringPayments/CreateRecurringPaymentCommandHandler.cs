@@ -30,7 +30,8 @@ internal sealed class CreateRecurringPaymentCommandHandler(
             command.PaymentMethod,
             command.Bank,
             command.Note,
-            command.IsActive);
+            command.IsActive,
+            command.StartPeriod);
         if (item.IsFailure)
         {
             return Result.Failure<Guid>(item.Error);

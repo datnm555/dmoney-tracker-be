@@ -33,6 +33,9 @@ public sealed class RecurringPayment : AuditedEntity
 
     public bool IsActive { get; private set; } = true;
 
+    /// <summary>First YYYY-MM month the item appears in the schedule; null = every month.</summary>
+    public string? StartPeriod { get; private set; }
+
     public static Result<RecurringPayment> Create(
         Guid userId,
         string name,
@@ -44,11 +47,12 @@ public sealed class RecurringPayment : AuditedEntity
         string? paymentMethod,
         string? bank,
         string? note,
-        bool isActive)
+        bool isActive,
+        string? startPeriod = null)
     {
         var item = new RecurringPayment { Id = Guid.CreateVersion7(), UserId = userId };
         Result applied = item.Apply(name, categoryId, subCategoryId, amount, isVariable, dayOfMonth,
-            paymentMethod, bank, note, isActive);
+            paymentMethod, bank, note, isActive, startPeriod);
         return applied.IsFailure ? Result.Failure<RecurringPayment>(applied.Error) : item;
     }
 
@@ -62,12 +66,13 @@ public sealed class RecurringPayment : AuditedEntity
         string? paymentMethod,
         string? bank,
         string? note,
-        bool isActive)
+        bool isActive,
+        string? startPeriod = null)
     {
         // Validate on a scratch copy so a failed update leaves the tracked entity untouched.
         var scratch = new RecurringPayment();
         Result validated = scratch.Apply(name, categoryId, subCategoryId, amount, isVariable, dayOfMonth,
-            paymentMethod, bank, note, isActive);
+            paymentMethod, bank, note, isActive, startPeriod);
         if (validated.IsFailure)
         {
             return validated;
@@ -83,6 +88,7 @@ public sealed class RecurringPayment : AuditedEntity
         Bank = scratch.Bank;
         Note = scratch.Note;
         IsActive = scratch.IsActive;
+        StartPeriod = scratch.StartPeriod;
         return Result.Success();
     }
 
@@ -96,7 +102,8 @@ public sealed class RecurringPayment : AuditedEntity
         string? paymentMethod,
         string? bank,
         string? note,
-        bool isActive)
+        bool isActive,
+        string? startPeriod = null)
     {
         string trimmed = name?.Trim() ?? string.Empty;
         if (trimmed.Length == 0)
@@ -142,6 +149,12 @@ public sealed class RecurringPayment : AuditedEntity
             return Result.Failure(RecurringPaymentErrors.NoteTooLong);
         }
 
+        string? start = string.IsNullOrWhiteSpace(startPeriod) ? null : startPeriod.Trim();
+        if (start is not null && !RecurringPaymentRecord.TryParsePeriod(start, out _))
+        {
+            return Result.Failure(RecurringPaymentErrors.InvalidPeriod);
+        }
+
         Name = trimmed;
         CategoryId = categoryId;
         SubCategoryId = subCategoryId;
@@ -152,6 +165,7 @@ public sealed class RecurringPayment : AuditedEntity
         Bank = trimmedBank;
         Note = trimmedNote;
         IsActive = isActive;
+        StartPeriod = start;
         return Result.Success();
     }
 }

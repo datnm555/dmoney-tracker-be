@@ -98,6 +98,7 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["recurring.empty"].ShouldBe("Chưa có khoản định kỳ nào");
         resources["recurring.cardRow"].ShouldBe("Sao kê thẻ");
         resources["recurring.enterAmount"].ShouldBe("Tự nhập");
+        resources["recurring.startPeriod"].ShouldBe("Bắt đầu từ tháng");
         resources["form.moreOptions"].ShouldBe("Tuỳ chọn khác");
         resources["form.payWith"].ShouldBe("Trả bằng");
         resources["form.payWithOther"].ShouldBe("Khác");
@@ -195,6 +196,7 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["recurring.empty"].ShouldBe("No recurring items yet");
         resources["recurring.cardRow"].ShouldBe("Card statement");
         resources["recurring.enterAmount"].ShouldBe("Enter amount");
+        resources["recurring.startPeriod"].ShouldBe("Starts from month");
         resources["form.moreOptions"].ShouldBe("More options");
         resources["form.payWith"].ShouldBe("Pay with");
         resources["form.payWithOther"].ShouldBe("Other");

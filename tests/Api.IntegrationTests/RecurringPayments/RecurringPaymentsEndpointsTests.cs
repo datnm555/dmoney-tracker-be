@@ -28,7 +28,8 @@ public sealed class RecurringPaymentsEndpointsTests(ApiTestFactory factory) : IC
     private sealed record MoneyBody(decimal Amount, string Currency);
     private sealed record ItemBody(
         Guid Id, string Name, Guid? CategoryId, Guid? SubCategoryId, MoneyBody Amount,
-        bool IsVariable, int DayOfMonth, string? PaymentMethod, string? Bank, string? Note, bool IsActive);
+        bool IsVariable, int DayOfMonth, string? PaymentMethod, string? Bank, string? Note, bool IsActive,
+        string? StartPeriod);
 
     private static async Task<Guid> CreateCategoryAsync(HttpClient client, string name)
     {
@@ -138,7 +139,8 @@ public sealed class RecurringPaymentsEndpointsTests(ApiTestFactory factory) : IC
             paymentMethod = "cash",
             bank = "VPBank",
             note = "n",
-            isActive = false
+            isActive = false,
+            startPeriod = "2026-12"
         });
         put.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
@@ -153,6 +155,7 @@ public sealed class RecurringPaymentsEndpointsTests(ApiTestFactory factory) : IC
         item.Bank.ShouldBe("VPBank");
         item.Note.ShouldBe("n");
         item.IsActive.ShouldBeFalse();
+        item.StartPeriod.ShouldBe("2026-12");
 
         (await client.PutAsJsonAsync($"/recurring-payments/{id}",
                 new { name = "New name", amount = 0m, dayOfMonth = 28, isActive = true }))
@@ -166,6 +169,7 @@ public sealed class RecurringPaymentsEndpointsTests(ApiTestFactory factory) : IC
         item.IsVariable.ShouldBeFalse();
         item.IsActive.ShouldBeTrue();
         item.Amount.Amount.ShouldBe(0m);
+        item.StartPeriod.ShouldBeNull();
     }
 
     [Fact]
@@ -210,6 +214,8 @@ public sealed class RecurringPaymentsEndpointsTests(ApiTestFactory factory) : IC
         await Fail(new { name = "x", amount = -1m, dayOfMonth = 1 }, "RecurringPayments.NegativeAmount");
         await Fail(new { name = "x", amount = 1m, dayOfMonth = 0 }, "RecurringPayments.InvalidDay");
         await Fail(new { name = "x", amount = 1m, dayOfMonth = 32 }, "RecurringPayments.InvalidDay");
+        await Fail(new { name = "x", amount = 1m, dayOfMonth = 1, startPeriod = "2026-13" }, "RecurringPayments.InvalidPeriod");
+        await Fail(new { name = "x", amount = 1m, dayOfMonth = 1, startPeriod = "2026-1" }, "RecurringPayments.InvalidPeriod");
         await Fail(new { name = "x", amount = 1m, dayOfMonth = 1, categoryId = Guid.NewGuid() },
             "RecurringPayments.InvalidCategory");
         await Fail(new { name = "x", amount = 1m, dayOfMonth = 1, categoryId = catA, subCategoryId = subOfB },

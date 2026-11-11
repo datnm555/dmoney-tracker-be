@@ -472,6 +472,7 @@
   <data name="recurring.empty" xml:space="preserve"><value>No recurring items yet</value></data>
   <data name="recurring.cardRow" xml:space="preserve"><value>Card statement</value></data>
   <data name="recurring.enterAmount" xml:space="preserve"><value>Enter amount</value></data>
+  <data name="recurring.startPeriod" xml:space="preserve"><value>Starts from month</value></data>
   <data name="form.moreOptions" xml:space="preserve"><value>More options</value></data>
   <data name="form.payWith" xml:space="preserve"><value>Pay with</value></data>
   <data name="form.payWithOther" xml:space="preserve"><value>Other</value></data>

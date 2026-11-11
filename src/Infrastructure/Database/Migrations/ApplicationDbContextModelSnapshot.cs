@@ -402,6 +402,10 @@ namespace Infrastructure.Database.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<string>("StartPeriod")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
                     b.Property<Guid?>("SubCategoryId")
                         .HasColumnType("uuid");
 

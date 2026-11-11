@@ -472,6 +472,7 @@
   <data name="recurring.empty" xml:space="preserve"><value>Chưa có khoản định kỳ nào</value></data>
   <data name="recurring.cardRow" xml:space="preserve"><value>Sao kê thẻ</value></data>
   <data name="recurring.enterAmount" xml:space="preserve"><value>Tự nhập</value></data>
+  <data name="recurring.startPeriod" xml:space="preserve"><value>Bắt đầu từ tháng</value></data>
   <data name="form.moreOptions" xml:space="preserve"><value>Tuỳ chọn khác</value></data>
   <data name="form.payWith" xml:space="preserve"><value>Trả bằng</value></data>
   <data name="form.payWithOther" xml:space="preserve"><value>Khác</value></data>
