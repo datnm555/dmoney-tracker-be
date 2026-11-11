@@ -117,7 +117,7 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
             string? SavingsBank, MoneyBody Balance, MoneyBody TotalDeposited, MoneyBody TotalWithdrawn,
             int TransactionCount, GoalItem? Goal);
 
-        internal sealed record GoalItem(Guid Id, MoneyBody TargetAmount, string StartPeriod, int Months);
+        internal sealed record GoalItem(Guid Id, MoneyBody TargetAmount, string StartPeriod, int Months, MoneyBody InitialAmount);
 
         internal sealed record TxItem(
             Guid TransactionId, string Date, string Content, string? SavingsBank, string? Bank,
@@ -245,8 +245,9 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
     }
 
     private static Task<HttpResponseMessage> PutGoalAsync(
-        HttpClient client, string savingsBank, decimal target, string startPeriod = "2026-11", int months = 15) =>
-        client.PutAsJsonAsync("/savings/goals", new { savingsBank, targetAmount = target, startPeriod, months });
+        HttpClient client, string savingsBank, decimal target, string startPeriod = "2026-11", int months = 15,
+        decimal initialAmount = 0) =>
+        client.PutAsJsonAsync("/savings/goals", new { savingsBank, targetAmount = target, startPeriod, months, initialAmount });
 
     private static async Task<SavingsSummaryBody> SummaryAsync(HttpClient client) =>
         (await (await client.GetAsync("/savings/summary")).Content.ReadFromJsonAsync<SavingsSummaryBody>())!;
@@ -315,6 +316,7 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
         await Fail(PutGoalAsync(client, "A", 0m), "SavingsGoals.InvalidTarget");
         await Fail(PutGoalAsync(client, "A", 1m, "2026-13"), "SavingsGoals.InvalidPeriod");
         await Fail(PutGoalAsync(client, "A", 1m, months: 0), "SavingsGoals.InvalidMonths");
+        await Fail(PutGoalAsync(client, "A", 1m, initialAmount: -1m), "SavingsGoals.NegativeInitialAmount");
 
         Guid id = (await (await PutGoalAsync(client, "Mine", 1m)).Content.ReadFromJsonAsync<CreatedBody>())!.Id;
         HttpClient other = await CreateAuthenticatedClientAsync("sav-goal-other@example.com", "savgoalother");
@@ -322,5 +324,28 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
         (await other.DeleteAsync($"/savings/goals/{id}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
         (await factory.CreateClient().PutAsJsonAsync("/savings/goals", new { savingsBank = "A", targetAmount = 1m, startPeriod = "2026-11", months = 1 }))
             .StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Goal_InitialAmount_CountsTowardBalance_WithoutATransaction()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("sav-goal-init@example.com", "savgoalinit");
+        Guid savings = await GetCategoryIdByCodeAsync(client, "savings");
+        Guid book = await GetSavingsBookIdAsync(client);
+        Guid plan = await GetDefaultPlanIdAsync(client);
+
+        (await PutGoalAsync(client, "Sam & Bắp", 60_000_000m, initialAmount: 4_000_000m)).StatusCode.ShouldBe(HttpStatusCode.OK);
+        SavingsSummaryBody body = await SummaryAsync(client);
+        var account = body.Accounts.Single();
+        account.Balance.Amount.ShouldBe(4_000_000m);
+        account.TransactionCount.ShouldBe(0);
+        account.Goal!.InitialAmount.Amount.ShouldBe(4_000_000m);
+        body.TotalBalance.Amount.ShouldBe(4_000_000m);
+
+        await PostTxAsync(client, plan, savings, book, "2026-12-01", "Kỳ 2", 0m, 4_000_000m, "Sam & Bắp");
+        body = await SummaryAsync(client);
+        body.Accounts.Single().Balance.Amount.ShouldBe(8_000_000m);
+        body.Accounts.Single().TotalDeposited.Amount.ShouldBe(4_000_000m);
+        body.TotalBalance.Amount.ShouldBe(8_000_000m);
     }
 }

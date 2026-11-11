@@ -17,7 +17,8 @@ public sealed record SavingsAccountResponse(
     int TransactionCount,
     SavingsGoalResponse? Goal);
 
-public sealed record SavingsGoalResponse(Guid Id, MoneyResponse TargetAmount, string StartPeriod, int Months);
+public sealed record SavingsGoalResponse(
+    Guid Id, MoneyResponse TargetAmount, string StartPeriod, int Months, MoneyResponse InitialAmount);
 
 public sealed record SavingsTransactionResponse(
     Guid TransactionId,

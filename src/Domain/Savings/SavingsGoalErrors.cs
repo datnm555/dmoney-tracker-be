@@ -20,6 +20,9 @@ public static class SavingsGoalErrors
     public static readonly Error InvalidPeriod = Error.Validation(
         "SavingsGoals.InvalidPeriod", "Start month must be in the format YYYY-MM.");
 
+    public static readonly Error NegativeInitialAmount = Error.Validation(
+        "SavingsGoals.NegativeInitialAmount", "The amount saved before must not be negative.");
+
     public static readonly Error InvalidMonths = Error.Validation(
         "SavingsGoals.InvalidMonths", $"Duration must be between 1 and {SavingsGoal.MaxMonths} months.");
 }

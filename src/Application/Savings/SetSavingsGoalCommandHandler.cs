@@ -26,7 +26,7 @@ internal sealed class SetSavingsGoalCommandHandler(
 
         if (existing is not null)
         {
-            Result updated = existing.Update(command.TargetAmount, command.StartPeriod, command.Months);
+            Result updated = existing.Update(command.TargetAmount, command.StartPeriod, command.Months, command.InitialAmount);
             if (updated.IsFailure)
             {
                 return Result.Failure<Guid>(updated.Error);
@@ -37,7 +37,7 @@ internal sealed class SetSavingsGoalCommandHandler(
         }
 
         Result<SavingsGoal> goal = SavingsGoal.Create(
-            userId, savingsBank, command.TargetAmount, command.StartPeriod, command.Months);
+            userId, savingsBank, command.TargetAmount, command.StartPeriod, command.Months, command.InitialAmount);
         if (goal.IsFailure)
         {
             return Result.Failure<Guid>(goal.Error);

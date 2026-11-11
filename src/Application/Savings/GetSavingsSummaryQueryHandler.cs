@@ -78,7 +78,9 @@ internal sealed class GetSavingsSummaryQueryHandler(
                 r.Deposited,
                 r.Withdrawn,
                 r.Count,
+                // Money saved before tracking (goal's InitialAmount) counts without a transaction.
                 Balance = r.Deposited - r.Withdrawn
+                    + (r.SavingsBank is not null && goals.TryGetValue(r.SavingsBank, out SavingsGoal? g) ? g.InitialAmount : 0m)
             })
             .OrderBy(r => r.SavingsBank is null)
             .ThenByDescending(r => r.Balance)
@@ -94,7 +96,8 @@ internal sealed class GetSavingsSummaryQueryHandler(
                         goal.Id,
                         new MoneyResponse(goal.TargetAmount, Money.DefaultCurrency),
                         goal.StartPeriod,
-                        goal.Months)
+                        goal.Months,
+                        new MoneyResponse(goal.InitialAmount, Money.DefaultCurrency))
                     : null))
             .ToList();
 
