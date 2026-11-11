@@ -27,6 +27,9 @@ internal sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.Property(a => a.BankName)
             .HasMaxLength(AccountConstants.BankNameMaxLength);
 
+        builder.Property(a => a.IsDefault)
+            .HasDefaultValue(false);
+
         builder.Property(a => a.CreditLimit).HasColumnType("numeric(18,2)");
         builder.Property(a => a.InterestRatePercent).HasColumnType("numeric(5,2)");
 

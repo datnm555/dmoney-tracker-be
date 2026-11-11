@@ -24,3 +24,7 @@ public sealed record UpdateAccountCommand(
     string? BankName = null) : ICommand;
 
 public sealed record DeleteAccountCommand(Guid Id) : ICommand;
+
+public sealed record SetDefaultAccountCommand(Guid Id) : ICommand;
+
+public sealed record ClearDefaultAccountCommand(Guid Id) : ICommand;

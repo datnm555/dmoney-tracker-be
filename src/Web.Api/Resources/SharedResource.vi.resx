@@ -443,6 +443,9 @@
   <data name="accounts.type.credit_card" xml:space="preserve"><value>Thẻ tín dụng</value></data>
   <data name="accounts.type.ewallet" xml:space="preserve"><value>Ví điện tử</value></data>
   <data name="accounts.type.cash" xml:space="preserve"><value>Tiền mặt</value></data>
+  <data name="accounts.default" xml:space="preserve"><value>Mặc định</value></data>
+  <data name="accounts.setDefault" xml:space="preserve"><value>Đặt làm mặc định khi chi tiêu</value></data>
+  <data name="accounts.clearDefault" xml:space="preserve"><value>Bỏ mặc định</value></data>
   <data name="accounts.bank" xml:space="preserve"><value>Ngân hàng</value></data>
   <data name="accounts.noBank" xml:space="preserve"><value>Khác</value></data>
   <data name="accounts.lastDigits" xml:space="preserve"><value>4 số cuối</value></data>

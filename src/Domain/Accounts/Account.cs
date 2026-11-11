@@ -29,6 +29,9 @@ public sealed class Account : AuditedEntity
     /// <summary>Free-text bank name used to group accounts; no FK to the banks catalog.</summary>
     public string? BankName { get; private set; }
 
+    /// <summary>Preselected in the transaction form's "Trả bằng"; at most one per user, possibly none.</summary>
+    public bool IsDefault { get; private set; }
+
     public static Result<Account> Create(
         Guid userId,
         string name,
@@ -73,6 +76,10 @@ public sealed class Account : AuditedEntity
         BankName = scratch.BankName;
         return Result.Success();
     }
+
+    public void MakeDefault() => IsDefault = true;
+
+    public void ClearDefault() => IsDefault = false;
 
     private Result Apply(
         string name,

@@ -100,6 +100,40 @@ internal sealed class DeleteAccount : IEndpoint
     }
 }
 
+internal sealed class SetDefaultAccount : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/accounts/{id:guid}/default", async (
+            Guid id,
+            ICommandHandler<SetDefaultAccountCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(new SetDefaultAccountCommand(id), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
+
+internal sealed class ClearDefaultAccount : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapDelete("/accounts/{id:guid}/default", async (
+            Guid id,
+            ICommandHandler<ClearDefaultAccountCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(new ClearDefaultAccountCommand(id), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
+
 internal sealed class GetAccountSnapshots : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
