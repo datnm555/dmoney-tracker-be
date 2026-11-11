@@ -280,6 +280,10 @@
   <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Balance entry not found.</value></data>
   <data name="Accounts.BankNameTooLong" xml:space="preserve"><value>Bank name must be at most 100 characters.</value></data>
   <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Note must be at most 500 characters.</value></data>
+  <data name="Accounts.InvalidPaymentAmount" xml:space="preserve"><value>Payment amount must be greater than zero.</value></data>
+  <data name="Accounts.NotCreditCard" xml:space="preserve"><value>Only a credit card statement can be paid.</value></data>
+  <data name="Accounts.NoBalance" xml:space="preserve"><value>Update the card balance before paying its statement.</value></data>
+  <data name="Accounts.InvalidSourceAccount" xml:space="preserve"><value>A card cannot pay its own statement.</value></data>
   <data name="RecurringPayments.NotFound" xml:space="preserve"><value>Recurring payment not found.</value></data>
   <data name="RecurringPayments.NameRequired" xml:space="preserve"><value>Please enter a name.</value></data>
   <data name="RecurringPayments.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
@@ -439,6 +443,8 @@
   <data name="accounts.installmentRemaining" xml:space="preserve"><value>Installments remaining</value></data>
   <data name="accounts.statementPaid" xml:space="preserve"><value>Statement paid</value></data>
   <data name="accounts.statementUntracked" xml:space="preserve"><value>Statement includes spending not recorded as transactions</value></data>
+  <data name="accounts.payFrom" xml:space="preserve"><value>Pay from account</value></data>
+  <data name="accounts.payFromNone" xml:space="preserve"><value>Don't update another account</value></data>
   <data name="accounts.note" xml:space="preserve"><value>Note</value></data>
   <data name="accounts.lastUpdated" xml:space="preserve"><value>Updated</value></data>
   <data name="accounts.empty" xml:space="preserve"><value>No accounts yet</value></data>

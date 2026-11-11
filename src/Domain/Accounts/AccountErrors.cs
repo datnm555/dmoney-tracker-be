@@ -38,6 +38,18 @@ public static class AccountErrors
     public static readonly Error SnapshotNotFound = Error.NotFound(
         "Accounts.SnapshotNotFound", "Balance entry not found.");
 
+    public static readonly Error InvalidPaymentAmount = Error.Validation(
+        "Accounts.InvalidPaymentAmount", "Payment amount must be greater than zero.");
+
+    public static readonly Error NotCreditCard = Error.Validation(
+        "Accounts.NotCreditCard", "Only a credit card statement can be paid.");
+
+    public static readonly Error NoBalance = Error.Validation(
+        "Accounts.NoBalance", "Update the card balance before paying its statement.");
+
+    public static readonly Error InvalidSourceAccount = Error.Validation(
+        "Accounts.InvalidSourceAccount", "A card cannot pay its own statement.");
+
     public static readonly Error NoteTooLong = Error.Validation(
         "Accounts.NoteTooLong",
         $"Note must be at most {AccountConstants.NoteMaxLength} characters.");

@@ -15,4 +15,7 @@ public static class AccountTypes
     public static readonly IReadOnlyList<string> All = [Checking, Ewallet, Cash, Overdraft, CreditCard];
 
     public static bool IsValid(string type) => All.Contains(type, StringComparer.Ordinal);
+
+    /// <summary>Debt types store the amount owed as their balance.</summary>
+    public static bool IsDebt(string type) => type is Overdraft or CreditCard;
 }
