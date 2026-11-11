@@ -24,7 +24,7 @@ internal sealed class GetBanksQueryHandler(
 
         return await dbContext.Banks
             .Where(b => b.UserId == userId)
-            .OrderByDescending(b => b.IsDefault)
+            .OrderBy(b => b.SortOrder)
             .ThenBy(b => b.Name)
             .Select(b => new BankResponse(b.Id, b.Name, b.IsDefault))
             .ToListAsync(cancellationToken);

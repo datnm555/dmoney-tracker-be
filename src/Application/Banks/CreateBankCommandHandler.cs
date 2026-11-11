@@ -20,7 +20,11 @@ internal sealed class CreateBankCommandHandler(
             return Result.Failure<Guid>(UserErrors.Unauthenticated);
         }
 
-        Result<Bank> bank = Bank.Create(userId, command.Name);
+        // New banks go to the end of the user's display order.
+        int? lastOrder = await dbContext.Banks
+            .Where(b => b.UserId == userId)
+            .MaxAsync(b => (int?)b.SortOrder, cancellationToken);
+        Result<Bank> bank = Bank.Create(userId, command.Name, (lastOrder ?? -1) + 1);
         if (bank.IsFailure)
         {
             return Result.Failure<Guid>(bank.Error);

@@ -76,6 +76,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<UpdateBankCommand>, UpdateBankCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteBankCommand>, DeleteBankCommandHandler>();
         services.AddScoped<ICommandHandler<SetDefaultBankCommand>, SetDefaultBankCommandHandler>();
+        services.AddScoped<ICommandHandler<ReorderBanksCommand>, ReorderBanksCommandHandler>();
 
         services.AddScoped<IQueryHandler<GetAccountsQuery, List<AccountResponse>>, GetAccountsQueryHandler>();
         services.AddScoped<ICommandHandler<CreateAccountCommand, Guid>, CreateAccountCommandHandler>();

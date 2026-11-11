@@ -16,7 +16,10 @@ public sealed class Bank : AuditedEntity
 
     public bool IsDefault { get; private set; }
 
-    public static Result<Bank> Create(Guid userId, string name)
+    /// <summary>Display priority, ascending: the UI lists banks (and pay-with groups) in this order.</summary>
+    public int SortOrder { get; private set; }
+
+    public static Result<Bank> Create(Guid userId, string name, int sortOrder = 0)
     {
         string trimmed = name?.Trim() ?? string.Empty;
         if (trimmed.Length == 0)
@@ -33,13 +36,16 @@ public sealed class Bank : AuditedEntity
         {
             Id = Guid.CreateVersion7(),
             UserId = userId,
-            Name = trimmed
+            Name = trimmed,
+            SortOrder = sortOrder
         };
     }
 
     public void MakeDefault() => IsDefault = true;
 
     public void ClearDefault() => IsDefault = false;
+
+    public void MoveTo(int sortOrder) => SortOrder = sortOrder;
 
     public Result Rename(string name)
     {
