@@ -28,7 +28,8 @@ public sealed class AccountSnapshotsEndpointsTests(ApiTestFactory factory) : ICl
     private sealed record MoneyBody(decimal Amount, string Currency);
     private sealed record SnapshotBody(
         Guid Id, Guid AccountId, DateOnly Date, MoneyBody Balance, MoneyBody? StatementAmount,
-        DateOnly? DueDate, MoneyBody? InstallmentRemaining, bool StatementPaid, string? Note);
+        DateOnly? DueDate, MoneyBody? InstallmentRemaining, bool StatementPaid, string? Note,
+        bool StatementUntracked);
     private sealed record AccountBody(Guid Id, string Name, SnapshotBody? LatestSnapshot);
 
     private static async Task<Guid> CreateAccountAsync(HttpClient client, string name = "Thẻ test")
@@ -131,7 +132,8 @@ public sealed class AccountSnapshotsEndpointsTests(ApiTestFactory factory) : ICl
             dueDate = "2026-12-01",
             installmentRemaining = 900m,
             statementPaid = true,
-            note = "new"
+            note = "new",
+            statementUntracked = true
         });
         put.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
@@ -143,6 +145,7 @@ public sealed class AccountSnapshotsEndpointsTests(ApiTestFactory factory) : ICl
         s.InstallmentRemaining!.Amount.ShouldBe(900m);
         s.StatementPaid.ShouldBeTrue();
         s.Note.ShouldBe("new");
+        s.StatementUntracked.ShouldBeTrue();
 
         // Clearing optional fields on update.
         (await client.PutAsJsonAsync($"/accounts/snapshots/{id}", new { date = "2026-11-12", balance = 5000m }))
@@ -153,6 +156,7 @@ public sealed class AccountSnapshotsEndpointsTests(ApiTestFactory factory) : ICl
         s.InstallmentRemaining.ShouldBeNull();
         s.StatementPaid.ShouldBeFalse();
         s.Note.ShouldBeNull();
+        s.StatementUntracked.ShouldBeFalse();
     }
 
     [Fact]

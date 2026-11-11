@@ -26,6 +26,12 @@ public sealed class AccountSnapshot : AuditedEntity
 
     public string? Note { get; private set; }
 
+    /// <summary>
+    /// The statement covers spending that was never recorded as transactions (before swipe-level
+    /// tracking began), so paying it should be recorded as an expense.
+    /// </summary>
+    public bool StatementUntracked { get; private set; }
+
     public static Result<AccountSnapshot> Create(
         Guid accountId,
         DateOnly date,
@@ -34,10 +40,11 @@ public sealed class AccountSnapshot : AuditedEntity
         DateOnly? dueDate = null,
         decimal? installmentRemaining = null,
         bool statementPaid = false,
-        string? note = null)
+        string? note = null,
+        bool statementUntracked = false)
     {
         var snapshot = new AccountSnapshot { Id = Guid.CreateVersion7(), AccountId = accountId };
-        Result applied = snapshot.Apply(date, balance, statementAmount, dueDate, installmentRemaining, statementPaid, note);
+        Result applied = snapshot.Apply(date, balance, statementAmount, dueDate, installmentRemaining, statementPaid, note, statementUntracked);
         return applied.IsFailure ? Result.Failure<AccountSnapshot>(applied.Error) : snapshot;
     }
 
@@ -48,11 +55,12 @@ public sealed class AccountSnapshot : AuditedEntity
         DateOnly? dueDate = null,
         decimal? installmentRemaining = null,
         bool statementPaid = false,
-        string? note = null)
+        string? note = null,
+        bool statementUntracked = false)
     {
         // Validate on a scratch copy so a failed update leaves the tracked entity untouched.
         var scratch = new AccountSnapshot();
-        Result validated = scratch.Apply(date, balance, statementAmount, dueDate, installmentRemaining, statementPaid, note);
+        Result validated = scratch.Apply(date, balance, statementAmount, dueDate, installmentRemaining, statementPaid, note, statementUntracked);
         if (validated.IsFailure)
         {
             return validated;
@@ -65,6 +73,7 @@ public sealed class AccountSnapshot : AuditedEntity
         InstallmentRemaining = scratch.InstallmentRemaining;
         StatementPaid = scratch.StatementPaid;
         Note = scratch.Note;
+        StatementUntracked = scratch.StatementUntracked;
         return Result.Success();
     }
 
@@ -75,7 +84,8 @@ public sealed class AccountSnapshot : AuditedEntity
         DateOnly? dueDate,
         decimal? installmentRemaining,
         bool statementPaid,
-        string? note)
+        string? note,
+        bool statementUntracked)
     {
         if (balance < 0 || statementAmount is < 0 || installmentRemaining is < 0)
         {
@@ -95,6 +105,7 @@ public sealed class AccountSnapshot : AuditedEntity
         InstallmentRemaining = installmentRemaining;
         StatementPaid = statementPaid;
         Note = trimmedNote;
+        StatementUntracked = statementUntracked;
         return Result.Success();
     }
 }

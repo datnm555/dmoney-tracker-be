@@ -438,6 +438,7 @@
   <data name="accounts.dueDate" xml:space="preserve"><value>Hạn thanh toán</value></data>
   <data name="accounts.installmentRemaining" xml:space="preserve"><value>Trả góp còn lại</value></data>
   <data name="accounts.statementPaid" xml:space="preserve"><value>Đã thanh toán kỳ này</value></data>
+  <data name="accounts.statementUntracked" xml:space="preserve"><value>Sao kê gồm chi tiêu chưa ghi giao dịch</value></data>
   <data name="accounts.note" xml:space="preserve"><value>Ghi chú</value></data>
   <data name="accounts.lastUpdated" xml:space="preserve"><value>Cập nhật</value></data>
   <data name="accounts.empty" xml:space="preserve"><value>Chưa có tài khoản nào</value></data>

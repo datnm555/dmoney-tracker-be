@@ -35,7 +35,8 @@ internal sealed class CreateAccountSnapshotCommandHandler(
             command.DueDate,
             command.InstallmentRemaining,
             command.StatementPaid,
-            command.Note);
+            command.Note,
+            command.StatementUntracked);
         if (snapshot.IsFailure)
         {
             return Result.Failure<Guid>(snapshot.Error);
