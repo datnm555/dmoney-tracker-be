@@ -19,7 +19,8 @@ internal static class RecurringPaymentMapping
         item.Bank,
         item.Note,
         item.IsActive,
-        item.StartPeriod);
+        item.StartPeriod,
+        item.SavingsBank);
 
     public static RecurringPaymentRecordResponse ToResponse(this RecurringPaymentRecord record) => new(
         record.Id,

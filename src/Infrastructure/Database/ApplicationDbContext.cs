@@ -1,6 +1,7 @@
 using Application.Abstractions.Data;
 using Domain.Accounts;
 using Domain.RecurringPayments;
+using Domain.Savings;
 using Domain.Banks;
 using Domain.Beneficiaries;
 using Domain.Categories;
@@ -43,6 +44,8 @@ internal sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext
     public DbSet<RecurringPayment> RecurringPayments => Set<RecurringPayment>();
 
     public DbSet<RecurringPaymentRecord> RecurringPaymentRecords => Set<RecurringPaymentRecord>();
+
+    public DbSet<SavingsGoal> SavingsGoals => Set<SavingsGoal>();
 
     public DbSet<GoldAcquisition> GoldAcquisitions => Set<GoldAcquisition>();
 

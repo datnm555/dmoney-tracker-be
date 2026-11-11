@@ -115,7 +115,9 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
     {
         internal sealed record AccountItem(
             string? SavingsBank, MoneyBody Balance, MoneyBody TotalDeposited, MoneyBody TotalWithdrawn,
-            int TransactionCount);
+            int TransactionCount, GoalItem? Goal);
+
+        internal sealed record GoalItem(Guid Id, MoneyBody TargetAmount, string StartPeriod, int Months);
 
         internal sealed record TxItem(
             Guid TransactionId, string Date, string Content, string? SavingsBank, string? Bank,
@@ -240,5 +242,85 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
         body!.Accounts.Select(a => a.SavingsBank).ShouldBe(["Techcombank", "ACB", "BIDV", null]);
         body.Accounts.Single(a => a.SavingsBank == "BIDV").Balance.Amount.ShouldBe(-2_000_000m);
         body.TotalBalance.Amount.ShouldBe(14_000_000m);
+    }
+
+    private static Task<HttpResponseMessage> PutGoalAsync(
+        HttpClient client, string savingsBank, decimal target, string startPeriod = "2026-11", int months = 15) =>
+        client.PutAsJsonAsync("/savings/goals", new { savingsBank, targetAmount = target, startPeriod, months });
+
+    private static async Task<SavingsSummaryBody> SummaryAsync(HttpClient client) =>
+        (await (await client.GetAsync("/savings/summary")).Content.ReadFromJsonAsync<SavingsSummaryBody>())!;
+
+    [Fact]
+    public async Task Goal_AttachesToItsSavingsPlace_AndUpsertsByPlace()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("sav-goal@example.com", "savgoal");
+        Guid savings = await GetCategoryIdByCodeAsync(client, "savings");
+        Guid book = await GetSavingsBookIdAsync(client);
+        Guid plan = await GetDefaultPlanIdAsync(client);
+        await PostTxAsync(client, plan, savings, book, "2026-11-01", "Tiết kiệm Sam & Bắp", 0m, 4_000_000m, "Sam & Bắp");
+        await PostTxAsync(client, plan, savings, book, "2026-11-02", "Sổ khác", 0m, 1_000_000m, "VPBank");
+
+        var put = await PutGoalAsync(client, " Sam & Bắp ", 60_000_000m);
+        put.StatusCode.ShouldBe(HttpStatusCode.OK);
+        Guid id = (await put.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        SavingsSummaryBody body = await SummaryAsync(client);
+        var goal = body.Accounts.Single(a => a.SavingsBank == "Sam & Bắp").Goal!;
+        goal.Id.ShouldBe(id);
+        goal.TargetAmount.Amount.ShouldBe(60_000_000m);
+        goal.StartPeriod.ShouldBe("2026-11");
+        goal.Months.ShouldBe(15);
+        body.Accounts.Single(a => a.SavingsBank == "VPBank").Goal.ShouldBeNull();
+
+        // Setting it again for the same place updates the same goal.
+        var again = await PutGoalAsync(client, "Sam & Bắp", 72_000_000m, "2026-12", 18);
+        (await again.Content.ReadFromJsonAsync<CreatedBody>())!.Id.ShouldBe(id);
+        goal = (await SummaryAsync(client)).Accounts.Single(a => a.SavingsBank == "Sam & Bắp").Goal!;
+        goal.TargetAmount.Amount.ShouldBe(72_000_000m);
+        goal.Months.ShouldBe(18);
+    }
+
+    [Fact]
+    public async Task Goal_WithoutDeposits_ShowsAsEmptyAccount_AndCanBeDeleted()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("sav-goal-empty@example.com", "savgoalempty");
+        Guid id = (await (await PutGoalAsync(client, "Quỹ du lịch", 30_000_000m)).Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        var account = (await SummaryAsync(client)).Accounts.Single();
+        account.SavingsBank.ShouldBe("Quỹ du lịch");
+        account.Balance.Amount.ShouldBe(0m);
+        account.TransactionCount.ShouldBe(0);
+        account.Goal!.Id.ShouldBe(id);
+
+        (await client.DeleteAsync($"/savings/goals/{id}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await SummaryAsync(client)).Accounts.ShouldBeEmpty();
+        (await client.DeleteAsync($"/savings/goals/{id}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Goal_Validation_AndIsolation()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("sav-goal-bad@example.com", "savgoalbad");
+
+        async Task Fail(Task<HttpResponseMessage> call, string code)
+        {
+            HttpResponseMessage response = await call;
+            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+            (await response.Content.ReadAsStringAsync()).ShouldContain(code);
+        }
+
+        await Fail(PutGoalAsync(client, " ", 1m), "SavingsGoals.SavingsBankRequired");
+        await Fail(PutGoalAsync(client, new string('x', 101), 1m), "SavingsGoals.SavingsBankTooLong");
+        await Fail(PutGoalAsync(client, "A", 0m), "SavingsGoals.InvalidTarget");
+        await Fail(PutGoalAsync(client, "A", 1m, "2026-13"), "SavingsGoals.InvalidPeriod");
+        await Fail(PutGoalAsync(client, "A", 1m, months: 0), "SavingsGoals.InvalidMonths");
+
+        Guid id = (await (await PutGoalAsync(client, "Mine", 1m)).Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+        HttpClient other = await CreateAuthenticatedClientAsync("sav-goal-other@example.com", "savgoalother");
+        (await SummaryAsync(other)).Accounts.ShouldBeEmpty();
+        (await other.DeleteAsync($"/savings/goals/{id}")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        (await factory.CreateClient().PutAsJsonAsync("/savings/goals", new { savingsBank = "A", targetAmount = 1m, startPeriod = "2026-11", months = 1 }))
+            .StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 }

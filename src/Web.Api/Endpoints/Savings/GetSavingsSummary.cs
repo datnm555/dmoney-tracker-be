@@ -24,3 +24,37 @@ internal sealed class GetSavingsSummary : IEndpoint
         }).RequireAuthorization();
     }
 }
+
+internal sealed class SetSavingsGoal : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/savings/goals", async (
+            SetSavingsGoalCommand command,
+            ICommandHandler<SetSavingsGoalCommand, Guid> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result<Guid> result = await handler.Handle(command, cancellationToken);
+
+            return result.ToHttpResult(localizer, id => Results.Ok(new { id }));
+        }).RequireAuthorization();
+    }
+}
+
+internal sealed class DeleteSavingsGoal : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapDelete("/savings/goals/{id:guid}", async (
+            Guid id,
+            ICommandHandler<DeleteSavingsGoalCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(new DeleteSavingsGoalCommand(id), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}

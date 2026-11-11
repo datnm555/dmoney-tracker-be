@@ -1,5 +1,6 @@
 using Domain.Accounts;
 using Domain.RecurringPayments;
+using Domain.Savings;
 using Domain.Banks;
 using Domain.Beneficiaries;
 using Domain.Categories;
@@ -41,6 +42,8 @@ public interface IApplicationDbContext
     DbSet<RecurringPayment> RecurringPayments { get; }
 
     DbSet<RecurringPaymentRecord> RecurringPaymentRecords { get; }
+
+    DbSet<SavingsGoal> SavingsGoals { get; }
 
     DbSet<GoldAcquisition> GoldAcquisitions { get; }
 

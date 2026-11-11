@@ -46,7 +46,8 @@ internal sealed class UpdateRecurringPaymentCommandHandler(
             command.Bank,
             command.Note,
             command.IsActive,
-            command.StartPeriod);
+            command.StartPeriod,
+            command.SavingsBank);
         if (updated.IsFailure)
         {
             return updated;

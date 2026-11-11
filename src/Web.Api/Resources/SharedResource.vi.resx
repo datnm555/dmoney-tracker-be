@@ -383,6 +383,22 @@
   <data name="savings.totalDeposited" xml:space="preserve"><value>Tổng đã gửi</value></data>
   <data name="savings.totalWithdrawn" xml:space="preserve"><value>Tổng đã rút</value></data>
   <data name="savings.monthlyChart" xml:space="preserve"><value>Gửi / rút theo tháng</value></data>
+  <data name="savings.goal" xml:space="preserve"><value>Mục tiêu</value></data>
+  <data name="savings.setGoal" xml:space="preserve"><value>Đặt mục tiêu</value></data>
+  <data name="savings.target" xml:space="preserve"><value>Số tiền mục tiêu</value></data>
+  <data name="savings.startMonth" xml:space="preserve"><value>Bắt đầu từ tháng</value></data>
+  <data name="savings.months" xml:space="preserve"><value>Số tháng</value></data>
+  <data name="savings.monthUnit" xml:space="preserve"><value>tháng</value></data>
+  <data name="savings.period" xml:space="preserve"><value>Kỳ</value></data>
+  <data name="savings.perMonth" xml:space="preserve"><value>Cần gửi mỗi tháng</value></data>
+  <data name="savings.goalReached" xml:space="preserve"><value>Đã đạt mục tiêu</value></data>
+  <data name="savings.deleteGoal" xml:space="preserve"><value>Xoá mục tiêu</value></data>
+  <data name="SavingsGoals.NotFound" xml:space="preserve"><value>Không tìm thấy mục tiêu tiết kiệm.</value></data>
+  <data name="SavingsGoals.SavingsBankRequired" xml:space="preserve"><value>Hãy chọn nơi gửi.</value></data>
+  <data name="SavingsGoals.SavingsBankTooLong" xml:space="preserve"><value>Nơi gửi tối đa 100 ký tự.</value></data>
+  <data name="SavingsGoals.InvalidTarget" xml:space="preserve"><value>Số tiền mục tiêu phải lớn hơn 0.</value></data>
+  <data name="SavingsGoals.InvalidPeriod" xml:space="preserve"><value>Tháng bắt đầu không hợp lệ.</value></data>
+  <data name="SavingsGoals.InvalidMonths" xml:space="preserve"><value>Số tháng phải từ 1 đến 600.</value></data>
   <data name="form.savingsBank" xml:space="preserve"><value>Nơi gửi</value></data>
   <data name="export.colSavingsBank" xml:space="preserve"><value>Nơi gửi</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Loại vàng</value></data>

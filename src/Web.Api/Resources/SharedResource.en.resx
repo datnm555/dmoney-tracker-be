@@ -383,6 +383,22 @@
   <data name="savings.totalDeposited" xml:space="preserve"><value>Total deposited</value></data>
   <data name="savings.totalWithdrawn" xml:space="preserve"><value>Total withdrawn</value></data>
   <data name="savings.monthlyChart" xml:space="preserve"><value>Deposits and withdrawals by month</value></data>
+  <data name="savings.goal" xml:space="preserve"><value>Goal</value></data>
+  <data name="savings.setGoal" xml:space="preserve"><value>Set goal</value></data>
+  <data name="savings.target" xml:space="preserve"><value>Target amount</value></data>
+  <data name="savings.startMonth" xml:space="preserve"><value>Start month</value></data>
+  <data name="savings.months" xml:space="preserve"><value>Number of months</value></data>
+  <data name="savings.monthUnit" xml:space="preserve"><value>months</value></data>
+  <data name="savings.period" xml:space="preserve"><value>Period</value></data>
+  <data name="savings.perMonth" xml:space="preserve"><value>Needed per month</value></data>
+  <data name="savings.goalReached" xml:space="preserve"><value>Goal reached</value></data>
+  <data name="savings.deleteGoal" xml:space="preserve"><value>Delete goal</value></data>
+  <data name="SavingsGoals.NotFound" xml:space="preserve"><value>Savings goal not found.</value></data>
+  <data name="SavingsGoals.SavingsBankRequired" xml:space="preserve"><value>Choose where the savings are held.</value></data>
+  <data name="SavingsGoals.SavingsBankTooLong" xml:space="preserve"><value>Savings place must be at most 100 characters.</value></data>
+  <data name="SavingsGoals.InvalidTarget" xml:space="preserve"><value>Target amount must be greater than zero.</value></data>
+  <data name="SavingsGoals.InvalidPeriod" xml:space="preserve"><value>Start month must be in the format YYYY-MM.</value></data>
+  <data name="SavingsGoals.InvalidMonths" xml:space="preserve"><value>Duration must be between 1 and 600 months.</value></data>
   <data name="form.savingsBank" xml:space="preserve"><value>Held at</value></data>
   <data name="export.colSavingsBank" xml:space="preserve"><value>Held at</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Gold type</value></data>

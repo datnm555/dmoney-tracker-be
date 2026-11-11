@@ -100,6 +100,8 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<DeletePurchasePlaceCommand>, DeletePurchasePlaceCommandHandler>();
         services.AddScoped<IQueryHandler<GetGoldSummaryQuery, GoldSummaryResponse>, GetGoldSummaryQueryHandler>();
         services.AddScoped<IQueryHandler<GetSavingsSummaryQuery, SavingsSummaryResponse>, GetSavingsSummaryQueryHandler>();
+        services.AddScoped<ICommandHandler<SetSavingsGoalCommand, Guid>, SetSavingsGoalCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteSavingsGoalCommand>, DeleteSavingsGoalCommandHandler>();
         services.AddScoped<IQueryHandler<GetGoldAcquisitionsQuery, List<GoldAcquisitionResponse>>, GetGoldAcquisitionsQueryHandler>();
         services.AddScoped<ICommandHandler<CreateGoldAcquisitionCommand, Guid>, CreateGoldAcquisitionCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateGoldAcquisitionCommand>, UpdateGoldAcquisitionCommandHandler>();
