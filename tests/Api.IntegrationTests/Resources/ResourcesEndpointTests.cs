@@ -47,6 +47,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.type.ewallet"].ShouldBe("Ví điện tử");
         resources["accounts.type.cash"].ShouldBe("Tiền mặt");
         resources["accounts.setDefault"].ShouldBe("Đặt làm mặc định khi chi tiêu");
+        resources["form.payWithMore"].ShouldBe("Xem thêm");
+        resources["banks.moveUp"].ShouldBe("Đưa lên");
         resources["accounts.bank"].ShouldBe("Ngân hàng");
         resources["accounts.noBank"].ShouldBe("Khác");
         resources["accounts.lastDigits"].ShouldBe("4 số cuối");
@@ -157,6 +159,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.type.ewallet"].ShouldBe("E-wallet");
         resources["accounts.type.cash"].ShouldBe("Cash");
         resources["accounts.setDefault"].ShouldBe("Set as default for payments");
+        resources["form.payWithMore"].ShouldBe("Show more");
+        resources["banks.moveUp"].ShouldBe("Move up");
         resources["accounts.bank"].ShouldBe("Bank");
         resources["accounts.noBank"].ShouldBe("Other");
         resources["accounts.lastDigits"].ShouldBe("Last 4 digits");

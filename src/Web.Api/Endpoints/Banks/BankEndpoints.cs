@@ -82,6 +82,25 @@ internal sealed class SetDefaultBank : IEndpoint
     }
 }
 
+internal sealed class ReorderBanks : IEndpoint
+{
+    internal sealed record ReorderBanksRequest(List<Guid> Ids);
+
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPut("/banks/order", async (
+            ReorderBanksRequest request,
+            ICommandHandler<ReorderBanksCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(new ReorderBanksCommand(request.Ids ?? []), cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
+
 internal sealed class DeleteBank : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)

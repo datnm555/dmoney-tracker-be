@@ -269,6 +269,7 @@
   <data name="Banks.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
   <data name="Banks.Duplicate" xml:space="preserve"><value>This bank already exists.</value></data>
   <data name="Banks.NotFound" xml:space="preserve"><value>Bank not found.</value></data>
+  <data name="Banks.InvalidOrder" xml:space="preserve"><value>The order must list each of your banks exactly once.</value></data>
   <data name="Accounts.NotFound" xml:space="preserve"><value>Account not found.</value></data>
   <data name="Accounts.NameRequired" xml:space="preserve"><value>Please enter an account name.</value></data>
   <data name="Accounts.NameTooLong" xml:space="preserve"><value>Name must be at most 100 characters.</value></data>
@@ -366,6 +367,9 @@
   <data name="banks.deleteConfirm" xml:space="preserve"><value>Delete this bank?</value></data>
   <data name="banks.default" xml:space="preserve"><value>Default</value></data>
   <data name="banks.setDefault" xml:space="preserve"><value>Set default</value></data>
+  <data name="banks.moveUp" xml:space="preserve"><value>Move up</value></data>
+  <data name="banks.moveDown" xml:space="preserve"><value>Move down</value></data>
+  <data name="banks.orderHint" xml:space="preserve"><value>This order decides which banks come first in "Pay with" — the top 2 are always shown, the rest sit under "Show more".</value></data>
   <data name="menu.savings" xml:space="preserve"><value>Savings</value></data>
   <data name="savings.title" xml:space="preserve"><value>Savings</value></data>
   <data name="savings.total" xml:space="preserve"><value>Total savings</value></data>
@@ -517,4 +521,6 @@
   <data name="form.today" xml:space="preserve"><value>Today</value></data>
   <data name="form.yesterday" xml:space="preserve"><value>Yesterday</value></data>
   <data name="form.suggestions" xml:space="preserve"><value>Suggestions from past transactions</value></data>
+  <data name="form.payWithMore" xml:space="preserve"><value>Show more</value></data>
+  <data name="form.payWithLess" xml:space="preserve"><value>Show less</value></data>
 </root>

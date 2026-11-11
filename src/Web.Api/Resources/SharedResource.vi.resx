@@ -269,6 +269,7 @@
   <data name="Banks.NameTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
   <data name="Banks.Duplicate" xml:space="preserve"><value>Ngân hàng này đã tồn tại.</value></data>
   <data name="Banks.NotFound" xml:space="preserve"><value>Không tìm thấy ngân hàng.</value></data>
+  <data name="Banks.InvalidOrder" xml:space="preserve"><value>Thứ tự phải gồm mỗi ngân hàng của bạn đúng một lần.</value></data>
   <data name="Accounts.NotFound" xml:space="preserve"><value>Không tìm thấy tài khoản.</value></data>
   <data name="Accounts.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên tài khoản.</value></data>
   <data name="Accounts.NameTooLong" xml:space="preserve"><value>Tên tối đa 100 ký tự.</value></data>
@@ -366,6 +367,9 @@
   <data name="banks.deleteConfirm" xml:space="preserve"><value>Xóa ngân hàng này?</value></data>
   <data name="banks.default" xml:space="preserve"><value>Mặc định</value></data>
   <data name="banks.setDefault" xml:space="preserve"><value>Đặt mặc định</value></data>
+  <data name="banks.moveUp" xml:space="preserve"><value>Đưa lên</value></data>
+  <data name="banks.moveDown" xml:space="preserve"><value>Đưa xuống</value></data>
+  <data name="banks.orderHint" xml:space="preserve"><value>Thứ tự này quyết định ngân hàng nào hiện trước ở "Trả bằng" — 2 ngân hàng đầu luôn hiển thị, còn lại nằm trong "Xem thêm".</value></data>
   <data name="menu.savings" xml:space="preserve"><value>Tiết kiệm</value></data>
   <data name="savings.title" xml:space="preserve"><value>Tiết kiệm</value></data>
   <data name="savings.total" xml:space="preserve"><value>Tổng tiết kiệm</value></data>
@@ -517,4 +521,6 @@
   <data name="form.today" xml:space="preserve"><value>Hôm nay</value></data>
   <data name="form.yesterday" xml:space="preserve"><value>Hôm qua</value></data>
   <data name="form.suggestions" xml:space="preserve"><value>Gợi ý từ giao dịch cũ</value></data>
+  <data name="form.payWithMore" xml:space="preserve"><value>Xem thêm</value></data>
+  <data name="form.payWithLess" xml:space="preserve"><value>Thu gọn</value></data>
 </root>

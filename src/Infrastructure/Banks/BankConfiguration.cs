@@ -17,6 +17,9 @@ internal sealed class BankConfiguration : IEntityTypeConfiguration<Bank>
             .HasMaxLength(BankConstants.NameMaxLength)
             .IsRequired();
 
+        builder.Property(b => b.SortOrder)
+            .HasDefaultValue(0);
+
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(b => b.UserId)

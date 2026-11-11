@@ -16,4 +16,7 @@ public static class BankErrors
 
     public static readonly Error NotFound = Error.NotFound(
         "Banks.NotFound", "Bank not found.");
+
+    public static readonly Error InvalidOrder = Error.Validation(
+        "Banks.InvalidOrder", "The order must list each of your banks exactly once.");
 }

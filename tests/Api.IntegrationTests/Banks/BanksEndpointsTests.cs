@@ -68,7 +68,7 @@ public sealed class BanksEndpointsTests(ApiTestFactory factory) : IClassFixture<
 
         var list = await (await client.GetAsync("/banks")).Content.ReadFromJsonAsync<List<BankBody>>();
         list!.Count.ShouldBe(2);
-        list.Select(b => b.Name).ShouldBe(new List<string> { "MoMo", "Techcombank" }); // ordered by name
+        list.Select(b => b.Name).ShouldBe(new List<string> { "Techcombank", "MoMo" }); // creation order until reordered
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public sealed class BanksEndpointsTests(ApiTestFactory factory) : IClassFixture<
     }
 
     [Fact]
-    public async Task SetDefault_Switches_AndOrdersDefaultFirst()
+    public async Task SetDefault_Switches_WithoutDuplicating()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("bank-default@example.com", "bankdefault");
         Guid momo = await CreateBankAsync(client, "MoMo");
@@ -101,19 +101,59 @@ public sealed class BanksEndpointsTests(ApiTestFactory factory) : IClassFixture<
 
         (await client.PutAsync($"/banks/{vpb}/default", null)).StatusCode.ShouldBe(HttpStatusCode.NoContent);
         list = await (await client.GetAsync("/banks")).Content.ReadFromJsonAsync<List<BankBody>>();
-        list![0].Id.ShouldBe(vpb); // default sorts first
-        list[0].IsDefault.ShouldBeTrue();
-        list.Count(b => b.IsDefault).ShouldBe(1);
+        list!.Single(b => b.IsDefault).Id.ShouldBe(vpb);
 
         // Switching moves the flag, never duplicates it.
         (await client.PutAsync($"/banks/{momo}/default", null)).StatusCode.ShouldBe(HttpStatusCode.NoContent);
         list = await (await client.GetAsync("/banks")).Content.ReadFromJsonAsync<List<BankBody>>();
-        list![0].Id.ShouldBe(momo);
-        list.Count(b => b.IsDefault).ShouldBe(1);
+        list!.Single(b => b.IsDefault).Id.ShouldBe(momo);
 
         // Foreign user's bank is a 404.
         HttpClient other = await CreateAuthenticatedClientAsync("bank-default2@example.com", "bankdefault2");
         (await other.PutAsync($"/banks/{momo}/default", null)).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Order_NewBanksAppend_ReorderRewritesIt_AndSurvivesDefault()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("bank-order@example.com", "bankorder");
+        Guid acb = await CreateBankAsync(client, "ACB");
+        Guid tcb = await CreateBankAsync(client, "Techcombank");
+        Guid vpb = await CreateBankAsync(client, "VPBank");
+
+        async Task<List<Guid>> OrderAsync() =>
+            (await (await client.GetAsync("/banks")).Content.ReadFromJsonAsync<List<BankBody>>())!
+                .Select(b => b.Id).ToList();
+
+        (await OrderAsync()).ShouldBe([acb, tcb, vpb]); // creation order
+
+        (await client.PutAsJsonAsync("/banks/order", new { ids = new[] { vpb, tcb, acb } }))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await OrderAsync()).ShouldBe([vpb, tcb, acb]);
+
+        // Setting a default no longer reorders.
+        (await client.PutAsync($"/banks/{acb}/default", null)).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await OrderAsync()).ShouldBe([vpb, tcb, acb]);
+
+        Guid momo = await CreateBankAsync(client, "MoMo");
+        (await OrderAsync()).ShouldBe([vpb, tcb, acb, momo]); // appended last
+    }
+
+    [Fact]
+    public async Task Order_MustListEachOwnBankOnce()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("bank-order-bad@example.com", "bankorderbad");
+        Guid a = await CreateBankAsync(client, "A");
+        Guid b = await CreateBankAsync(client, "B");
+        HttpClient other = await CreateAuthenticatedClientAsync("bank-order-bad2@example.com", "bankorderbad2");
+        Guid foreign = await CreateBankAsync(other, "X");
+
+        foreach (Guid[] ids in new[] { new[] { a }, new[] { a, a }, new[] { a, foreign }, new[] { a, b, foreign } })
+        {
+            HttpResponseMessage response = await client.PutAsJsonAsync("/banks/order", new { ids });
+            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+            (await response.Content.ReadAsStringAsync()).ShouldContain("Banks.InvalidOrder");
+        }
     }
 
     [Fact]
