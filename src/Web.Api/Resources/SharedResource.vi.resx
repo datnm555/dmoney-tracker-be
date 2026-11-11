@@ -445,6 +445,15 @@
   <data name="accounts.statementUntracked" xml:space="preserve"><value>Sao kê gồm chi tiêu chưa ghi giao dịch</value></data>
   <data name="accounts.payFrom" xml:space="preserve"><value>Trả từ tài khoản</value></data>
   <data name="accounts.payFromNone" xml:space="preserve"><value>Không cập nhật tài khoản khác</value></data>
+  <data name="accounts.closeMonth" xml:space="preserve"><value>Chốt tháng</value></data>
+  <data name="accounts.closeMonthHint" xml:space="preserve"><value>Nhập số dư cuối kỳ — phần chênh lệch được ghi thành 1 giao dịch gộp.</value></data>
+  <data name="accounts.openingBalance" xml:space="preserve"><value>Số dư đầu kỳ</value></data>
+  <data name="accounts.closingBalance" xml:space="preserve"><value>Số dư cuối kỳ</value></data>
+  <data name="accounts.topUps" xml:space="preserve"><value>Tiền nạp vào trong kỳ</value></data>
+  <data name="accounts.spent" xml:space="preserve"><value>Đã chi trong kỳ</value></data>
+  <data name="accounts.received" xml:space="preserve"><value>Thu thêm trong kỳ</value></data>
+  <data name="accounts.closeContent" xml:space="preserve"><value>Tổng hợp</value></data>
+  <data name="accounts.continue" xml:space="preserve"><value>Tiếp tục</value></data>
   <data name="accounts.note" xml:space="preserve"><value>Ghi chú</value></data>
   <data name="accounts.lastUpdated" xml:space="preserve"><value>Cập nhật</value></data>
   <data name="accounts.empty" xml:space="preserve"><value>Chưa có tài khoản nào</value></data>
