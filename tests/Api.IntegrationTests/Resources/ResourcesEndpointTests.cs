@@ -33,7 +33,7 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.days"].ShouldBe("ngày");
         resources["accounts.dueToday"].ShouldBe("hôm nay");
         resources["accounts.markPaid"].ShouldBe("Đã trả");
-        resources["accounts.groupMoney"].ShouldBe("Tiền");
+        resources["accounts.groupMoney"].ShouldBe("Tài khoản thanh toán");
         resources["accounts.groupOverdraft"].ShouldBe("Thấu chi");
         resources["accounts.groupCredit"].ShouldBe("Thẻ tín dụng");
         resources["accounts.add"].ShouldBe("Thêm tài khoản");
@@ -138,7 +138,7 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.days"].ShouldBe("days");
         resources["accounts.dueToday"].ShouldBe("today");
         resources["accounts.markPaid"].ShouldBe("Mark paid");
-        resources["accounts.groupMoney"].ShouldBe("Money");
+        resources["accounts.groupMoney"].ShouldBe("Payment accounts");
         resources["accounts.groupOverdraft"].ShouldBe("Overdraft");
         resources["accounts.groupCredit"].ShouldBe("Credit cards");
         resources["accounts.add"].ShouldBe("Add account");
