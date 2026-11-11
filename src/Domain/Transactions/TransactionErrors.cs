@@ -40,6 +40,14 @@ public static class TransactionErrors
         "Transactions.InvalidMonth",
         "Invalid month (expected format YYYY or YYYY-MM).");
 
+    public static readonly Error InvalidDateRange = Error.Validation(
+        "Transactions.InvalidDateRange",
+        "Invalid date range (expected from and to as YYYY-MM-DD, from on or before to).");
+
+    public static readonly Error DateRangeTooLong = Error.Validation(
+        "Transactions.DateRangeTooLong",
+        "A date range can span at most 366 days.");
+
     public static readonly Error InvalidPaymentMethod = Error.Validation(
         "Transactions.InvalidPaymentMethod",
         "Invalid payment method.");

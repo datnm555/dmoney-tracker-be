@@ -19,6 +19,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources.ShouldNotBeNull();
         resources["menu.summary"].ShouldBe("Tổng hợp");
         resources["Transactions.EmptyAmount"].ShouldBe("Cần ít nhất một số tiền lớn hơn 0.");
+        resources["filters.dateRange"].ShouldBe("Khoảng ngày");
+        resources["Transactions.InvalidDateRange"].ShouldStartWith("Khoảng ngày không hợp lệ");
         resources["cat.excludeFromStats"].ShouldBe("Không tính vào thống kê");
         resources["summary.excludedBadge"].ShouldBe("Không tính");
         resources["menu.accounts"].ShouldBe("Tài khoản & Nợ");
