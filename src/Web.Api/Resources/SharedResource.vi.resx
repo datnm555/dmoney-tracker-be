@@ -540,4 +540,8 @@
   <data name="form.suggestions" xml:space="preserve"><value>Gợi ý từ giao dịch cũ</value></data>
   <data name="form.payWithMore" xml:space="preserve"><value>Xem thêm</value></data>
   <data name="form.payWithLess" xml:space="preserve"><value>Thu gọn</value></data>
+  <data name="theme.title" xml:space="preserve"><value>Giao diện</value></data>
+  <data name="theme.light" xml:space="preserve"><value>Sáng</value></data>
+  <data name="theme.dark" xml:space="preserve"><value>Tối</value></data>
+  <data name="theme.system" xml:space="preserve"><value>Theo hệ thống</value></data>
 </root>
