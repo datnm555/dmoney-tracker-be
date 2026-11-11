@@ -7,6 +7,7 @@ public sealed record SetSavingsGoalCommand(
     string SavingsBank,
     decimal TargetAmount,
     string StartPeriod,
-    int Months) : ICommand<Guid>;
+    int Months,
+    decimal InitialAmount = 0) : ICommand<Guid>;
 
 public sealed record DeleteSavingsGoalCommand(Guid Id) : ICommand;

@@ -16,6 +16,7 @@ internal sealed class SavingsGoalConfiguration : IEntityTypeConfiguration<Saving
 
         builder.Property(g => g.SavingsBank).HasMaxLength(SavingsGoal.SavingsBankMaxLength).IsRequired();
         builder.Property(g => g.TargetAmount).HasColumnType("numeric(18,2)");
+        builder.Property(g => g.InitialAmount).HasColumnType("numeric(18,2)");
         builder.Property(g => g.StartPeriod).HasMaxLength(RecurringPaymentConstants.PeriodLength).IsRequired();
 
         builder.HasOne<User>()

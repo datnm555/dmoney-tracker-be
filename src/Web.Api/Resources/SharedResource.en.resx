@@ -393,12 +393,14 @@
   <data name="savings.perMonth" xml:space="preserve"><value>Needed per month</value></data>
   <data name="savings.goalReached" xml:space="preserve"><value>Goal reached</value></data>
   <data name="savings.deleteGoal" xml:space="preserve"><value>Delete goal</value></data>
+  <data name="savings.initialAmount" xml:space="preserve"><value>Saved before</value></data>
   <data name="SavingsGoals.NotFound" xml:space="preserve"><value>Savings goal not found.</value></data>
   <data name="SavingsGoals.SavingsBankRequired" xml:space="preserve"><value>Choose where the savings are held.</value></data>
   <data name="SavingsGoals.SavingsBankTooLong" xml:space="preserve"><value>Savings place must be at most 100 characters.</value></data>
   <data name="SavingsGoals.InvalidTarget" xml:space="preserve"><value>Target amount must be greater than zero.</value></data>
   <data name="SavingsGoals.InvalidPeriod" xml:space="preserve"><value>Start month must be in the format YYYY-MM.</value></data>
   <data name="SavingsGoals.InvalidMonths" xml:space="preserve"><value>Duration must be between 1 and 600 months.</value></data>
+  <data name="SavingsGoals.NegativeInitialAmount" xml:space="preserve"><value>The amount saved before must not be negative.</value></data>
   <data name="form.savingsBank" xml:space="preserve"><value>Held at</value></data>
   <data name="export.colSavingsBank" xml:space="preserve"><value>Held at</value></data>
   <data name="export.colGoldType" xml:space="preserve"><value>Gold type</value></data>

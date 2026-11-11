@@ -68,6 +68,7 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.payFromNone"].ShouldBe("Không cập nhật tài khoản khác");
         resources["accounts.closeMonth"].ShouldBe("Chốt tháng");
         resources["savings.goal"].ShouldBe("Mục tiêu");
+        resources["savings.initialAmount"].ShouldBe("Đã có từ trước");
         resources["savings.perMonth"].ShouldBe("Cần gửi mỗi tháng");
         resources["SavingsGoals.InvalidTarget"].ShouldBe("Số tiền mục tiêu phải lớn hơn 0.");
         resources["accounts.spent"].ShouldBe("Đã chi trong kỳ");
@@ -176,6 +177,7 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.payFromNone"].ShouldBe("Don't update another account");
         resources["accounts.closeMonth"].ShouldBe("Close month");
         resources["savings.goal"].ShouldBe("Goal");
+        resources["savings.initialAmount"].ShouldBe("Saved before");
         resources["savings.perMonth"].ShouldBe("Needed per month");
         resources["SavingsGoals.InvalidTarget"].ShouldBe("Target amount must be greater than zero.");
         resources["accounts.spent"].ShouldBe("Spent this period");
