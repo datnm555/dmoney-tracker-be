@@ -125,7 +125,8 @@ internal sealed record AccountSnapshotRequest(
     DateOnly? DueDate,
     decimal? InstallmentRemaining,
     bool StatementPaid,
-    string? Note);
+    string? Note,
+    bool StatementUntracked = false);
 
 internal sealed class CreateAccountSnapshot : IEndpoint
 {
@@ -147,7 +148,8 @@ internal sealed class CreateAccountSnapshot : IEndpoint
                     request.DueDate,
                     request.InstallmentRemaining,
                     request.StatementPaid,
-                    request.Note),
+                    request.Note,
+                    request.StatementUntracked),
                 cancellationToken);
 
             return result.ToHttpResult(
@@ -177,7 +179,8 @@ internal sealed class UpdateAccountSnapshot : IEndpoint
                     request.DueDate,
                     request.InstallmentRemaining,
                     request.StatementPaid,
-                    request.Note),
+                    request.Note,
+                    request.StatementUntracked),
                 cancellationToken);
 
             return result.ToHttpResult(localizer);

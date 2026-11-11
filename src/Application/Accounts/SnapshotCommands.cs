@@ -10,7 +10,8 @@ public sealed record CreateAccountSnapshotCommand(
     DateOnly? DueDate = null,
     decimal? InstallmentRemaining = null,
     bool StatementPaid = false,
-    string? Note = null) : ICommand<Guid>;
+    string? Note = null,
+    bool StatementUntracked = false) : ICommand<Guid>;
 
 public sealed record UpdateAccountSnapshotCommand(
     Guid Id,
@@ -20,6 +21,7 @@ public sealed record UpdateAccountSnapshotCommand(
     DateOnly? DueDate = null,
     decimal? InstallmentRemaining = null,
     bool StatementPaid = false,
-    string? Note = null) : ICommand;
+    string? Note = null,
+    bool StatementUntracked = false) : ICommand;
 
 public sealed record DeleteAccountSnapshotCommand(Guid Id) : ICommand;

@@ -63,6 +63,7 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.dueDate"].ShouldBe("Hạn thanh toán");
         resources["accounts.installmentRemaining"].ShouldBe("Trả góp còn lại");
         resources["accounts.statementPaid"].ShouldBe("Đã thanh toán kỳ này");
+        resources["accounts.statementUntracked"].ShouldBe("Sao kê gồm chi tiêu chưa ghi giao dịch");
         resources["accounts.note"].ShouldBe("Ghi chú");
         resources["accounts.lastUpdated"].ShouldBe("Cập nhật");
         resources["accounts.empty"].ShouldBe("Chưa có tài khoản nào");
@@ -161,6 +162,7 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.dueDate"].ShouldBe("Due date");
         resources["accounts.installmentRemaining"].ShouldBe("Installments remaining");
         resources["accounts.statementPaid"].ShouldBe("Statement paid");
+        resources["accounts.statementUntracked"].ShouldBe("Statement includes spending not recorded as transactions");
         resources["accounts.note"].ShouldBe("Note");
         resources["accounts.lastUpdated"].ShouldBe("Updated");
         resources["accounts.empty"].ShouldBe("No accounts yet");

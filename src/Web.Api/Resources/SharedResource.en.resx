@@ -438,6 +438,7 @@
   <data name="accounts.dueDate" xml:space="preserve"><value>Due date</value></data>
   <data name="accounts.installmentRemaining" xml:space="preserve"><value>Installments remaining</value></data>
   <data name="accounts.statementPaid" xml:space="preserve"><value>Statement paid</value></data>
+  <data name="accounts.statementUntracked" xml:space="preserve"><value>Statement includes spending not recorded as transactions</value></data>
   <data name="accounts.note" xml:space="preserve"><value>Note</value></data>
   <data name="accounts.lastUpdated" xml:space="preserve"><value>Updated</value></data>
   <data name="accounts.empty" xml:space="preserve"><value>No accounts yet</value></data>

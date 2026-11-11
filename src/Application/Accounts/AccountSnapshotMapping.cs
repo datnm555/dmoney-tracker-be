@@ -16,7 +16,8 @@ internal static class AccountSnapshotMapping
         s.DueDate,
         s.InstallmentRemaining is { } installment ? Vnd(installment) : null,
         s.StatementPaid,
-        s.Note);
+        s.Note,
+        s.StatementUntracked);
 
     private static MoneyResponse Vnd(decimal amount) => new(amount, Money.DefaultCurrency);
 }
