@@ -280,6 +280,10 @@
   <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Không tìm thấy bản ghi số dư.</value></data>
   <data name="Accounts.BankNameTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
   <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 500 ký tự.</value></data>
+  <data name="Accounts.InvalidPaymentAmount" xml:space="preserve"><value>Số tiền trả phải lớn hơn 0.</value></data>
+  <data name="Accounts.NotCreditCard" xml:space="preserve"><value>Chỉ trả được sao kê của thẻ tín dụng.</value></data>
+  <data name="Accounts.NoBalance" xml:space="preserve"><value>Hãy cập nhật số dư thẻ trước khi trả sao kê.</value></data>
+  <data name="Accounts.InvalidSourceAccount" xml:space="preserve"><value>Thẻ không thể tự trả sao kê của chính nó.</value></data>
   <data name="RecurringPayments.NotFound" xml:space="preserve"><value>Không tìm thấy khoản định kỳ.</value></data>
   <data name="RecurringPayments.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên khoản.</value></data>
   <data name="RecurringPayments.NameTooLong" xml:space="preserve"><value>Tên tối đa 100 ký tự.</value></data>

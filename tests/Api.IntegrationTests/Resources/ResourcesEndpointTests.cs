@@ -64,6 +64,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.installmentRemaining"].ShouldBe("Trả góp còn lại");
         resources["accounts.statementPaid"].ShouldBe("Đã thanh toán kỳ này");
         resources["accounts.statementUntracked"].ShouldBe("Sao kê gồm chi tiêu chưa ghi giao dịch");
+        resources["Accounts.InvalidPaymentAmount"].ShouldBe("Số tiền trả phải lớn hơn 0.");
+        resources["Accounts.NoBalance"].ShouldBe("Hãy cập nhật số dư thẻ trước khi trả sao kê.");
         resources["accounts.note"].ShouldBe("Ghi chú");
         resources["accounts.lastUpdated"].ShouldBe("Cập nhật");
         resources["accounts.empty"].ShouldBe("Chưa có tài khoản nào");
@@ -163,6 +165,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.installmentRemaining"].ShouldBe("Installments remaining");
         resources["accounts.statementPaid"].ShouldBe("Statement paid");
         resources["accounts.statementUntracked"].ShouldBe("Statement includes spending not recorded as transactions");
+        resources["Accounts.InvalidPaymentAmount"].ShouldBe("Payment amount must be greater than zero.");
+        resources["Accounts.NoBalance"].ShouldBe("Update the card balance before paying its statement.");
         resources["accounts.note"].ShouldBe("Note");
         resources["accounts.lastUpdated"].ShouldBe("Updated");
         resources["accounts.empty"].ShouldBe("No accounts yet");

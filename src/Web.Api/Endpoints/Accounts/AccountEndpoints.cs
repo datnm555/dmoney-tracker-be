@@ -204,3 +204,25 @@ internal sealed class DeleteAccountSnapshot : IEndpoint
         }).RequireAuthorization();
     }
 }
+
+internal sealed class PayStatement : IEndpoint
+{
+    internal sealed record PayStatementRequest(DateOnly Date, decimal Amount, Guid? FromAccountId = null);
+
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapPost("/accounts/{id:guid}/pay-statement", async (
+            Guid id,
+            PayStatementRequest request,
+            ICommandHandler<PayStatementCommand> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result result = await handler.Handle(
+                new PayStatementCommand(id, request.Date, request.Amount, request.FromAccountId),
+                cancellationToken);
+
+            return result.ToHttpResult(localizer);
+        }).RequireAuthorization();
+    }
+}
