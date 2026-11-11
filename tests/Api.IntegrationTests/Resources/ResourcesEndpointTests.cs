@@ -48,6 +48,7 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.type.cash"].ShouldBe("Tiền mặt");
         resources["accounts.setDefault"].ShouldBe("Đặt làm mặc định khi chi tiêu");
         resources["form.payWithMore"].ShouldBe("Xem thêm");
+        resources["savings.deposit"].ShouldBe("Gửi tiết kiệm");
         resources["banks.moveUp"].ShouldBe("Đưa lên");
         resources["accounts.bank"].ShouldBe("Ngân hàng");
         resources["accounts.noBank"].ShouldBe("Khác");
@@ -160,6 +161,7 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["accounts.type.cash"].ShouldBe("Cash");
         resources["accounts.setDefault"].ShouldBe("Set as default for payments");
         resources["form.payWithMore"].ShouldBe("Show more");
+        resources["savings.deposit"].ShouldBe("Deposit");
         resources["banks.moveUp"].ShouldBe("Move up");
         resources["accounts.bank"].ShouldBe("Bank");
         resources["accounts.noBank"].ShouldBe("Other");

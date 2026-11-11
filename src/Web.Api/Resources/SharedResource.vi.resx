@@ -379,9 +379,9 @@
   <data name="savings.unassigned" xml:space="preserve"><value>Chưa ghi nơi gửi</value></data>
   <data name="savings.history" xml:space="preserve"><value>Lịch sử tiết kiệm</value></data>
   <data name="savings.count" xml:space="preserve"><value>giao dịch</value></data>
-  <data name="savings.empty" xml:space="preserve"><value>Chưa có giao dịch sổ tiết kiệm nào trong sổ mặc định.</value></data>
+  <data name="savings.empty" xml:space="preserve"><value>Chưa có khoản tiết kiệm nào. Bấm "Gửi tiết kiệm" để ghi khoản đầu tiên.</value></data>
   <data name="savings.filterAll" xml:space="preserve"><value>Tất cả nơi gửi</value></data>
-  <data name="savings.hint" xml:space="preserve"><value>Danh mục Tích luỹ › Sổ tiết kiệm của sổ mặc định: ghi nợ = gửi vào, ghi có = rút ra.</value></data>
+  <data name="savings.hint" xml:space="preserve"><value>Gửi tiền = ghi một khoản chi vào Tích luỹ › Sổ tiết kiệm; rút ra = ghi một khoản thu cùng danh mục. Chỉ tính trong sổ mặc định.</value></data>
   <data name="savings.plan" xml:space="preserve"><value>Sổ</value></data>
   <data name="savings.thisMonth" xml:space="preserve"><value>Gửi tháng này</value></data>
   <data name="savings.totalDeposited" xml:space="preserve"><value>Tổng đã gửi</value></data>
@@ -398,6 +398,8 @@
   <data name="savings.goalReached" xml:space="preserve"><value>Đã đạt mục tiêu</value></data>
   <data name="savings.deleteGoal" xml:space="preserve"><value>Xoá mục tiêu</value></data>
   <data name="savings.initialAmount" xml:space="preserve"><value>Đã có từ trước</value></data>
+  <data name="savings.noHistory" xml:space="preserve"><value>Chưa có giao dịch gửi / rút — số dư hiện tại là khoản "đã có từ trước" của mục tiêu.</value></data>
+  <data name="savings.deposit" xml:space="preserve"><value>Gửi tiết kiệm</value></data>
   <data name="SavingsGoals.NotFound" xml:space="preserve"><value>Không tìm thấy mục tiêu tiết kiệm.</value></data>
   <data name="SavingsGoals.SavingsBankRequired" xml:space="preserve"><value>Hãy chọn nơi gửi.</value></data>
   <data name="SavingsGoals.SavingsBankTooLong" xml:space="preserve"><value>Nơi gửi tối đa 100 ký tự.</value></data>
