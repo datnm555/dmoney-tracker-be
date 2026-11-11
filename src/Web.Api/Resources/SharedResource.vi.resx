@@ -311,6 +311,7 @@
   <data name="beneficiaries.default" xml:space="preserve"><value>Mặc định</value></data>
   <data name="beneficiaries.setDefault" xml:space="preserve"><value>Đặt mặc định</value></data>
   <data name="beneficiaries.none" xml:space="preserve"><value>Không có</value></data>
+  <data name="beneficiaries.hint" xml:space="preserve"><value>Khoản chi dành cho ai (ví dụ: Gia đình, Con, Bố mẹ). Đối tượng mặc định được chọn sẵn khi tạo giao dịch.</value></data>
   <data name="menu.gold" xml:space="preserve"><value>Vàng</value></data>
   <data name="menu.goldTypes" xml:space="preserve"><value>Loại vàng</value></data>
   <data name="gold.title" xml:space="preserve"><value>Quản lý vàng</value></data>
@@ -422,6 +423,7 @@
   <data name="plans.manage" xml:space="preserve"><value>Quản lý sổ</value></data>
   <data name="plans.created" xml:space="preserve"><value>Đã tạo sổ và chuyển sang sổ mới.</value></data>
   <data name="plans.form" xml:space="preserve"><value>Sổ</value></data>
+  <data name="plans.hint" xml:space="preserve"><value>Mỗi sổ là một bộ giao dịch riêng. Sổ mặc định được chọn sẵn khi mở app và là sổ tính Tiết kiệm.</value></data>
   <data name="import.targetPlan" xml:space="preserve"><value>Nhập vào sổ</value></data>
   <data name="menu.accounts" xml:space="preserve"><value>Tài khoản &amp; Nợ</value></data>
   <data name="accounts.title" xml:space="preserve"><value>Tài khoản &amp; Nợ</value></data>
@@ -516,6 +518,8 @@
   <data name="recurring.cardRow" xml:space="preserve"><value>Sao kê thẻ</value></data>
   <data name="recurring.enterAmount" xml:space="preserve"><value>Tự nhập</value></data>
   <data name="recurring.startPeriod" xml:space="preserve"><value>Bắt đầu từ tháng</value></data>
+  <data name="recurring.paused" xml:space="preserve"><value>Tạm dừng</value></data>
+  <data name="recurring.noRecords" xml:space="preserve"><value>Chưa ghi nhận lần nào.</value></data>
   <data name="form.moreOptions" xml:space="preserve"><value>Tuỳ chọn khác</value></data>
   <data name="form.payWith" xml:space="preserve"><value>Trả bằng</value></data>
   <data name="form.payWithOther" xml:space="preserve"><value>Khác</value></data>

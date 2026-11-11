@@ -311,6 +311,7 @@
   <data name="beneficiaries.default" xml:space="preserve"><value>Default</value></data>
   <data name="beneficiaries.setDefault" xml:space="preserve"><value>Set default</value></data>
   <data name="beneficiaries.none" xml:space="preserve"><value>None</value></data>
+  <data name="beneficiaries.hint" xml:space="preserve"><value>Who a spending is for (e.g. Family, Kids, Parents). The default is preselected when creating a transaction.</value></data>
   <data name="menu.gold" xml:space="preserve"><value>Gold</value></data>
   <data name="menu.goldTypes" xml:space="preserve"><value>Gold types</value></data>
   <data name="gold.title" xml:space="preserve"><value>Gold</value></data>
@@ -422,6 +423,7 @@
   <data name="plans.manage" xml:space="preserve"><value>Manage plans</value></data>
   <data name="plans.created" xml:space="preserve"><value>Plan created and selected.</value></data>
   <data name="plans.form" xml:space="preserve"><value>Plan</value></data>
+  <data name="plans.hint" xml:space="preserve"><value>Each book is its own set of transactions. The default book opens first and is the one Savings counts.</value></data>
   <data name="import.targetPlan" xml:space="preserve"><value>Import into plan</value></data>
   <data name="menu.accounts" xml:space="preserve"><value>Accounts &amp; Debt</value></data>
   <data name="accounts.title" xml:space="preserve"><value>Accounts &amp; Debt</value></data>
@@ -516,6 +518,8 @@
   <data name="recurring.cardRow" xml:space="preserve"><value>Card statement</value></data>
   <data name="recurring.enterAmount" xml:space="preserve"><value>Enter amount</value></data>
   <data name="recurring.startPeriod" xml:space="preserve"><value>Starts from month</value></data>
+  <data name="recurring.paused" xml:space="preserve"><value>Paused</value></data>
+  <data name="recurring.noRecords" xml:space="preserve"><value>Nothing recorded yet.</value></data>
   <data name="form.moreOptions" xml:space="preserve"><value>More options</value></data>
   <data name="form.payWith" xml:space="preserve"><value>Pay with</value></data>
   <data name="form.payWithOther" xml:space="preserve"><value>Other</value></data>
