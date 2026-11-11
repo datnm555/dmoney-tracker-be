@@ -412,7 +412,7 @@
   <data name="accounts.dueToday" xml:space="preserve"><value>today</value></data>
   <data name="accounts.dueTodayFull" xml:space="preserve"><value>due today</value></data>
   <data name="accounts.markPaid" xml:space="preserve"><value>Mark paid</value></data>
-  <data name="accounts.groupMoney" xml:space="preserve"><value>Money</value></data>
+  <data name="accounts.groupMoney" xml:space="preserve"><value>Payment accounts</value></data>
   <data name="accounts.groupOverdraft" xml:space="preserve"><value>Overdraft</value></data>
   <data name="accounts.groupCredit" xml:space="preserve"><value>Credit cards</value></data>
   <data name="accounts.add" xml:space="preserve"><value>Add account</value></data>

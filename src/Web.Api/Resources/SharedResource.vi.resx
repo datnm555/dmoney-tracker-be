@@ -412,7 +412,7 @@
   <data name="accounts.dueToday" xml:space="preserve"><value>hôm nay</value></data>
   <data name="accounts.dueTodayFull" xml:space="preserve"><value>đến hạn hôm nay</value></data>
   <data name="accounts.markPaid" xml:space="preserve"><value>Đã trả</value></data>
-  <data name="accounts.groupMoney" xml:space="preserve"><value>Tiền</value></data>
+  <data name="accounts.groupMoney" xml:space="preserve"><value>Tài khoản thanh toán</value></data>
   <data name="accounts.groupOverdraft" xml:space="preserve"><value>Thấu chi</value></data>
   <data name="accounts.groupCredit" xml:space="preserve"><value>Thẻ tín dụng</value></data>
   <data name="accounts.add" xml:space="preserve"><value>Thêm tài khoản</value></data>
