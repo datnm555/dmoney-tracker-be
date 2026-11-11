@@ -124,6 +124,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["form.today"].ShouldBe("Hôm nay");
         resources["form.yesterday"].ShouldBe("Hôm qua");
         resources["form.suggestions"].ShouldBe("Gợi ý từ giao dịch cũ");
+        resources["theme.title"].ShouldBe("Giao diện");
+        resources["theme.system"].ShouldBe("Theo hệ thống");
     }
 
     [Fact]
@@ -238,6 +240,8 @@ public sealed class ResourcesEndpointTests(ApiTestFactory factory) : IClassFixtu
         resources["form.today"].ShouldBe("Today");
         resources["form.yesterday"].ShouldBe("Yesterday");
         resources["form.suggestions"].ShouldBe("Suggestions from past transactions");
+        resources["theme.title"].ShouldBe("Theme");
+        resources["theme.system"].ShouldBe("System");
     }
 
     [Fact]
