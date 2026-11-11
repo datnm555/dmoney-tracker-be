@@ -53,7 +53,8 @@ internal sealed class GetAccountsQueryHandler(
                 a.DueDay,
                 a.InterestRatePercent,
                 latest.TryGetValue(a.Id, out AccountSnapshot? snapshot) ? snapshot.ToResponse() : null,
-                a.BankName))
+                a.BankName,
+                a.IsDefault))
             .ToList();
     }
 

@@ -443,6 +443,9 @@
   <data name="accounts.type.credit_card" xml:space="preserve"><value>Credit card</value></data>
   <data name="accounts.type.ewallet" xml:space="preserve"><value>E-wallet</value></data>
   <data name="accounts.type.cash" xml:space="preserve"><value>Cash</value></data>
+  <data name="accounts.default" xml:space="preserve"><value>Default</value></data>
+  <data name="accounts.setDefault" xml:space="preserve"><value>Set as default for payments</value></data>
+  <data name="accounts.clearDefault" xml:space="preserve"><value>Remove default</value></data>
   <data name="accounts.bank" xml:space="preserve"><value>Bank</value></data>
   <data name="accounts.noBank" xml:space="preserve"><value>Other</value></data>
   <data name="accounts.lastDigits" xml:space="preserve"><value>Last 4 digits</value></data>

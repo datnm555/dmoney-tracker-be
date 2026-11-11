@@ -44,6 +44,11 @@ namespace Infrastructure.Database.Migrations
                     b.Property<decimal?>("InterestRatePercent")
                         .HasColumnType("numeric(5,2)");
 
+                    b.Property<bool>("IsDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("LastDigits")
                         .HasMaxLength(4)
                         .HasColumnType("character varying(4)");

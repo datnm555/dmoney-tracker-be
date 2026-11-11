@@ -1,0 +1,39 @@
+using Application.Abstractions.Authentication;
+using Application.Abstractions.Data;
+using Application.Abstractions.Messaging;
+using Domain.Accounts;
+using Domain.Users;
+using Microsoft.EntityFrameworkCore;
+using SharedKernel;
+
+namespace Application.Accounts;
+
+internal sealed class ClearDefaultAccountCommandHandler(
+    IApplicationDbContext dbContext,
+    IUserContext userContext)
+    : ICommandHandler<ClearDefaultAccountCommand>
+{
+    public async Task<Result> Handle(ClearDefaultAccountCommand command, CancellationToken cancellationToken)
+    {
+        if (userContext.UserId is not { } userId)
+        {
+            return Result.Failure(UserErrors.Unauthenticated);
+        }
+
+        Account? account = await dbContext.Accounts
+            .FirstOrDefaultAsync(a => a.Id == command.Id && a.UserId == userId, cancellationToken);
+        if (account is null)
+        {
+            return Result.Failure(AccountErrors.NotFound);
+        }
+
+        if (!account.IsDefault)
+        {
+            return Result.Success();
+        }
+
+        account.ClearDefault();
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return Result.Success();
+    }
+}

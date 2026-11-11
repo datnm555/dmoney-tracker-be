@@ -30,7 +30,7 @@ public sealed class AccountsEndpointsTests(ApiTestFactory factory) : IClassFixtu
     private sealed record AccountBody(
         Guid Id, string Name, string Type, string? LastDigits, MoneyBody? CreditLimit,
         int? StatementDay, int? DueDay, decimal? InterestRatePercent, JsonElement? LatestSnapshot,
-        string? BankName = null);
+        string? BankName = null, bool IsDefault = false);
 
     private static async Task<Guid> CreateAsync(HttpClient client, object body)
     {
@@ -225,6 +225,31 @@ public sealed class AccountsEndpointsTests(ApiTestFactory factory) : IClassFixtu
             await userB.PutAsJsonAsync($"/accounts/{id}", new { name = "Hacked", type = "cash" }),
             HttpStatusCode.NotFound, "Accounts.NotFound");
         await ShouldFailWithAsync(await userB.DeleteAsync($"/accounts/{id}"), HttpStatusCode.NotFound, "Accounts.NotFound");
+        await ShouldFailWithAsync(
+            await userB.PutAsync($"/accounts/{id}/default", null), HttpStatusCode.NotFound, "Accounts.NotFound");
+        await ShouldFailWithAsync(
+            await userB.DeleteAsync($"/accounts/{id}/default"), HttpStatusCode.NotFound, "Accounts.NotFound");
         (await ListAsync(userA)).Single().Name.ShouldBe("Secret");
+    }
+
+    [Fact]
+    public async Task Default_SetSwitchesAndClears()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("acc-default@example.com", "accdefault");
+        Guid tcb = await CreateAsync(client, new { name = "TCB", type = "checking" });
+        Guid momo = await CreateAsync(client, new { name = "Momo", type = "ewallet" });
+
+        // No default until the user picks one.
+        (await ListAsync(client)).ShouldAllBe(a => !a.IsDefault);
+
+        (await client.PutAsync($"/accounts/{tcb}/default", null)).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ListAsync(client)).Single(a => a.IsDefault).Id.ShouldBe(tcb);
+
+        // Picking another moves the flag; there is never more than one.
+        (await client.PutAsync($"/accounts/{momo}/default", null)).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ListAsync(client)).Single(a => a.IsDefault).Id.ShouldBe(momo);
+
+        (await client.DeleteAsync($"/accounts/{momo}/default")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ListAsync(client)).ShouldAllBe(a => !a.IsDefault);
     }
 }
