@@ -4,6 +4,7 @@ using Application.Abstractions.Messaging;
 using Application.Savings.Data;
 using Application.Transactions.Data;
 using Domain.Plans;
+using Domain.Savings;
 using Domain.SubCategories;
 using Domain.Transactions;
 using Domain.Users;
@@ -60,7 +61,17 @@ internal sealed class GetSavingsSummaryQueryHandler(
             })
             .ToListAsync(cancellationToken);
 
+        Dictionary<string, SavingsGoal> goals = await dbContext.SavingsGoals
+            .Where(g => g.UserId == userId)
+            .ToDictionaryAsync(g => g.SavingsBank, cancellationToken);
+
+        // A goal set before the first deposit still shows, as an empty account.
+        var goalOnlyRows = goals.Keys
+            .Where(bank => !accountRows.Any(r => r.SavingsBank == bank))
+            .Select(bank => new { SavingsBank = (string?)bank, Deposited = 0m, Withdrawn = 0m, Count = 0 });
+
         List<SavingsAccountResponse> accounts = accountRows
+            .Concat(goalOnlyRows)
             .Select(r => new
             {
                 r.SavingsBank,
@@ -77,7 +88,14 @@ internal sealed class GetSavingsSummaryQueryHandler(
                 new MoneyResponse(r.Balance, Money.DefaultCurrency),
                 new MoneyResponse(r.Deposited, Money.DefaultCurrency),
                 new MoneyResponse(r.Withdrawn, Money.DefaultCurrency),
-                r.Count))
+                r.Count,
+                r.SavingsBank is not null && goals.TryGetValue(r.SavingsBank, out SavingsGoal? goal)
+                    ? new SavingsGoalResponse(
+                        goal.Id,
+                        new MoneyResponse(goal.TargetAmount, Money.DefaultCurrency),
+                        goal.StartPeriod,
+                        goal.Months)
+                    : null))
             .ToList();
 
         decimal total = accounts.Sum(a => a.Balance.Amount);

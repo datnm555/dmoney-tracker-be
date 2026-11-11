@@ -25,6 +25,7 @@ internal sealed class RecurringPaymentConfiguration : IEntityTypeConfiguration<R
         builder.Property(r => r.Bank).HasMaxLength(RecurringPaymentConstants.BankMaxLength);
         builder.Property(r => r.Note).HasMaxLength(RecurringPaymentConstants.NoteMaxLength);
         builder.Property(r => r.StartPeriod).HasMaxLength(RecurringPaymentConstants.PeriodLength);
+        builder.Property(r => r.SavingsBank).HasMaxLength(RecurringPaymentConstants.BankMaxLength);
 
         builder.HasOne<User>()
             .WithMany()
