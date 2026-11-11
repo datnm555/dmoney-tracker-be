@@ -36,7 +36,8 @@ internal sealed class UpdateAccountSnapshotCommandHandler(
             command.DueDate,
             command.InstallmentRemaining,
             command.StatementPaid,
-            command.Note);
+            command.Note,
+            command.StatementUntracked);
         if (updated.IsFailure)
         {
             return updated;

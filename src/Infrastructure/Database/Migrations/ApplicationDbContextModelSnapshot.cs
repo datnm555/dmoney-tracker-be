@@ -111,6 +111,9 @@ namespace Infrastructure.Database.Migrations
                     b.Property<bool>("StatementPaid")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("StatementUntracked")
+                        .HasColumnType("boolean");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId", "Date");
