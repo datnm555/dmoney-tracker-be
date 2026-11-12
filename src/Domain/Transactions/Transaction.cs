@@ -63,6 +63,12 @@ public sealed class Transaction : AuditedEntity
     /// <summary>Where savings are held ("Nơi gửi"), distinct from Bank (the source account). Free text.</summary>
     public string? SavingsBank { get; private set; }
 
+    /// <summary>
+    /// The account this money moved through ("Trả bằng"). Linked transactions recorded after the
+    /// account's latest balance reading move its current balance.
+    /// </summary>
+    public Guid? AccountId { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         Guid planId,
@@ -85,7 +91,8 @@ public sealed class Transaction : AuditedEntity
         Guid? goldTypeId = null,
         decimal? goldQuantity = null,
         Guid? purchasePlaceId = null,
-        string? savingsBank = null)
+        string? savingsBank = null,
+        Guid? accountId = null)
     {
         if (date == default)
         {
@@ -167,7 +174,8 @@ public sealed class Transaction : AuditedEntity
             GoldTypeId = goldTypeId,
             GoldQuantity = goldQuantity,
             PurchasePlaceId = purchasePlaceId,
-            SavingsBank = normalizedSavingsBank
+            SavingsBank = normalizedSavingsBank,
+            AccountId = accountId
         };
 
         return transaction;
@@ -194,7 +202,8 @@ public sealed class Transaction : AuditedEntity
         Guid? goldTypeId = null,
         decimal? goldQuantity = null,
         Guid? purchasePlaceId = null,
-        string? savingsBank = null)
+        string? savingsBank = null,
+        Guid? accountId = null)
     {
         if (date == default)
         {
@@ -273,6 +282,7 @@ public sealed class Transaction : AuditedEntity
         GoldQuantity = goldQuantity;
         PurchasePlaceId = purchasePlaceId;
         SavingsBank = normalizedSavingsBank;
+        AccountId = accountId;
 
         return Result.Success();
     }

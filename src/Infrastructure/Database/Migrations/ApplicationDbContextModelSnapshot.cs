@@ -577,6 +577,9 @@ namespace Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("AccountId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Bank")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
@@ -661,6 +664,8 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
 
                     b.HasIndex("BeneficiaryId");
 
@@ -881,6 +886,11 @@ namespace Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Domain.Transactions.Transaction", b =>
                 {
+                    b.HasOne("Domain.Accounts.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Domain.Beneficiaries.Beneficiary", null)
                         .WithMany()
                         .HasForeignKey("BeneficiaryId")

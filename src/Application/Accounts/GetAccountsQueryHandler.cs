@@ -39,6 +39,14 @@ internal sealed class GetAccountsQueryHandler(
                 g => g.Key,
                 g => g.OrderByDescending(s => s.Date).ThenByDescending(s => s.CreatedAt).First());
 
+        // A handful of accounts per user: one small query each for the linked transactions since its reading.
+        var balances = new Dictionary<Guid, AccountBalance>();
+        foreach (Account account in accounts)
+        {
+            balances[account.Id] = await AccountBalances.CurrentAsync(
+                dbContext, account, latest.GetValueOrDefault(account.Id), cancellationToken);
+        }
+
         // The type group order lives in AccountTypes.All, so sort in memory (a handful of rows per user).
         return accounts
             .OrderBy(a => IndexOfType(a.Type))
@@ -54,7 +62,9 @@ internal sealed class GetAccountsQueryHandler(
                 a.InterestRatePercent,
                 latest.TryGetValue(a.Id, out AccountSnapshot? snapshot) ? snapshot.ToResponse() : null,
                 a.BankName,
-                a.IsDefault))
+                a.IsDefault,
+                new MoneyResponse(balances[a.Id].Amount, Money.DefaultCurrency),
+                balances[a.Id].TransactionsSinceSnapshot))
             .ToList();
     }
 

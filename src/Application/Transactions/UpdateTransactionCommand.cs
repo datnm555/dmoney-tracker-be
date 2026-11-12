@@ -26,4 +26,5 @@ public sealed record UpdateTransactionCommand(
     Guid? GoldTypeId = null,
     decimal? GoldQuantity = null,
     Guid? PurchasePlaceId = null,
-    string? SavingsBank = null) : ICommand;
+    string? SavingsBank = null,
+    Guid? AccountId = null) : ICommand;

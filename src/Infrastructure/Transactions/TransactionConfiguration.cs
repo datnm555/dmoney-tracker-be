@@ -114,5 +114,11 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .WithMany()
             .HasForeignKey(t => t.PurchasePlaceId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Deleting an account keeps its transactions; they just stop moving any balance.
+        builder.HasOne<Domain.Accounts.Account>()
+            .WithMany()
+            .HasForeignKey(t => t.AccountId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

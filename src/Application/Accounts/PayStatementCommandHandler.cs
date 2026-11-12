@@ -59,12 +59,18 @@ internal sealed class PayStatementCommandHandler(
             return Result.Failure(AccountErrors.NoBalance);
         }
 
+        // Start from the balances on the new reading's day so transactions recorded since the last
+        // readings are kept.
+        DateOnly cardReadingDate = ReadingDate(command.Date, cardLatest);
+        AccountBalance cardBalance = await AccountBalances.CurrentAsync(
+            dbContext, card, cardLatest, cancellationToken, cardReadingDate);
+
         // A partial payment keeps the statement open with what is left to pay.
         bool fullyPaid = cardLatest.StatementAmount is not { } statement || command.Amount >= statement;
         Result<AccountSnapshot> cardReading = AccountSnapshot.Create(
             card.Id,
-            ReadingDate(command.Date, cardLatest),
-            Math.Max(0, cardLatest.Balance - command.Amount),
+            cardReadingDate,
+            Math.Max(0, cardBalance.Amount - command.Amount),
             fullyPaid ? cardLatest.StatementAmount : cardLatest.StatementAmount - command.Amount,
             cardLatest.DueDate,
             cardLatest.InstallmentRemaining,
@@ -81,14 +87,16 @@ internal sealed class PayStatementCommandHandler(
         if (source is not null)
         {
             AccountSnapshot? sourceLatest = await LatestAsync(source.Id, cancellationToken);
-            decimal before = sourceLatest?.Balance ?? 0;
+            DateOnly sourceReadingDate = sourceLatest is null ? command.Date : ReadingDate(command.Date, sourceLatest);
+            decimal before = (await AccountBalances.CurrentAsync(
+                dbContext, source, sourceLatest, cancellationToken, sourceReadingDate)).Amount;
             // Paying from a debt account borrows more; paying from a money account spends what it holds.
             decimal after = AccountTypes.IsDebt(source.Type)
                 ? before + command.Amount
                 : Math.Max(0, before - command.Amount);
             Result<AccountSnapshot> sourceReading = AccountSnapshot.Create(
                 source.Id,
-                sourceLatest is null ? command.Date : ReadingDate(command.Date, sourceLatest),
+                sourceReadingDate,
                 after,
                 sourceLatest?.StatementAmount,
                 sourceLatest?.DueDate,
