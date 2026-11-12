@@ -547,4 +547,21 @@
   <data name="theme.light" xml:space="preserve"><value>Sáng</value></data>
   <data name="theme.dark" xml:space="preserve"><value>Tối</value></data>
   <data name="theme.system" xml:space="preserve"><value>Theo hệ thống</value></data>
+  <data name="dashboard.netWorth" xml:space="preserve"><value>Tài sản ròng</value></data>
+  <data name="dashboard.netWorthHint" xml:space="preserve"><value>Tiền + tiết kiệm + vàng (giá vốn) − nợ, trên mọi sổ</value></data>
+  <data name="dashboard.assetMoney" xml:space="preserve"><value>Tiền trong tài khoản</value></data>
+  <data name="dashboard.assetSavings" xml:space="preserve"><value>Tiết kiệm</value></data>
+  <data name="dashboard.assetGold" xml:space="preserve"><value>Vàng (giá vốn)</value></data>
+  <data name="dashboard.assetDebt" xml:space="preserve"><value>Nợ</value></data>
+  <data name="transactions.filterAccount" xml:space="preserve"><value>Tài khoản</value></data>
+  <data name="transactions.allAccounts" xml:space="preserve"><value>Mọi tài khoản</value></data>
+  <data name="accounts.viewTransactions" xml:space="preserve"><value>Xem giao dịch</value></data>
+  <data name="accounts.linkedTitle" xml:space="preserve"><value>Giao dịch của tài khoản</value></data>
+  <data name="accounts.linkedHint" xml:space="preserve"><value>Giao dịch được tô đậm ghi sau lần cập nhật số dư gần nhất nên đang làm thay đổi số dư hiện tại.</value></data>
+  <data name="accounts.linkedEmpty" xml:space="preserve"><value>Chưa có giao dịch nào gắn với tài khoản này.</value></data>
+  <data name="accounts.notInTotals" xml:space="preserve"><value>Chưa nhập số dư — chưa tính vào tổng</value></data>
+  <data name="export.colAccount" xml:space="preserve"><value>Tài khoản</value></data>
+  <data name="export.colToAccount" xml:space="preserve"><value>Chuyển vào</value></data>
+  <data name="import.account" xml:space="preserve"><value>Sao kê của tài khoản</value></data>
+  <data name="import.accountNone" xml:space="preserve"><value>Không gắn tài khoản</value></data>
 </root>

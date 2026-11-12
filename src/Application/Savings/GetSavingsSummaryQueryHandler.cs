@@ -14,9 +14,11 @@ using SharedKernel;
 namespace Application.Savings;
 
 /// <summary>
-/// Savings = the user's default-plan transactions whose sub-category code is "savings_book"
+/// Savings = the user's transactions in every plan (savings are real money, like account balances)
+/// whose sub-category code is "savings_book"
 /// ("Tích luỹ › Sổ tiết kiệm"; gold under Tích luỹ is excluded). Debit = deposit, credit = withdrawal.
 /// Grouped per SavingsBank ("Nơi gửi"); rows without one form a single unassigned (null) bucket.
+/// PlanId/PlanName name the default plan, where the Savings page records new deposits.
 /// </summary>
 internal sealed class GetSavingsSummaryQueryHandler(
     IApplicationDbContext dbContext,
@@ -46,9 +48,7 @@ internal sealed class GetSavingsSummaryQueryHandler(
             .Select(s => (Guid?)s.Id);
 
         IQueryable<Transaction> scope = dbContext.Transactions
-            .Where(t => t.UserId == userId
-                        && t.PlanId == plan.Id
-                        && savingsBookIds.Contains(t.SubCategoryId));
+            .Where(t => t.UserId == userId && savingsBookIds.Contains(t.SubCategoryId));
 
         var accountRows = await scope
             .GroupBy(t => t.SavingsBank)

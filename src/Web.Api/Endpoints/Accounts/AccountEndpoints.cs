@@ -152,6 +152,24 @@ internal sealed class GetAccountSnapshots : IEndpoint
     }
 }
 
+internal sealed class GetAccountTransactions : IEndpoint
+{
+    public void MapEndpoint(IEndpointRouteBuilder app)
+    {
+        app.MapGet("/accounts/{id:guid}/transactions", async (
+            Guid id,
+            IQueryHandler<GetAccountTransactionsQuery, List<AccountTransactionResponse>> handler,
+            IStringLocalizer<SharedResource> localizer,
+            CancellationToken cancellationToken) =>
+        {
+            Result<List<AccountTransactionResponse>> result = await handler.Handle(
+                new GetAccountTransactionsQuery(id), cancellationToken);
+
+            return result.ToHttpResult(localizer, Results.Ok);
+        }).RequireAuthorization();
+    }
+}
+
 internal sealed record AccountSnapshotRequest(
     DateOnly Date,
     decimal Balance,

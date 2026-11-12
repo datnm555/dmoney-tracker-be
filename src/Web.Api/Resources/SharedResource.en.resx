@@ -547,4 +547,21 @@
   <data name="theme.light" xml:space="preserve"><value>Light</value></data>
   <data name="theme.dark" xml:space="preserve"><value>Dark</value></data>
   <data name="theme.system" xml:space="preserve"><value>System</value></data>
+  <data name="dashboard.netWorth" xml:space="preserve"><value>Net worth</value></data>
+  <data name="dashboard.netWorthHint" xml:space="preserve"><value>Money + savings + gold (at cost) − debt, across all ledgers</value></data>
+  <data name="dashboard.assetMoney" xml:space="preserve"><value>Money in accounts</value></data>
+  <data name="dashboard.assetSavings" xml:space="preserve"><value>Savings</value></data>
+  <data name="dashboard.assetGold" xml:space="preserve"><value>Gold (at cost)</value></data>
+  <data name="dashboard.assetDebt" xml:space="preserve"><value>Debt</value></data>
+  <data name="transactions.filterAccount" xml:space="preserve"><value>Account</value></data>
+  <data name="transactions.allAccounts" xml:space="preserve"><value>All accounts</value></data>
+  <data name="accounts.viewTransactions" xml:space="preserve"><value>View transactions</value></data>
+  <data name="accounts.linkedTitle" xml:space="preserve"><value>Account transactions</value></data>
+  <data name="accounts.linkedHint" xml:space="preserve"><value>Highlighted rows were recorded after the latest balance reading, so they move the current balance.</value></data>
+  <data name="accounts.linkedEmpty" xml:space="preserve"><value>No transactions are linked to this account yet.</value></data>
+  <data name="accounts.notInTotals" xml:space="preserve"><value>No balance entered yet — not in the totals</value></data>
+  <data name="export.colAccount" xml:space="preserve"><value>Account</value></data>
+  <data name="export.colToAccount" xml:space="preserve"><value>Transferred to</value></data>
+  <data name="import.account" xml:space="preserve"><value>Statement of account</value></data>
+  <data name="import.accountNone" xml:space="preserve"><value>No account</value></data>
 </root>

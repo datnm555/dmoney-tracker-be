@@ -272,4 +272,61 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
         reopened.CurrentBalance.Amount.ShouldBe(65_225_611m);
         (await ledger.GetAsync(checking)).CurrentBalance.Amount.ShouldBe(44_347_025m);
     }
+
+    [Fact]
+    public async Task AccountTransactions_ListLinkedRows_WithTheirEffectAndWhetherTheyMoveTheBalance()
+    {
+        Ledger ledger = await LedgerAsync("bal-list@example.com", "ballist");
+        Guid overdraft = await ledger.AccountAsync("overdraft", 1_000_000m, "2026-11-10");
+        Guid checking = await ledger.AccountAsync("checking", 5_000_000m, "2026-11-10");
+        Guid before = await ledger.AddAsync("2026-11-09", 100_000m, overdraft);
+        Guid spent = await ledger.AddAsync("2026-11-11", 200_000m, overdraft);
+        Guid paidIn = await ledger.AddAsync("2026-11-12", 300_000m, checking, toAccountId: overdraft);
+        await ledger.AddAsync("2026-11-12", 50_000m, checking);
+
+        List<AccountTxBody> rows = (await ledger.Client.GetFromJsonAsync<List<AccountTxBody>>($"/accounts/{overdraft}/transactions"))!;
+
+        rows.Select(r => r.Id).ShouldBe([paidIn, spent, before]);
+        rows[0].Incoming.ShouldBeTrue();
+        rows[0].Effect.Amount.ShouldBe(-300_000m);
+        rows[0].AfterSnapshot.ShouldBeTrue();
+        rows[1].Effect.Amount.ShouldBe(200_000m);
+        rows[1].AfterSnapshot.ShouldBeTrue();
+        rows[2].AfterSnapshot.ShouldBeFalse();
+        (await ledger.GetAsync(overdraft)).CurrentBalance.Amount.ShouldBe(1_000_000m + rows.Where(r => r.AfterSnapshot).Sum(r => r.Effect.Amount));
+
+        Ledger other = await LedgerAsync("bal-list2@example.com", "ballist2");
+        (await other.Client.GetAsync($"/accounts/{overdraft}/transactions")).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Import_IntoAnAccount_LinksEveryRow()
+    {
+        Ledger ledger = await LedgerAsync("bal-imp@example.com", "balimp");
+        Guid checking = await ledger.AccountAsync("checking", 5_000_000m, "2026-11-10");
+
+        var import = await ledger.Client.PostAsJsonAsync("/transactions/import", new
+        {
+            planId = ledger.PlanId,
+            accountId = checking,
+            rows = new[]
+            {
+                new { date = "2026-11-11", content = "Lương", amount = 2_000_000m, note = (string?)null },
+                new { date = "2026-11-12", content = "Grab", amount = -150_000m, note = (string?)null }
+            }
+        });
+        import.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await ledger.GetAsync(checking)).CurrentBalance.Amount.ShouldBe(6_850_000m);
+
+        Ledger other = await LedgerAsync("bal-imp2@example.com", "balimp2");
+        var foreign = await other.Client.PostAsJsonAsync("/transactions/import", new
+        {
+            planId = other.PlanId,
+            accountId = checking,
+            rows = new[] { new { date = "2026-11-11", content = "X", amount = 1m, note = (string?)null } }
+        });
+        foreign.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    private sealed record AccountTxBody(Guid Id, MoneyBody Effect, bool Incoming, bool AfterSnapshot);
 }

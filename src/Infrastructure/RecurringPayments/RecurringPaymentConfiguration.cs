@@ -34,6 +34,12 @@ internal sealed class RecurringPaymentConfiguration : IEntityTypeConfiguration<R
 
         builder.HasIndex(r => r.UserId);
 
+        // Deleting the account keeps the item; it just falls back to the default account.
+        builder.HasOne<Domain.Accounts.Account>()
+            .WithMany()
+            .HasForeignKey(r => r.AccountId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.Ignore(r => r.DomainEvents);
     }
 }
