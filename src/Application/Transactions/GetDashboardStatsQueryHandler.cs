@@ -60,9 +60,10 @@ internal sealed class GetDashboardStatsQueryHandler(
         DateOnly windowStart = currentMonthStart.AddMonths(-11);
         DateOnly windowEnd = currentMonthStart.AddMonths(1);
 
-        var rows = await dbContext.Transactions
+        IQueryable<Transaction> counted = dbContext.Transactions
             .Where(t => t.UserId == userId && t.PlanId == planId && t.Date >= windowStart && t.Date < windowEnd)
-            .CountedInStats(dbContext)
+            .CountedInStats(dbContext);
+        var rows = await counted
             .GroupBy(t => new { t.Date.Year, t.Date.Month })
             .Select(g => new
             {
@@ -72,13 +73,17 @@ internal sealed class GetDashboardStatsQueryHandler(
                 Debit = g.Sum(t => t.Debit.Amount)
             })
             .ToListAsync(cancellationToken);
+        List<ReimbursementOffset> offsets = await counted.ReimbursementOffsetsAsync(dbContext, cancellationToken);
 
         List<MonthlyStatResponse> monthly = [];
         for (int i = 0; i < 12; i++)
         {
             DateOnly slot = windowStart.AddMonths(i);
             var row = rows.FirstOrDefault(r => r.Year == slot.Year && r.Month == slot.Month);
-            decimal credit = row?.Credit ?? 0m;
+            // Money repaying the owner's advances is not income.
+            decimal credit = (row?.Credit ?? 0m) - offsets
+                .Where(o => o.Date.Year == slot.Year && o.Date.Month == slot.Month)
+                .Sum(o => o.Amount);
             decimal debit = row?.Debit ?? 0m;
             monthly.Add(new MonthlyStatResponse(
                 slot.ToString("yyyy-MM", CultureInfo.InvariantCulture),

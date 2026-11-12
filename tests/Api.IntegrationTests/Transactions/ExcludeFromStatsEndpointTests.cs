@@ -211,6 +211,58 @@ public sealed class ExcludeFromStatsEndpointTests(ApiTestFactory factory) : ICla
         summary.Items.Single().ExcludedFromStats.ShouldBeTrue();
     }
 
+    [Fact]
+    public async Task Stats_LeaveOutAdvancesGoldAndTheRepaidPartOfReimbursements()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync();
+        Guid planId = await GetDefaultPlanIdAsync(client);
+        Guid categoryId = await CreateCategoryAsync(client, Unique("Advance cat"), excludeFromStats: false);
+        await CreateTransactionAsync(client, planId, 2, 0m, 100_000m, categoryId, null);
+
+        Guid advanceId = await PostTransactionAsync(client, new
+        {
+            date = $"{ThisMonth}-03", content = "ứng hộ", creditAmount = 0m, debitAmount = 300_000m,
+            categoryId, planId, isAdvance = true
+        });
+        Guid reimburseId = await PostTransactionAsync(client, new
+        {
+            date = $"{ThisMonth}-04", content = "được trả + thêm", creditAmount = 500_000m, debitAmount = 0m,
+            categoryId, planId, advanceTransactionIds = new[] { advanceId }
+        });
+
+        var goldType = await client.PostAsJsonAsync("/gold-types", new { name = Unique("SJC") });
+        goldType.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid goldTypeId = (await goldType.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+        Guid goldId = await PostTransactionAsync(client, new
+        {
+            date = $"{ThisMonth}-05", content = "mua vàng", creditAmount = 0m, debitAmount = 8_000_000m,
+            categoryId, planId, goldTypeId, goldQuantity = 1m
+        });
+
+        var summary = await client.GetFromJsonAsync<SummaryBody>($"/transactions?month={ThisMonth}&planId={planId}");
+        summary.ShouldNotBeNull();
+        summary.TotalCredit.Amount.ShouldBe(200_000m);
+        summary.TotalDebit.Amount.ShouldBe(100_000m);
+        summary.Items.Single(i => i.Id == advanceId).ExcludedFromStats.ShouldBeTrue();
+        summary.Items.Single(i => i.Id == goldId).ExcludedFromStats.ShouldBeTrue();
+        ItemBody reimbursement = summary.Items.Single(i => i.Id == reimburseId);
+        reimbursement.ExcludedFromStats.ShouldBeFalse();
+        reimbursement.CountedCredit!.Amount.ShouldBe(200_000m);
+
+        var stats = await client.GetFromJsonAsync<StatsBody>($"/transactions/stats?month={ThisMonth}&planId={planId}");
+        stats!.Monthly[^1].TotalCredit.Amount.ShouldBe(200_000m);
+        stats.Monthly[^1].TotalDebit.Amount.ShouldBe(100_000m);
+        stats.Daily.Single().Day.ShouldBe(2);
+        stats.ByCategory.Single().Debit.Amount.ShouldBe(100_000m);
+    }
+
+    private static async Task<Guid> PostTransactionAsync(HttpClient client, object body)
+    {
+        var response = await client.PostAsJsonAsync("/transactions", body);
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
+
     private static async Task<CategoryBody> GetCategoryAsync(HttpClient client, Guid id)
     {
         var list = await client.GetFromJsonAsync<List<CategoryBody>>("/categories");
@@ -232,7 +284,8 @@ public sealed class ExcludeFromStatsEndpointTests(ApiTestFactory factory) : ICla
     internal sealed record CategoryBody(Guid Id, string Name, string Icon, string? Code, string Kind, bool ExcludeFromStats);
     internal sealed record SubCategoryBody(
         Guid Id, Guid CategoryId, string Name, bool IsDefault, string? Icon, string? Code, bool ExcludeFromStats);
-    internal sealed record ItemBody(Guid Id, string Content, MoneyBody Credit, MoneyBody Debit, bool ExcludedFromStats);
+    internal sealed record ItemBody(
+        Guid Id, string Content, MoneyBody Credit, MoneyBody Debit, bool ExcludedFromStats, MoneyBody? CountedCredit = null);
     internal sealed record SummaryBody(List<ItemBody> Items, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
 
     internal sealed record StatsBody(
