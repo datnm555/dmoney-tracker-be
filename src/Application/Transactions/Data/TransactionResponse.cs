@@ -32,7 +32,9 @@ public sealed record TransactionResponse(
     string? SavingsBank = null,
     bool ExcludedFromStats = false,
     Guid? AccountId = null,
-    Guid? ToAccountId = null);
+    Guid? ToAccountId = null,
+    MoneyResponse? CountedCredit = null,
+    MoneyResponse? CountedDebit = null);
 
 public sealed record LinkedTransactionResponse(
     Guid Id,

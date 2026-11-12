@@ -100,11 +100,14 @@ internal sealed class GetTransactionsByMonthQueryHandler(
             .ToListAsync(cancellationToken);
 
         items = await AttachLinksAsync(items, cancellationToken);
-        items = await FlagExcludedAsync(monthScope, items, cancellationToken);
 
-        // Totals skip excluded-from-stats rows; the items list above stays complete.
+        // Totals skip excluded-from-stats rows and the part of a credit that repaid advances;
+        // the items list above stays complete.
         IQueryable<Transaction> countedScope = monthScope.CountedInStats(dbContext);
-        decimal totalCredit = await countedScope.SumAsync(t => t.Credit.Amount, cancellationToken);
+        List<ReimbursementOffset> offsets = await countedScope.ReimbursementOffsetsAsync(dbContext, cancellationToken);
+        items = await FlagStatsAsync(monthScope, items, offsets, cancellationToken);
+        decimal totalCredit = await countedScope.SumAsync(t => t.Credit.Amount, cancellationToken)
+                              - offsets.Sum(o => o.Amount);
         decimal totalDebit = await countedScope.SumAsync(t => t.Debit.Amount, cancellationToken);
 
         return new MonthlySummaryResponse(
@@ -160,10 +163,14 @@ internal sealed class GetTransactionsByMonthQueryHandler(
     private static bool TryParseDay(string? value, out DateOnly day) =>
         DateOnly.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out day);
 
-    /// <summary>Marks items whose category or sub-category is excluded from stats.</summary>
-    private async Task<List<TransactionResponse>> FlagExcludedAsync(
+    /// <summary>
+    /// Marks excluded items and sets what each item adds to the totals: nothing when excluded,
+    /// a reimbursing credit only what exceeds the advances it repaid.
+    /// </summary>
+    private async Task<List<TransactionResponse>> FlagStatsAsync(
         IQueryable<Transaction> monthScope,
         List<TransactionResponse> items,
+        List<ReimbursementOffset> offsets,
         CancellationToken cancellationToken)
     {
         if (items.Count == 0)
@@ -176,10 +183,27 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                 .Select(t => t.Id)
                 .ToListAsync(cancellationToken))
             .ToHashSet();
+        var offsetById = offsets.ToDictionary(o => o.TransactionId, o => o.Amount);
 
-        return excludedIds.Count == 0
-            ? items
-            : items.Select(i => excludedIds.Contains(i.Id) ? i with { ExcludedFromStats = true } : i).ToList();
+        return items.Select(i =>
+        {
+            if (excludedIds.Contains(i.Id))
+            {
+                return i with
+                {
+                    ExcludedFromStats = true,
+                    CountedCredit = new MoneyResponse(0m, i.Credit.Currency),
+                    CountedDebit = new MoneyResponse(0m, i.Debit.Currency)
+                };
+            }
+
+            decimal offset = offsetById.GetValueOrDefault(i.Id);
+            return i with
+            {
+                CountedCredit = new MoneyResponse(i.Credit.Amount - offset, i.Credit.Currency),
+                CountedDebit = i.Debit
+            };
+        }).ToList();
     }
 
     /// <summary>Attaches related transactions (advance/prepaid links, both directions).</summary>
