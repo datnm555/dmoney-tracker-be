@@ -14,7 +14,8 @@ public sealed record CreateRecurringPaymentCommand(
     string? Note = null,
     bool IsActive = true,
     string? StartPeriod = null,
-    string? SavingsBank = null) : ICommand<Guid>;
+    string? SavingsBank = null,
+    Guid? AccountId = null) : ICommand<Guid>;
 
 public sealed record UpdateRecurringPaymentCommand(
     Guid Id,
@@ -29,6 +30,7 @@ public sealed record UpdateRecurringPaymentCommand(
     string? Note = null,
     bool IsActive = true,
     string? StartPeriod = null,
-    string? SavingsBank = null) : ICommand;
+    string? SavingsBank = null,
+    Guid? AccountId = null) : ICommand;
 
 public sealed record DeleteRecurringPaymentCommand(Guid Id) : ICommand;

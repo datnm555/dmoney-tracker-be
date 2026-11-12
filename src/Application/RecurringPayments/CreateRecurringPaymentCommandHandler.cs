@@ -32,14 +32,15 @@ internal sealed class CreateRecurringPaymentCommandHandler(
             command.Note,
             command.IsActive,
             command.StartPeriod,
-            command.SavingsBank);
+            command.SavingsBank,
+            command.AccountId);
         if (item.IsFailure)
         {
             return Result.Failure<Guid>(item.Error);
         }
 
         Result references = await RecurringPaymentReferences.ValidateAsync(
-            dbContext, command.CategoryId, command.SubCategoryId, cancellationToken);
+            dbContext, userId, command.CategoryId, command.SubCategoryId, command.AccountId, cancellationToken);
         if (references.IsFailure)
         {
             return Result.Failure<Guid>(references.Error);

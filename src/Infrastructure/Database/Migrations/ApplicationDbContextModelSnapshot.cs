@@ -377,6 +377,9 @@ namespace Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("AccountId")
+                        .HasColumnType("uuid");
+
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric(18,2)");
 
@@ -430,6 +433,8 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
 
                     b.HasIndex("UserId");
 
@@ -850,6 +855,11 @@ namespace Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Domain.RecurringPayments.RecurringPayment", b =>
                 {
+                    b.HasOne("Domain.Accounts.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Domain.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")

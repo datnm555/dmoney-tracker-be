@@ -28,7 +28,7 @@ internal sealed class UpdateRecurringPaymentCommandHandler(
         }
 
         Result references = await RecurringPaymentReferences.ValidateAsync(
-            dbContext, command.CategoryId, command.SubCategoryId, cancellationToken);
+            dbContext, userId, command.CategoryId, command.SubCategoryId, command.AccountId, cancellationToken);
 
         if (references.IsFailure)
         {
@@ -47,7 +47,8 @@ internal sealed class UpdateRecurringPaymentCommandHandler(
             command.Note,
             command.IsActive,
             command.StartPeriod,
-            command.SavingsBank);
+            command.SavingsBank,
+            command.AccountId);
         if (updated.IsFailure)
         {
             return updated;

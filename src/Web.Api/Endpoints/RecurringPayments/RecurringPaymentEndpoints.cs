@@ -58,7 +58,8 @@ internal sealed class UpdateRecurringPayment : IEndpoint
         string? Note = null,
         bool IsActive = true,
         string? StartPeriod = null,
-        string? SavingsBank = null);
+        string? SavingsBank = null,
+        Guid? AccountId = null);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -83,7 +84,8 @@ internal sealed class UpdateRecurringPayment : IEndpoint
                     request.Note,
                     request.IsActive,
                     request.StartPeriod,
-                    request.SavingsBank),
+                    request.SavingsBank,
+                    request.AccountId),
                 cancellationToken);
 
             return result.ToHttpResult(localizer);

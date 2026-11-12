@@ -149,7 +149,7 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
     }
 
     [Fact]
-    public async Task SavingsSummary_OnlyDefaultPlanSavingsBookRows_GroupedPerSavingsBank()
+    public async Task SavingsSummary_SavingsBookRowsOfEveryPlan_GroupedPerSavingsBank()
     {
         HttpClient other = await CreateAuthenticatedClientAsync("sav-other@example.com", "savother");
         await PostTxAsync(other, await GetDefaultPlanIdAsync(other), await GetCategoryIdByCodeAsync(other, "savings"),
@@ -175,15 +175,15 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
 
         body!.PlanId.ShouldBe(defaultPlan);
         body.PlanName.ShouldBe("Sổ chính");
-        body.TotalBalance.Amount.ShouldBe(7_000_000m);
+        body.TotalBalance.Amount.ShouldBe(11_000_000m);
         body.Accounts.Count.ShouldBe(2);
 
         SavingsSummaryBody.AccountItem vietin = body.Accounts[0];
         vietin.SavingsBank.ShouldBe("Vietinbank");
-        vietin.Balance.Amount.ShouldBe(5_000_000m);
-        vietin.TotalDeposited.Amount.ShouldBe(6_000_000m);
+        vietin.Balance.Amount.ShouldBe(9_000_000m);
+        vietin.TotalDeposited.Amount.ShouldBe(10_000_000m);
         vietin.TotalWithdrawn.Amount.ShouldBe(1_000_000m);
-        vietin.TransactionCount.ShouldBe(2);
+        vietin.TransactionCount.ShouldBe(3);
 
         SavingsSummaryBody.AccountItem unassigned = body.Accounts[1];
         unassigned.SavingsBank.ShouldBeNull();
@@ -192,8 +192,9 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
         unassigned.TotalWithdrawn.Amount.ShouldBe(0m);
         unassigned.TransactionCount.ShouldBe(1);
 
-        body.Transactions.Select(t => t.Content).ShouldBe(["Gửi chưa rõ", "Rút 1tr", "Gửi 6tr"]);
-        SavingsSummaryBody.TxItem first = body.Transactions[2];
+        body.Transactions.Select(t => t.Content).ShouldBe(["Gửi chưa rõ", "Rút 1tr", "Gửi 4tr sổ phụ", "Gửi 6tr"]);
+        body.Transactions[2].PlanId.ShouldBe(otherPlan);
+        SavingsSummaryBody.TxItem first = body.Transactions[3];
         first.Bank.ShouldBe("VPBank");
         first.SavingsBank.ShouldBe("Vietinbank");
         first.PlanId.ShouldBe(defaultPlan);
@@ -202,7 +203,7 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
     }
 
     [Fact]
-    public async Task SavingsSummary_FollowsDefaultPlanSwitch()
+    public async Task SavingsSummary_SpansAllPlans_PlanIdFollowsTheDefaultPlan()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("sav-switch@example.com", "savswitch");
         Guid savings = await GetCategoryIdByCodeAsync(client, "savings");
@@ -219,8 +220,8 @@ public sealed class SavingsSummaryEndpointTests(ApiTestFactory factory) : IClass
 
         body!.PlanId.ShouldBe(familyPlan);
         body.PlanName.ShouldBe("Sổ gia đình");
-        body.TotalBalance.Amount.ShouldBe(8_000_000m);
-        body.Transactions.Select(t => t.Content).ShouldBe(["Gửi sổ gia đình"]);
+        body.TotalBalance.Amount.ShouldBe(9_000_000m);
+        body.Transactions.Select(t => t.Content).ShouldBe(["Gửi sổ gia đình", "Gửi sổ chính"], ignoreOrder: true);
     }
 
     [Fact]

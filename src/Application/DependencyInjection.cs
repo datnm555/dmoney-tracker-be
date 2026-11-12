@@ -85,6 +85,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<SetDefaultAccountCommand>, SetDefaultAccountCommandHandler>();
         services.AddScoped<ICommandHandler<ClearDefaultAccountCommand>, ClearDefaultAccountCommandHandler>();
         services.AddScoped<IQueryHandler<GetAccountSnapshotsQuery, List<AccountSnapshotResponse>>, GetAccountSnapshotsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAccountTransactionsQuery, List<AccountTransactionResponse>>, GetAccountTransactionsQueryHandler>();
         services.AddScoped<ICommandHandler<CreateAccountSnapshotCommand, Guid>, CreateAccountSnapshotCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateAccountSnapshotCommand>, UpdateAccountSnapshotCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteAccountSnapshotCommand>, DeleteAccountSnapshotCommandHandler>();

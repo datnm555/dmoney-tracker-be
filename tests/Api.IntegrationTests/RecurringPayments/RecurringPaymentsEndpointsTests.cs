@@ -29,7 +29,7 @@ public sealed class RecurringPaymentsEndpointsTests(ApiTestFactory factory) : IC
     private sealed record ItemBody(
         Guid Id, string Name, Guid? CategoryId, Guid? SubCategoryId, MoneyBody Amount,
         bool IsVariable, int DayOfMonth, string? PaymentMethod, string? Bank, string? Note, bool IsActive,
-        string? StartPeriod, string? SavingsBank);
+        string? StartPeriod, string? SavingsBank, Guid? AccountId = null);
 
     private static async Task<Guid> CreateCategoryAsync(HttpClient client, string name)
     {
@@ -63,6 +63,36 @@ public sealed class RecurringPaymentsEndpointsTests(ApiTestFactory factory) : IC
 
     private static object Valid(string name = "Tiền điện") =>
         new { name, amount = 100m, isVariable = false, dayOfMonth = 5 };
+
+    [Fact]
+    public async Task AccountId_RoundTrips_RejectsOtherUsersAccount_AndClearsWhenTheAccountIsDeleted()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("rp-acc@example.com", "rpacc");
+        HttpClient other = await CreateAuthenticatedClientAsync("rp-acc2@example.com", "rpacc2");
+        Guid accountId = await CreateAccountAsync(client, "VPBank lương");
+        Guid foreignId = await CreateAccountAsync(other, "Người khác");
+
+        Guid id = await CreateAsync(client, new { name = "Tiền nhà", amount = 5_000_000m, isVariable = false, dayOfMonth = 5, accountId });
+        (await ListAsync(client)).Single(i => i.Id == id).AccountId.ShouldBe(accountId);
+
+        await ShouldFailWithAsync(
+            await client.PostAsJsonAsync("/recurring-payments", new { name = "X", amount = 1m, isVariable = false, dayOfMonth = 5, accountId = foreignId }),
+            HttpStatusCode.NotFound, "Accounts.NotFound");
+        await ShouldFailWithAsync(
+            await client.PutAsJsonAsync($"/recurring-payments/{id}", new { name = "Tiền nhà", amount = 5_000_000m, isVariable = false, dayOfMonth = 5, accountId = foreignId }),
+            HttpStatusCode.NotFound, "Accounts.NotFound");
+        (await ListAsync(client)).Single(i => i.Id == id).AccountId.ShouldBe(accountId);
+
+        (await client.DeleteAsync($"/accounts/{accountId}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ListAsync(client)).Single(i => i.Id == id).AccountId.ShouldBeNull();
+    }
+
+    private static async Task<Guid> CreateAccountAsync(HttpClient client, string name)
+    {
+        var response = await client.PostAsJsonAsync("/accounts", new { name, type = "checking" });
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+    }
 
     [Fact]
     public async Task Get_WithoutToken_Returns401()
