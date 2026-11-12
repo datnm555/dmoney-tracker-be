@@ -25,4 +25,5 @@ public sealed record CreateTransactionCommand(
     decimal? GoldQuantity = null,
     Guid? PurchasePlaceId = null,
     string? SavingsBank = null,
-    Guid? AccountId = null) : ICommand<Guid>;
+    Guid? AccountId = null,
+    Guid? ToAccountId = null) : ICommand<Guid>;

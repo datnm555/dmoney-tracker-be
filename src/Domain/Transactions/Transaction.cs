@@ -69,6 +69,13 @@ public sealed class Transaction : AuditedEntity
     /// </summary>
     public Guid? AccountId { get; private set; }
 
+    /// <summary>
+    /// The account the money went into ("Chuyển vào / Trả cho") when it moved between the owner's
+    /// accounts, e.g. paying a credit card from an overdraft. Money out only. It moves that account's
+    /// current balance the opposite way: a debt account owes less, a money account holds more.
+    /// </summary>
+    public Guid? ToAccountId { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         Guid planId,
@@ -92,7 +99,8 @@ public sealed class Transaction : AuditedEntity
         decimal? goldQuantity = null,
         Guid? purchasePlaceId = null,
         string? savingsBank = null,
-        Guid? accountId = null)
+        Guid? accountId = null,
+        Guid? toAccountId = null)
     {
         if (date == default)
         {
@@ -123,6 +131,12 @@ public sealed class Transaction : AuditedEntity
         if (beneficiaryId is not null && debit.Amount <= 0m)
         {
             return Result.Failure<Transaction>(TransactionErrors.BeneficiaryDebitOnly);
+        }
+
+        Result transferValidation = ValidateTransfer(debit, accountId, toAccountId);
+        if (transferValidation.IsFailure)
+        {
+            return Result.Failure<Transaction>(transferValidation.Error);
         }
 
         if ((goldTypeId is null) != (goldQuantity is null))
@@ -175,7 +189,8 @@ public sealed class Transaction : AuditedEntity
             GoldQuantity = goldQuantity,
             PurchasePlaceId = purchasePlaceId,
             SavingsBank = normalizedSavingsBank,
-            AccountId = accountId
+            AccountId = accountId,
+            ToAccountId = toAccountId
         };
 
         return transaction;
@@ -203,7 +218,8 @@ public sealed class Transaction : AuditedEntity
         decimal? goldQuantity = null,
         Guid? purchasePlaceId = null,
         string? savingsBank = null,
-        Guid? accountId = null)
+        Guid? accountId = null,
+        Guid? toAccountId = null)
     {
         if (date == default)
         {
@@ -234,6 +250,12 @@ public sealed class Transaction : AuditedEntity
         if (beneficiaryId is not null && debit.Amount <= 0m)
         {
             return Result.Failure(TransactionErrors.BeneficiaryDebitOnly);
+        }
+
+        Result transferValidation = ValidateTransfer(debit, accountId, toAccountId);
+        if (transferValidation.IsFailure)
+        {
+            return transferValidation;
         }
 
         if ((goldTypeId is null) != (goldQuantity is null))
@@ -283,8 +305,26 @@ public sealed class Transaction : AuditedEntity
         PurchasePlaceId = purchasePlaceId;
         SavingsBank = normalizedSavingsBank;
         AccountId = accountId;
+        ToAccountId = toAccountId;
 
         return Result.Success();
+    }
+
+    private static Result ValidateTransfer(Money debit, Guid? accountId, Guid? toAccountId)
+    {
+        if (toAccountId is null)
+        {
+            return Result.Success();
+        }
+
+        if (debit.Amount <= 0m)
+        {
+            return Result.Failure(TransactionErrors.TransferDebitOnly);
+        }
+
+        return toAccountId == accountId
+            ? Result.Failure(TransactionErrors.TransferSameAccount)
+            : Result.Success();
     }
 
     private static Result Validate(

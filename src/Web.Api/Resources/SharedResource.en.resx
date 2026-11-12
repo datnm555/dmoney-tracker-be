@@ -266,6 +266,8 @@
   <data name="Transactions.GoldQuantityInvalid" xml:space="preserve"><value>Gold quantity must be greater than zero.</value></data>
   <data name="Transactions.GoldRequiresAmount" xml:space="preserve"><value>A gold transaction must have either money out (buy) or money in (sell).</value></data>
   <data name="Transactions.PurchasePlaceRequiresGold" xml:space="preserve"><value>A purchase place only applies to gold transactions.</value></data>
+  <data name="Transactions.TransferDebitOnly" xml:space="preserve"><value>A destination account can only be set on a money-out transaction.</value></data>
+  <data name="Transactions.TransferSameAccount" xml:space="preserve"><value>The destination account must differ from the paying account.</value></data>
   <data name="GoldAcquisitions.DateRequired" xml:space="preserve"><value>Please choose a date.</value></data>
   <data name="GoldAcquisitions.QuantityInvalid" xml:space="preserve"><value>Quantity must be greater than zero.</value></data>
   <data name="GoldAcquisitions.UnitPriceInvalid" xml:space="preserve"><value>Unit price cannot be negative.</value></data>
@@ -535,6 +537,10 @@
   <data name="form.moreOptions" xml:space="preserve"><value>More options</value></data>
   <data name="form.payWith" xml:space="preserve"><value>Pay with</value></data>
   <data name="form.payWithOther" xml:space="preserve"><value>Other</value></data>
+  <data name="form.transferTo" xml:space="preserve"><value>Into / Paying off</value></data>
+  <data name="form.transferToAdd" xml:space="preserve"><value>+ Into one of my accounts (card bill, overdraft, top-up…)</value></data>
+  <data name="form.transferToRemove" xml:space="preserve"><value>Remove destination account</value></data>
+  <data name="form.transferToHint" xml:space="preserve"><value>The destination gets this amount back: a credit card / overdraft owes less, a regular account holds more.</value></data>
   <data name="form.cashChip" xml:space="preserve"><value>Cash</value></data>
   <data name="form.today" xml:space="preserve"><value>Today</value></data>
   <data name="form.yesterday" xml:space="preserve"><value>Yesterday</value></data>

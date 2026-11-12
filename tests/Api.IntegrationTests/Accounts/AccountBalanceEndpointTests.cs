@@ -31,7 +31,7 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
     private sealed record SnapshotBody(DateOnly Date, MoneyBody Balance);
     private sealed record AccountBody(
         Guid Id, SnapshotBody? LatestSnapshot, MoneyBody CurrentBalance, int TransactionsSinceSnapshot);
-    private sealed record ItemBody(Guid Id, Guid? AccountId);
+    private sealed record ItemBody(Guid Id, Guid? AccountId, Guid? ToAccountId);
     private sealed record SummaryBody(List<ItemBody> Items);
 
     private sealed class Ledger(HttpClient client, Guid planId, Guid categoryId)
@@ -40,7 +40,7 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
 
         public Guid PlanId => planId;
 
-        public object Payload(string date, decimal debit, decimal credit, Guid? accountId) => new
+        public object Payload(string date, decimal debit, decimal credit, Guid? accountId, Guid? toAccountId = null) => new
         {
             date,
             content = "Đóng phạt nguội xe oto",
@@ -50,12 +50,14 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
             planId,
             paymentMethod = "transfer",
             bank = "VPBank",
-            accountId
+            accountId,
+            toAccountId
         };
 
-        public async Task<Guid> AddAsync(string date, decimal debit, Guid? accountId, decimal credit = 0m)
+        public async Task<Guid> AddAsync(
+            string date, decimal debit, Guid? accountId, decimal credit = 0m, Guid? toAccountId = null)
         {
-            var response = await client.PostAsJsonAsync("/transactions", Payload(date, debit, credit, accountId));
+            var response = await client.PostAsJsonAsync("/transactions", Payload(date, debit, credit, accountId, toAccountId));
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
             return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
         }
@@ -212,5 +214,84 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
         source.CurrentBalance.Amount.ShouldBe(161_242_665m);
         source.TransactionsSinceSnapshot.ShouldBe(1);
         (await ledger.GetAsync(card)).CurrentBalance.Amount.ShouldBe(4_300_000m);
+    }
+
+    [Fact]
+    public async Task Transfer_PayingACardFromOverdraft_MovesBothAccounts()
+    {
+        Ledger ledger = await LedgerAsync("bal-xfer@example.com", "balxfer");
+        Guid overdraft = await ledger.AccountAsync("overdraft", 128_492_665m);
+        Guid card = await ledger.AccountAsync("credit_card", 24_625_403m);
+        Guid salary = await ledger.AccountAsync("checking", 1_000_000m);
+
+        Guid id = await ledger.AddAsync("2026-11-11", 16_135_984m, overdraft, toAccountId: card);
+        await ledger.AddAsync("2026-11-12", 500_000m, overdraft, toAccountId: salary); // move money to own account
+
+        (await ledger.GetAsync(overdraft)).CurrentBalance.Amount.ShouldBe(145_128_649m);
+        AccountBody paidCard = await ledger.GetAsync(card);
+        paidCard.CurrentBalance.Amount.ShouldBe(8_489_419m);
+        paidCard.TransactionsSinceSnapshot.ShouldBe(1);
+        (await ledger.GetAsync(salary)).CurrentBalance.Amount.ShouldBe(1_500_000m);
+
+        var summary = await ledger.Client.GetFromJsonAsync<SummaryBody>($"/transactions?month=2026-11&planId={ledger.PlanId}");
+        summary!.Items.Single(i => i.Id == id).ToAccountId.ShouldBe(card);
+
+        var clear = await ledger.Client.PutAsJsonAsync($"/transactions/{id}", ledger.Payload("2026-11-11", 16_135_984m, 0m, overdraft));
+        clear.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ledger.GetAsync(card)).CurrentBalance.Amount.ShouldBe(24_625_403m);
+    }
+
+    [Fact]
+    public async Task Transfer_RejectsSameAccount_MoneyIn_AndOtherUsersAccount()
+    {
+        Ledger ledger = await LedgerAsync("bal-xbad@example.com", "balxbad");
+        Guid overdraft = await ledger.AccountAsync("overdraft", 1_000_000m);
+        Guid card = await ledger.AccountAsync("credit_card", 1_000_000m);
+        Ledger other = await LedgerAsync("bal-xoth@example.com", "balxoth");
+        Guid otherCard = await other.AccountAsync("credit_card", 1_000_000m);
+
+        var same = await ledger.Client.PostAsJsonAsync("/transactions", ledger.Payload("2026-11-12", 100m, 0m, overdraft, overdraft));
+        same.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await same.Content.ReadAsStringAsync()).ShouldContain("Transactions.TransferSameAccount");
+
+        var moneyIn = await ledger.Client.PostAsJsonAsync("/transactions", ledger.Payload("2026-11-12", 0m, 100m, overdraft, card));
+        moneyIn.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await moneyIn.Content.ReadAsStringAsync()).ShouldContain("Transactions.TransferDebitOnly");
+
+        var foreign = await ledger.Client.PostAsJsonAsync("/transactions", ledger.Payload("2026-11-12", 100m, 0m, overdraft, otherCard));
+        foreign.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+
+        Guid id = await ledger.AddAsync("2026-11-12", 100m, overdraft);
+        var update = await ledger.Client.PutAsJsonAsync($"/transactions/{id}", ledger.Payload("2026-11-12", 100m, 0m, overdraft, otherCard));
+        update.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        (await other.GetAsync(otherCard)).CurrentBalance.Amount.ShouldBe(1_000_000m);
+    }
+
+    [Fact]
+    public async Task PayStatement_PaidByTransaction_SettlesStatement_WithoutMovingBalancesTwice()
+    {
+        Ledger ledger = await LedgerAsync("bal-ptx@example.com", "balptx");
+        Guid card = await ledger.AccountAsync("credit_card");
+        (await ledger.Client.PostAsJsonAsync($"/accounts/{card}/snapshots", new
+        {
+            date = "2026-11-10", balance = 90_678_586m, statementAmount = 65_652_975m, dueDate = "2026-11-13", statementPaid = false
+        })).StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid checking = await ledger.AccountAsync("checking", 70_000_000m, "2026-11-10");
+
+        // "Ghi nhận" on the card: the transaction pays from checking into the card, then settles the statement.
+        await ledger.AddAsync("2026-11-12", 65_652_975m, checking, toAccountId: card);
+        var pay = await ledger.Client.PostAsJsonAsync($"/accounts/{card}/pay-statement",
+            new { date = "2026-11-12", amount = 65_652_975m, paidByTransaction = true });
+        pay.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        AccountBody paid = await ledger.GetAsync(card);
+        paid.LatestSnapshot!.Balance.Amount.ShouldBe(25_025_611m);
+        paid.CurrentBalance.Amount.ShouldBe(25_025_611m);
+        paid.TransactionsSinceSnapshot.ShouldBe(0);
+        (await ledger.GetAsync(checking)).CurrentBalance.Amount.ShouldBe(4_347_025m);
+
+        var both = await ledger.Client.PostAsJsonAsync($"/accounts/{card}/pay-statement",
+            new { date = "2026-11-12", amount = 1m, fromAccountId = checking, paidByTransaction = true });
+        both.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 }

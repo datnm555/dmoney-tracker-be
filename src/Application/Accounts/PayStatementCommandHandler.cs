@@ -37,7 +37,7 @@ internal sealed class PayStatementCommandHandler(
             return Result.Failure(AccountErrors.NotCreditCard);
         }
 
-        if (command.FromAccountId == card.Id)
+        if (command.FromAccountId == card.Id || (command.PaidByTransaction && command.FromAccountId is not null))
         {
             return Result.Failure(AccountErrors.InvalidSourceAccount);
         }
@@ -70,7 +70,7 @@ internal sealed class PayStatementCommandHandler(
         Result<AccountSnapshot> cardReading = AccountSnapshot.Create(
             card.Id,
             cardReadingDate,
-            Math.Max(0, cardBalance.Amount - command.Amount),
+            command.PaidByTransaction ? cardBalance.Amount : Math.Max(0, cardBalance.Amount - command.Amount),
             fullyPaid ? cardLatest.StatementAmount : cardLatest.StatementAmount - command.Amount,
             cardLatest.DueDate,
             cardLatest.InstallmentRemaining,

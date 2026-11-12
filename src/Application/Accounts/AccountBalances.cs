@@ -15,6 +15,7 @@ internal static class AccountBalances
     /// reading's day but entered after it. Earlier transactions are already in the reading. Debt types
     /// owe more on money out; money types hold more on money in. <paramref name="upTo"/> stops at a day,
     /// for a new reading dated then (later-dated transactions keep moving the balance after it).
+    /// A transfer into the account (its ToAccountId) moves it the opposite way: paying a card owes less.
     /// </summary>
     public static async Task<AccountBalance> CurrentAsync(
         IApplicationDbContext dbContext,
@@ -23,7 +24,8 @@ internal static class AccountBalances
         CancellationToken cancellationToken,
         DateOnly? upTo = null)
     {
-        IQueryable<Transaction> linked = dbContext.Transactions.Where(t => t.AccountId == account.Id);
+        IQueryable<Transaction> linked = dbContext.Transactions
+            .Where(t => t.AccountId == account.Id || t.ToAccountId == account.Id);
         if (latest is not null)
         {
             DateOnly readingDate = latest.Date;
@@ -38,11 +40,15 @@ internal static class AccountBalances
         }
 
         var moves = await linked
-            .Select(t => new { Credit = t.Credit.Amount, Debit = t.Debit.Amount })
+            .Select(t => new { Credit = t.Credit.Amount, Debit = t.Debit.Amount, Incoming = t.ToAccountId == account.Id })
             .ToListAsync(cancellationToken);
 
         bool isDebt = AccountTypes.IsDebt(account.Type);
-        decimal net = moves.Sum(m => isDebt ? m.Debit - m.Credit : m.Credit - m.Debit);
+        decimal net = moves.Sum(m =>
+        {
+            decimal outgoing = isDebt ? m.Debit - m.Credit : m.Credit - m.Debit;
+            return m.Incoming ? -outgoing : outgoing;
+        });
         return new AccountBalance((latest?.Balance ?? 0) + net, moves.Count);
     }
 }

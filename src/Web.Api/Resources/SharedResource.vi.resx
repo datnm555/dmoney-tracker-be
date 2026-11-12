@@ -266,6 +266,8 @@
   <data name="Transactions.GoldQuantityInvalid" xml:space="preserve"><value>Số chỉ phải lớn hơn 0.</value></data>
   <data name="Transactions.GoldRequiresAmount" xml:space="preserve"><value>Giao dịch vàng phải có tiền ra (mua) hoặc tiền vào (bán).</value></data>
   <data name="Transactions.PurchasePlaceRequiresGold" xml:space="preserve"><value>Nơi mua chỉ áp dụng cho giao dịch vàng.</value></data>
+  <data name="Transactions.TransferDebitOnly" xml:space="preserve"><value>Chỉ chọn tài khoản nhận cho giao dịch chi.</value></data>
+  <data name="Transactions.TransferSameAccount" xml:space="preserve"><value>Tài khoản nhận phải khác tài khoản trả.</value></data>
   <data name="GoldAcquisitions.DateRequired" xml:space="preserve"><value>Vui lòng chọn ngày.</value></data>
   <data name="GoldAcquisitions.QuantityInvalid" xml:space="preserve"><value>Số chỉ phải lớn hơn 0.</value></data>
   <data name="GoldAcquisitions.UnitPriceInvalid" xml:space="preserve"><value>Đơn giá không được âm.</value></data>
@@ -535,6 +537,10 @@
   <data name="form.moreOptions" xml:space="preserve"><value>Tuỳ chọn khác</value></data>
   <data name="form.payWith" xml:space="preserve"><value>Trả bằng</value></data>
   <data name="form.payWithOther" xml:space="preserve"><value>Khác</value></data>
+  <data name="form.transferTo" xml:space="preserve"><value>Chuyển vào / Trả cho</value></data>
+  <data name="form.transferToAdd" xml:space="preserve"><value>+ Chuyển vào tài khoản của tôi (trả thẻ, trả thấu chi, nạp ví…)</value></data>
+  <data name="form.transferToRemove" xml:space="preserve"><value>Bỏ tài khoản nhận</value></data>
+  <data name="form.transferToHint" xml:space="preserve"><value>Tài khoản nhận được cộng lại số tiền này: thẻ tín dụng / thấu chi giảm dư nợ, tài khoản thường tăng số dư.</value></data>
   <data name="form.cashChip" xml:space="preserve"><value>Tiền mặt</value></data>
   <data name="form.today" xml:space="preserve"><value>Hôm nay</value></data>
   <data name="form.yesterday" xml:space="preserve"><value>Hôm qua</value></data>
