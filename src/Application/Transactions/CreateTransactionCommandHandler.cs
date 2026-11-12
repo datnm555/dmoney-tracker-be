@@ -76,6 +76,16 @@ internal sealed class CreateTransactionCommandHandler(
             }
         }
 
+        if (command.ToAccountId is { } commandToAccountId)
+        {
+            bool toAccountExists = await dbContext.Accounts.AnyAsync(
+                a => a.Id == commandToAccountId && a.UserId == userId, cancellationToken);
+            if (!toAccountExists)
+            {
+                return Result.Failure<Guid>(AccountErrors.NotFound);
+            }
+        }
+
         Result<Money> credit = Money.Create(command.CreditAmount);
         if (credit.IsFailure)
         {
@@ -129,7 +139,7 @@ internal sealed class CreateTransactionCommandHandler(
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
             command.PrepaidTransactionId, command.SubCategoryId, command.BeneficiaryId,
             command.GoldTypeId, command.GoldQuantity, command.PurchasePlaceId, command.SavingsBank,
-            command.AccountId);
+            command.AccountId, command.ToAccountId);
         if (transaction.IsFailure)
         {
             return Result.Failure<Guid>(transaction.Error);

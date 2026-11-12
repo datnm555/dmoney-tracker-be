@@ -120,5 +120,10 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .WithMany()
             .HasForeignKey(t => t.AccountId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne<Domain.Accounts.Account>()
+            .WithMany()
+            .HasForeignKey(t => t.ToAccountId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -95,7 +95,8 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                     .FirstOrDefault(),
                 t.SavingsBank,
                 false,
-                t.AccountId))
+                t.AccountId,
+                t.ToAccountId))
             .ToListAsync(cancellationToken);
 
         items = await AttachLinksAsync(items, cancellationToken);

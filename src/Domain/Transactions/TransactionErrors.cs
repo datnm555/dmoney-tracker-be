@@ -135,4 +135,12 @@ public static class TransactionErrors
     public static readonly Error PurchasePlaceRequiresGold = Error.Validation(
         "Transactions.PurchasePlaceRequiresGold",
         "A purchase place only applies to gold transactions.");
+
+    public static readonly Error TransferDebitOnly = Error.Validation(
+        "Transactions.TransferDebitOnly",
+        "A destination account can only be set on a money-out transaction.");
+
+    public static readonly Error TransferSameAccount = Error.Validation(
+        "Transactions.TransferSameAccount",
+        "The destination account must differ from the paying account.");
 }

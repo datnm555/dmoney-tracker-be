@@ -660,6 +660,9 @@ namespace Infrastructure.Database.Migrations
                     b.Property<Guid?>("SubCategoryId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ToAccountId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -682,6 +685,8 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("ReimbursedByTransactionId");
 
                     b.HasIndex("SubCategoryId");
+
+                    b.HasIndex("ToAccountId");
 
                     b.HasIndex("UserId", "Date");
 
@@ -930,6 +935,11 @@ namespace Infrastructure.Database.Migrations
                     b.HasOne("Domain.SubCategories.SubCategory", null)
                         .WithMany()
                         .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Domain.Accounts.Account", null)
+                        .WithMany()
+                        .HasForeignKey("ToAccountId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Domain.Users.User", null)
