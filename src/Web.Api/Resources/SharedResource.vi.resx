@@ -498,6 +498,7 @@
   <data name="accounts.lastUpdated" xml:space="preserve"><value>Cập nhật</value></data>
   <data name="accounts.empty" xml:space="preserve"><value>Chưa có tài khoản nào</value></data>
   <data name="accounts.noSnapshot" xml:space="preserve"><value>Chưa cập nhật số dư</value></data>
+  <data name="accounts.sinceSnapshot" xml:space="preserve"><value>giao dịch ghi sau đó</value></data>
   <data name="accounts.dueIn" xml:space="preserve"><value>đến hạn sau</value></data>
   <data name="accounts.overdue" xml:space="preserve"><value>quá hạn</value></data>
   <data name="accounts.deleteSnapshotConfirm" xml:space="preserve"><value>Xoá lần cập nhật số dư này?</value></data>

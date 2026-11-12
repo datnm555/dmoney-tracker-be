@@ -498,6 +498,7 @@
   <data name="accounts.lastUpdated" xml:space="preserve"><value>Updated</value></data>
   <data name="accounts.empty" xml:space="preserve"><value>No accounts yet</value></data>
   <data name="accounts.noSnapshot" xml:space="preserve"><value>No balance yet</value></data>
+  <data name="accounts.sinceSnapshot" xml:space="preserve"><value>transactions recorded since</value></data>
   <data name="accounts.dueIn" xml:space="preserve"><value>due in</value></data>
   <data name="accounts.overdue" xml:space="preserve"><value>overdue</value></data>
   <data name="accounts.deleteSnapshotConfirm" xml:space="preserve"><value>Delete this balance reading?</value></data>
