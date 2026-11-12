@@ -30,22 +30,18 @@ internal sealed class GetAccountsQueryHandler(
             .ToListAsync(cancellationToken);
 
         var accountIds = accounts.Select(a => a.Id).ToList();
-        List<AccountSnapshot> snapshots = await dbContext.AccountSnapshots
+        // Only each account's newest reading, picked SQL-side (the history grows every month).
+        List<AccountSnapshot> latestSnapshots = await dbContext.AccountSnapshots
             .Where(s => accountIds.Contains(s.AccountId))
-            .ToListAsync(cancellationToken);
-        Dictionary<Guid, AccountSnapshot> latest = snapshots
             .GroupBy(s => s.AccountId)
-            .ToDictionary(
-                g => g.Key,
-                g => g.OrderByDescending(s => s.Date).ThenByDescending(s => s.CreatedAt).First());
+            .Select(g => g.OrderByDescending(s => s.Date).ThenByDescending(s => s.CreatedAt).First())
+            .ToListAsync(cancellationToken);
+        var latest = latestSnapshots.ToDictionary(s => s.AccountId);
 
-        // A handful of accounts per user: one small query each for the linked transactions since its reading.
-        var balances = new Dictionary<Guid, AccountBalance>();
-        foreach (Account account in accounts)
-        {
-            balances[account.Id] = await AccountBalances.CurrentAsync(
-                dbContext, account, latest.GetValueOrDefault(account.Id), cancellationToken);
-        }
+        List<AccountMove> moves = await LinkedMovesAsync(userId, accounts, accountIds, latest, cancellationToken);
+        var balances = accounts.ToDictionary(
+            a => a.Id,
+            a => AccountBalances.Current(a, latest.GetValueOrDefault(a.Id), moves));
 
         // The type group order lives in AccountTypes.All, so sort in memory (a handful of rows per user).
         return accounts
@@ -64,8 +60,40 @@ internal sealed class GetAccountsQueryHandler(
                 a.BankName,
                 a.IsDefault,
                 new MoneyResponse(balances[a.Id].Amount, Money.DefaultCurrency),
-                balances[a.Id].TransactionsSinceSnapshot))
+                balances[a.Id].TransactionsSinceSnapshot,
+                new MoneyResponse(balances[a.Id].PaidInSinceSnapshot, Money.DefaultCurrency)))
             .ToList();
+    }
+
+    /// <summary>
+    /// One query for every transaction touching the accounts, from the oldest latest reading on
+    /// (all of them when an account has no reading yet).
+    /// </summary>
+    private async Task<List<AccountMove>> LinkedMovesAsync(
+        Guid userId,
+        List<Account> accounts,
+        List<Guid> accountIds,
+        Dictionary<Guid, AccountSnapshot> latest,
+        CancellationToken cancellationToken)
+    {
+        if (accounts.Count == 0)
+        {
+            return [];
+        }
+
+        IQueryable<Transaction> linked = dbContext.Transactions.Where(t =>
+            t.UserId == userId
+            && ((t.AccountId != null && accountIds.Contains(t.AccountId.Value))
+                || (t.ToAccountId != null && accountIds.Contains(t.ToAccountId.Value))));
+        if (accounts.All(a => latest.ContainsKey(a.Id)))
+        {
+            DateOnly from = latest.Values.Min(s => s.Date);
+            linked = linked.Where(t => t.Date >= from);
+        }
+
+        return await linked
+            .Select(t => new AccountMove(t.AccountId, t.ToAccountId, t.Date, t.CreatedAt, t.Credit.Amount, t.Debit.Amount))
+            .ToListAsync(cancellationToken);
     }
 
     private static int IndexOfType(string type)

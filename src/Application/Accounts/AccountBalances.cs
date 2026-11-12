@@ -1,54 +1,55 @@
-using Application.Abstractions.Data;
 using Domain.Accounts;
-using Domain.Transactions;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Accounts;
 
-/// <summary>An account's balance right now and how many linked transactions moved it since the latest reading.</summary>
-internal readonly record struct AccountBalance(decimal Amount, int TransactionsSinceSnapshot);
+/// <summary>
+/// An account's balance right now, how many linked transactions moved it since the latest reading,
+/// and how much was paid into it since then (for a card: paid towards the statement on that reading).
+/// </summary>
+internal readonly record struct AccountBalance(decimal Amount, int TransactionsSinceSnapshot, decimal PaidInSinceSnapshot);
+
+/// <summary>One transaction touching the owner's accounts, as far as balances care.</summary>
+internal readonly record struct AccountMove(
+    Guid? AccountId, Guid? ToAccountId, DateOnly Date, DateTime CreatedAt, decimal Credit, decimal Debit);
 
 internal static class AccountBalances
 {
     /// <summary>
     /// The latest reading plus every linked transaction recorded after it: dated later, or on the
     /// reading's day but entered after it. Earlier transactions are already in the reading. Debt types
-    /// owe more on money out; money types hold more on money in. <paramref name="upTo"/> stops at a day,
-    /// for a new reading dated then (later-dated transactions keep moving the balance after it).
-    /// A transfer into the account (its ToAccountId) moves it the opposite way: paying a card owes less.
+    /// owe more on money out; money types hold more on money in. A transfer into the account (its
+    /// ToAccountId) moves it the opposite way: paying a card owes less. Nothing is ever written back,
+    /// so editing or deleting a transaction always moves the balance back.
     /// </summary>
-    public static async Task<AccountBalance> CurrentAsync(
-        IApplicationDbContext dbContext,
-        Account account,
-        AccountSnapshot? latest,
-        CancellationToken cancellationToken,
-        DateOnly? upTo = null)
+    public static AccountBalance Current(Account account, AccountSnapshot? latest, IEnumerable<AccountMove> moves)
     {
-        IQueryable<Transaction> linked = dbContext.Transactions
-            .Where(t => t.AccountId == account.Id || t.ToAccountId == account.Id);
-        if (latest is not null)
-        {
-            DateOnly readingDate = latest.Date;
-            DateTime readingCreatedAt = latest.CreatedAt;
-            linked = linked.Where(t =>
-                t.Date > readingDate || (t.Date == readingDate && t.CreatedAt > readingCreatedAt));
-        }
-
-        if (upTo is { } lastDay)
-        {
-            linked = linked.Where(t => t.Date <= lastDay);
-        }
-
-        var moves = await linked
-            .Select(t => new { Credit = t.Credit.Amount, Debit = t.Debit.Amount, Incoming = t.ToAccountId == account.Id })
-            .ToListAsync(cancellationToken);
-
         bool isDebt = AccountTypes.IsDebt(account.Type);
-        decimal net = moves.Sum(m =>
+        decimal net = 0m;
+        decimal paidIn = 0m;
+        int count = 0;
+        foreach (AccountMove move in moves)
         {
-            decimal outgoing = isDebt ? m.Debit - m.Credit : m.Credit - m.Debit;
-            return m.Incoming ? -outgoing : outgoing;
-        });
-        return new AccountBalance((latest?.Balance ?? 0) + net, moves.Count);
+            bool incoming = move.ToAccountId == account.Id;
+            if ((!incoming && move.AccountId != account.Id) || !IsAfter(move, latest))
+            {
+                continue;
+            }
+
+            decimal outgoing = isDebt ? move.Debit - move.Credit : move.Credit - move.Debit;
+            net += incoming ? -outgoing : outgoing;
+            if (incoming)
+            {
+                paidIn += move.Debit;
+            }
+
+            count++;
+        }
+
+        return new AccountBalance((latest?.Balance ?? 0m) + net, count, paidIn);
     }
+
+    private static bool IsAfter(AccountMove move, AccountSnapshot? latest) =>
+        latest is null
+        || move.Date > latest.Date
+        || (move.Date == latest.Date && move.CreatedAt > latest.CreatedAt);
 }

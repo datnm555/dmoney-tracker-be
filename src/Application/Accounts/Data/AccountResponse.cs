@@ -7,4 +7,5 @@ public sealed record AccountResponse(
     MoneyResponse? CreditLimit, int? StatementDay, int? DueDay,
     decimal? InterestRatePercent, AccountSnapshotResponse? LatestSnapshot,
     string? BankName = null, bool IsDefault = false,
-    MoneyResponse? CurrentBalance = null, int TransactionsSinceSnapshot = 0);
+    MoneyResponse? CurrentBalance = null, int TransactionsSinceSnapshot = 0,
+    MoneyResponse? StatementPaidAmount = null);

@@ -30,7 +30,8 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
     private sealed record MoneyBody(decimal Amount, string Currency);
     private sealed record SnapshotBody(DateOnly Date, MoneyBody Balance);
     private sealed record AccountBody(
-        Guid Id, SnapshotBody? LatestSnapshot, MoneyBody CurrentBalance, int TransactionsSinceSnapshot);
+        Guid Id, SnapshotBody? LatestSnapshot, MoneyBody CurrentBalance, int TransactionsSinceSnapshot,
+        MoneyBody StatementPaidAmount);
     private sealed record ItemBody(Guid Id, Guid? AccountId, Guid? ToAccountId);
     private sealed record SummaryBody(List<ItemBody> Items);
 
@@ -192,31 +193,6 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
     }
 
     [Fact]
-    public async Task PayStatement_FromSource_KeepsTransactionsSinceItsReading()
-    {
-        Ledger ledger = await LedgerAsync("bal-pay@example.com", "balpay");
-        Guid card = await ledger.AccountAsync("credit_card");
-        (await ledger.Client.PostAsJsonAsync($"/accounts/{card}/snapshots", new
-        {
-            date = "2026-11-10", balance = 20_000_000m, statementAmount = 16_000_000m, dueDate = "2026-11-15", statementPaid = false
-        })).StatusCode.ShouldBe(HttpStatusCode.Created);
-        Guid overdraft = await ledger.AccountAsync("overdraft", 144_492_665m, "2026-11-10");
-        await ledger.AddAsync("2026-11-11", 700_000m, overdraft);
-        await ledger.AddAsync("2026-11-11", 300_000m, card);
-        await ledger.AddAsync("2026-11-20", 50_000m, overdraft); // dated after the payment: still moves it later
-
-        var pay = await ledger.Client.PostAsJsonAsync($"/accounts/{card}/pay-statement",
-            new { date = "2026-11-12", amount = 16_000_000m, fromAccountId = overdraft });
-        pay.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-
-        AccountBody source = await ledger.GetAsync(overdraft);
-        source.LatestSnapshot!.Balance.Amount.ShouldBe(161_192_665m);
-        source.CurrentBalance.Amount.ShouldBe(161_242_665m);
-        source.TransactionsSinceSnapshot.ShouldBe(1);
-        (await ledger.GetAsync(card)).CurrentBalance.Amount.ShouldBe(4_300_000m);
-    }
-
-    [Fact]
     public async Task Transfer_PayingACardFromOverdraft_MovesBothAccounts()
     {
         Ledger ledger = await LedgerAsync("bal-xfer@example.com", "balxfer");
@@ -268,9 +244,9 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
     }
 
     [Fact]
-    public async Task PayStatement_PaidByTransaction_SettlesStatement_WithoutMovingBalancesTwice()
+    public async Task StatementPaidAmount_ComesFromTransfersIntoTheCard_AndUndoesWithThem()
     {
-        Ledger ledger = await LedgerAsync("bal-ptx@example.com", "balptx");
+        Ledger ledger = await LedgerAsync("bal-paid@example.com", "balpaid");
         Guid card = await ledger.AccountAsync("credit_card");
         (await ledger.Client.PostAsJsonAsync($"/accounts/{card}/snapshots", new
         {
@@ -278,20 +254,22 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
         })).StatusCode.ShouldBe(HttpStatusCode.Created);
         Guid checking = await ledger.AccountAsync("checking", 70_000_000m, "2026-11-10");
 
-        // "Ghi nhận" on the card: the transaction pays from checking into the card, then settles the statement.
-        await ledger.AddAsync("2026-11-12", 65_652_975m, checking, toAccountId: card);
-        var pay = await ledger.Client.PostAsJsonAsync($"/accounts/{card}/pay-statement",
-            new { date = "2026-11-12", amount = 65_652_975m, paidByTransaction = true });
-        pay.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        // A swipe on the card is new spending, not a payment.
+        await ledger.AddAsync("2026-11-11", 200_000m, card);
+        Guid part = await ledger.AddAsync("2026-11-12", 40_000_000m, checking, toAccountId: card);
+        await ledger.AddAsync("2026-11-13", 25_652_975m, checking, toAccountId: card);
 
         AccountBody paid = await ledger.GetAsync(card);
-        paid.LatestSnapshot!.Balance.Amount.ShouldBe(25_025_611m);
-        paid.CurrentBalance.Amount.ShouldBe(25_025_611m);
-        paid.TransactionsSinceSnapshot.ShouldBe(0);
+        paid.StatementPaidAmount.Amount.ShouldBe(65_652_975m);
+        paid.CurrentBalance.Amount.ShouldBe(25_225_611m);
+        paid.LatestSnapshot!.Balance.Amount.ShouldBe(90_678_586m);
         (await ledger.GetAsync(checking)).CurrentBalance.Amount.ShouldBe(4_347_025m);
 
-        var both = await ledger.Client.PostAsJsonAsync($"/accounts/{card}/pay-statement",
-            new { date = "2026-11-12", amount = 1m, fromAccountId = checking, paidByTransaction = true });
-        both.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        // Deleting a payment puts both the debt and the open statement back.
+        (await ledger.Client.DeleteAsync($"/transactions/{part}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        AccountBody reopened = await ledger.GetAsync(card);
+        reopened.StatementPaidAmount.Amount.ShouldBe(25_652_975m);
+        reopened.CurrentBalance.Amount.ShouldBe(65_225_611m);
+        (await ledger.GetAsync(checking)).CurrentBalance.Amount.ShouldBe(44_347_025m);
     }
 }

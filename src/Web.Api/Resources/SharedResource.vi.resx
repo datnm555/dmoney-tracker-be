@@ -294,10 +294,6 @@
   <data name="Accounts.SnapshotNotFound" xml:space="preserve"><value>Không tìm thấy bản ghi số dư.</value></data>
   <data name="Accounts.BankNameTooLong" xml:space="preserve"><value>Tên ngân hàng tối đa 100 ký tự.</value></data>
   <data name="Accounts.NoteTooLong" xml:space="preserve"><value>Ghi chú tối đa 500 ký tự.</value></data>
-  <data name="Accounts.InvalidPaymentAmount" xml:space="preserve"><value>Số tiền trả phải lớn hơn 0.</value></data>
-  <data name="Accounts.NotCreditCard" xml:space="preserve"><value>Chỉ trả được sao kê của thẻ tín dụng.</value></data>
-  <data name="Accounts.NoBalance" xml:space="preserve"><value>Hãy cập nhật số dư thẻ trước khi trả sao kê.</value></data>
-  <data name="Accounts.InvalidSourceAccount" xml:space="preserve"><value>Thẻ không thể tự trả sao kê của chính nó.</value></data>
   <data name="RecurringPayments.NotFound" xml:space="preserve"><value>Không tìm thấy khoản định kỳ.</value></data>
   <data name="RecurringPayments.NameRequired" xml:space="preserve"><value>Vui lòng nhập tên khoản.</value></data>
   <data name="RecurringPayments.NameTooLong" xml:space="preserve"><value>Tên tối đa 100 ký tự.</value></data>
@@ -485,13 +481,13 @@
   <data name="accounts.installmentRemaining" xml:space="preserve"><value>Trả góp còn lại</value></data>
   <data name="accounts.statementPaid" xml:space="preserve"><value>Đã thanh toán kỳ này</value></data>
   <data name="accounts.statementUntracked" xml:space="preserve"><value>Sao kê gồm chi tiêu chưa ghi giao dịch</value></data>
-  <data name="accounts.payFrom" xml:space="preserve"><value>Trả từ tài khoản</value></data>
-  <data name="accounts.payFromNone" xml:space="preserve"><value>Không cập nhật tài khoản khác</value></data>
+  <data name="accounts.statementRemaining" xml:space="preserve"><value>Còn phải trả</value></data>
+  <data name="accounts.statementPaidSoFar" xml:space="preserve"><value>Đã trả trong kỳ</value></data>
   <data name="accounts.closeMonth" xml:space="preserve"><value>Chốt tháng</value></data>
-  <data name="accounts.closeMonthHint" xml:space="preserve"><value>Nhập số dư cuối kỳ — phần chênh lệch được ghi thành 1 giao dịch gộp.</value></data>
+  <data name="accounts.closeMonthHint" xml:space="preserve"><value>Nhập số dư cuối kỳ — phần chênh lệch được ghi thành 1 giao dịch gộp. Số dư đầu kỳ đã gồm mọi giao dịch đã ghi với tài khoản này (kể cả tiền chuyển vào), đừng nhập lại.</value></data>
   <data name="accounts.openingBalance" xml:space="preserve"><value>Số dư đầu kỳ</value></data>
   <data name="accounts.closingBalance" xml:space="preserve"><value>Số dư cuối kỳ</value></data>
-  <data name="accounts.topUps" xml:space="preserve"><value>Tiền nạp vào trong kỳ</value></data>
+  <data name="accounts.topUps" xml:space="preserve"><value>Tiền nạp vào chưa ghi giao dịch</value></data>
   <data name="accounts.spent" xml:space="preserve"><value>Đã chi trong kỳ</value></data>
   <data name="accounts.received" xml:space="preserve"><value>Thu thêm trong kỳ</value></data>
   <data name="accounts.closeContent" xml:space="preserve"><value>Tổng hợp</value></data>
