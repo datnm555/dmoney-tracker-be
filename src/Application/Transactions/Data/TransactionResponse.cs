@@ -30,7 +30,8 @@ public sealed record TransactionResponse(
     Guid? PurchasePlaceId = null,
     string? PurchasePlaceName = null,
     string? SavingsBank = null,
-    bool ExcludedFromStats = false);
+    bool ExcludedFromStats = false,
+    Guid? AccountId = null);
 
 public sealed record LinkedTransactionResponse(
     Guid Id,

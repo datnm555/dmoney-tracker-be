@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.Accounts;
 using Domain.Beneficiaries;
 using Domain.Categories;
 using Domain.GoldTypes;
@@ -60,6 +61,16 @@ internal sealed class UpdateTransactionCommandHandler(
             if (!purchasePlaceExists)
             {
                 return Result.Failure(PurchasePlaceErrors.NotFound);
+            }
+        }
+
+        if (command.AccountId is { } commandAccountId)
+        {
+            bool accountExists = await dbContext.Accounts.AnyAsync(
+                a => a.Id == commandAccountId && a.UserId == userId, cancellationToken);
+            if (!accountExists)
+            {
+                return Result.Failure(AccountErrors.NotFound);
             }
         }
 
@@ -142,7 +153,8 @@ internal sealed class UpdateTransactionCommandHandler(
             command.PaymentMethod, command.CardType, command.Bank, command.IsAdvance,
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
             command.PrepaidTransactionId, command.SubCategoryId, command.BeneficiaryId,
-            command.GoldTypeId, command.GoldQuantity, command.PurchasePlaceId, command.SavingsBank);
+            command.GoldTypeId, command.GoldQuantity, command.PurchasePlaceId, command.SavingsBank,
+            command.AccountId);
         if (updated.IsFailure)
         {
             return updated;

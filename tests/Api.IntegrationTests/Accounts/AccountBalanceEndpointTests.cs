@@ -1,0 +1,216 @@
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using Api.IntegrationTests.Infrastructure;
+using Shouldly;
+
+namespace Api.IntegrationTests.Accounts;
+
+/// <summary>Transactions paid with an account ("Trả bằng") move its current balance after the latest reading.</summary>
+public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
+{
+    private async Task<HttpClient> CreateAuthenticatedClientAsync(string email, string username)
+    {
+        HttpClient client = factory.CreateClient();
+        var register = await client.PostAsJsonAsync("/users/register",
+            new { email, username, displayName = "Test User", password = "password123" });
+        register.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var login = await client.PostAsJsonAsync("/users/login",
+            new { identifier = email, password = "password123" });
+        login.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await login.Content.ReadFromJsonAsync<LoginBody>();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", body!.Token);
+        return client;
+    }
+
+    private sealed record LoginBody(string Token);
+    private sealed record CreatedBody(Guid Id);
+    private sealed record PlanBody(Guid Id);
+    private sealed record MoneyBody(decimal Amount, string Currency);
+    private sealed record SnapshotBody(DateOnly Date, MoneyBody Balance);
+    private sealed record AccountBody(
+        Guid Id, SnapshotBody? LatestSnapshot, MoneyBody CurrentBalance, int TransactionsSinceSnapshot);
+    private sealed record ItemBody(Guid Id, Guid? AccountId);
+    private sealed record SummaryBody(List<ItemBody> Items);
+
+    private sealed class Ledger(HttpClient client, Guid planId, Guid categoryId)
+    {
+        public HttpClient Client => client;
+
+        public Guid PlanId => planId;
+
+        public object Payload(string date, decimal debit, decimal credit, Guid? accountId) => new
+        {
+            date,
+            content = "Đóng phạt nguội xe oto",
+            creditAmount = credit,
+            debitAmount = debit,
+            categoryId,
+            planId,
+            paymentMethod = "transfer",
+            bank = "VPBank",
+            accountId
+        };
+
+        public async Task<Guid> AddAsync(string date, decimal debit, Guid? accountId, decimal credit = 0m)
+        {
+            var response = await client.PostAsJsonAsync("/transactions", Payload(date, debit, credit, accountId));
+            response.StatusCode.ShouldBe(HttpStatusCode.Created);
+            return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+        }
+
+        public async Task<Guid> AccountAsync(string type, decimal? balance = null, string date = "2026-11-11")
+        {
+            var response = await client.PostAsJsonAsync("/accounts", new { name = $"Acc {type}", type });
+            response.StatusCode.ShouldBe(HttpStatusCode.Created);
+            Guid id = (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+            if (balance is { } amount)
+            {
+                await SnapshotAsync(id, amount, date);
+            }
+
+            return id;
+        }
+
+        public async Task SnapshotAsync(Guid accountId, decimal balance, string date = "2026-11-11") =>
+            (await client.PostAsJsonAsync($"/accounts/{accountId}/snapshots", new { date, balance, statementPaid = false }))
+                .StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        public async Task<AccountBody> GetAsync(Guid accountId) =>
+            (await client.GetFromJsonAsync<List<AccountBody>>("/accounts"))!.Single(a => a.Id == accountId);
+    }
+
+    private async Task<Ledger> LedgerAsync(string email, string username)
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync(email, username);
+        Guid planId = (await client.GetFromJsonAsync<List<PlanBody>>("/plans"))![0].Id;
+        var category = await client.PostAsJsonAsync("/categories", new { name = $"Phạt {username}", icon = "car" });
+        category.StatusCode.ShouldBe(HttpStatusCode.Created);
+        return new Ledger(client, planId, (await category.Content.ReadFromJsonAsync<CreatedBody>())!.Id);
+    }
+
+    [Fact]
+    public async Task Overdraft_LinkedTransactionsAfterReading_MoveCurrentBalance()
+    {
+        Ledger ledger = await LedgerAsync("bal-od@example.com", "balod");
+        Guid overdraft = await ledger.AccountAsync("overdraft", 144_492_665m);
+
+        await ledger.AddAsync("2026-11-10", 1_000_000m, overdraft); // dated before the reading: already in it
+        await ledger.AddAsync("2026-11-11", 700_000m, overdraft); // same day, entered after the reading
+        await ledger.AddAsync("2026-11-12", 0m, overdraft, credit: 200_000m); // money in pays the debt down
+        await ledger.AddAsync("2026-11-12", 9_999_999m, null); // not paid with the account
+
+        AccountBody account = await ledger.GetAsync(overdraft);
+        account.LatestSnapshot!.Balance.Amount.ShouldBe(144_492_665m);
+        account.CurrentBalance.Amount.ShouldBe(144_992_665m);
+        account.TransactionsSinceSnapshot.ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task MoneyAccount_SpendsOnDebit_GainsOnCredit_AndNewReadingAbsorbsThem()
+    {
+        Ledger ledger = await LedgerAsync("bal-chk@example.com", "balchk");
+        Guid checking = await ledger.AccountAsync("checking", 5_000_000m);
+
+        await ledger.AddAsync("2026-11-11", 1_500_000m, checking);
+        await ledger.AddAsync("2026-11-12", 0m, checking, credit: 300_000m);
+        (await ledger.GetAsync(checking)).CurrentBalance.Amount.ShouldBe(3_800_000m);
+
+        await ledger.SnapshotAsync(checking, 3_750_000m, "2026-11-12");
+        AccountBody account = await ledger.GetAsync(checking);
+        account.CurrentBalance.Amount.ShouldBe(3_750_000m);
+        account.TransactionsSinceSnapshot.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task AccountWithoutReading_StartsFromZero()
+    {
+        Ledger ledger = await LedgerAsync("bal-none@example.com", "balnone");
+        Guid card = await ledger.AccountAsync("credit_card");
+
+        await ledger.AddAsync("2026-11-01", 450_000m, card);
+
+        AccountBody account = await ledger.GetAsync(card);
+        account.LatestSnapshot.ShouldBeNull();
+        account.CurrentBalance.Amount.ShouldBe(450_000m);
+        account.TransactionsSinceSnapshot.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task Update_MovesAndClearsTheLink_AndListReturnsIt()
+    {
+        Ledger ledger = await LedgerAsync("bal-upd@example.com", "balupd");
+        Guid overdraft = await ledger.AccountAsync("overdraft", 100_000_000m);
+        Guid checking = await ledger.AccountAsync("checking", 10_000_000m);
+        Guid id = await ledger.AddAsync("2026-11-12", 700_000m, overdraft);
+
+        var move = await ledger.Client.PutAsJsonAsync($"/transactions/{id}", ledger.Payload("2026-11-12", 700_000m, 0m, checking));
+        move.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ledger.GetAsync(overdraft)).CurrentBalance.Amount.ShouldBe(100_000_000m);
+        (await ledger.GetAsync(checking)).CurrentBalance.Amount.ShouldBe(9_300_000m);
+
+        var summary = await ledger.Client.GetFromJsonAsync<SummaryBody>($"/transactions?month=2026-11&planId={ledger.PlanId}");
+        summary!.Items.Single(i => i.Id == id).AccountId.ShouldBe(checking);
+
+        var clear = await ledger.Client.PutAsJsonAsync($"/transactions/{id}", ledger.Payload("2026-11-12", 700_000m, 0m, null));
+        clear.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ledger.GetAsync(checking)).CurrentBalance.Amount.ShouldBe(10_000_000m);
+    }
+
+    [Fact]
+    public async Task DeletingTheAccount_KeepsTheTransaction_Unlinked()
+    {
+        Ledger ledger = await LedgerAsync("bal-del@example.com", "baldel");
+        Guid overdraft = await ledger.AccountAsync("overdraft", 1_000_000m);
+        Guid id = await ledger.AddAsync("2026-11-12", 700_000m, overdraft);
+
+        (await ledger.Client.DeleteAsync($"/accounts/{overdraft}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        var summary = await ledger.Client.GetFromJsonAsync<SummaryBody>($"/transactions?month=2026-11&planId={ledger.PlanId}");
+        summary!.Items.Single(i => i.Id == id).AccountId.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task OtherUsersAccount_Returns404_OnCreateAndUpdate()
+    {
+        Ledger owner = await LedgerAsync("bal-own@example.com", "balown");
+        Guid ownerAccount = await owner.AccountAsync("overdraft", 1_000_000m);
+        Ledger intruder = await LedgerAsync("bal-int@example.com", "balint");
+
+        var create = await intruder.Client.PostAsJsonAsync("/transactions", intruder.Payload("2026-11-12", 700_000m, 0m, ownerAccount));
+        create.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        (await create.Content.ReadAsStringAsync()).ShouldContain("Accounts.NotFound");
+
+        Guid id = await intruder.AddAsync("2026-11-12", 700_000m, null);
+        var update = await intruder.Client.PutAsJsonAsync($"/transactions/{id}", intruder.Payload("2026-11-12", 700_000m, 0m, ownerAccount));
+        update.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+
+        (await owner.GetAsync(ownerAccount)).CurrentBalance.Amount.ShouldBe(1_000_000m);
+    }
+
+    [Fact]
+    public async Task PayStatement_FromSource_KeepsTransactionsSinceItsReading()
+    {
+        Ledger ledger = await LedgerAsync("bal-pay@example.com", "balpay");
+        Guid card = await ledger.AccountAsync("credit_card");
+        (await ledger.Client.PostAsJsonAsync($"/accounts/{card}/snapshots", new
+        {
+            date = "2026-11-10", balance = 20_000_000m, statementAmount = 16_000_000m, dueDate = "2026-11-15", statementPaid = false
+        })).StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid overdraft = await ledger.AccountAsync("overdraft", 144_492_665m, "2026-11-10");
+        await ledger.AddAsync("2026-11-11", 700_000m, overdraft);
+        await ledger.AddAsync("2026-11-11", 300_000m, card);
+        await ledger.AddAsync("2026-11-20", 50_000m, overdraft); // dated after the payment: still moves it later
+
+        var pay = await ledger.Client.PostAsJsonAsync($"/accounts/{card}/pay-statement",
+            new { date = "2026-11-12", amount = 16_000_000m, fromAccountId = overdraft });
+        pay.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        AccountBody source = await ledger.GetAsync(overdraft);
+        source.LatestSnapshot!.Balance.Amount.ShouldBe(161_192_665m);
+        source.CurrentBalance.Amount.ShouldBe(161_242_665m);
+        source.TransactionsSinceSnapshot.ShouldBe(1);
+        (await ledger.GetAsync(card)).CurrentBalance.Amount.ShouldBe(4_300_000m);
+    }
+}
