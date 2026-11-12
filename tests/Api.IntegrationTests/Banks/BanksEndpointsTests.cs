@@ -89,6 +89,43 @@ public sealed class BanksEndpointsTests(ApiTestFactory factory) : IClassFixture<
     }
 
     [Fact]
+    public async Task Rename_FollowsToAccountsTransactionsAndRecurringItems_OfThatUserOnly()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("bank-cascade@example.com", "bankcascade");
+        HttpClient other = await CreateAuthenticatedClientAsync("bank-cascade2@example.com", "bankcascade2");
+        Guid vpb = await CreateBankAsync(client, "VPB");
+        Guid categoryId = await CreateCategoryAsync(client, $"Cascade {Guid.NewGuid():N}"[..20], "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+
+        var account = await client.PostAsJsonAsync("/accounts", new { name = "Lương", type = "checking", bankName = "VPB" });
+        account.StatusCode.ShouldBe(HttpStatusCode.Created);
+        (await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-11-12", content = "Grab", creditAmount = 0m, debitAmount = 50_000m,
+            categoryId, planId, paymentMethod = "transfer", bank = "VPB"
+        })).StatusCode.ShouldBe(HttpStatusCode.Created);
+        (await client.PostAsJsonAsync("/recurring-payments", new
+        {
+            name = "Tiền nhà", amount = 1m, isVariable = false, dayOfMonth = 5, paymentMethod = "transfer", bank = "VPB"
+        })).StatusCode.ShouldBe(HttpStatusCode.Created);
+        (await other.PostAsJsonAsync("/accounts", new { name = "Khác", type = "checking", bankName = "VPB" }))
+            .StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        (await client.PutAsJsonAsync($"/banks/{vpb}", new { name = "VPBank" })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        (await client.GetFromJsonAsync<List<NamedBankBody>>("/accounts"))!.Single().BankName.ShouldBe("VPBank");
+        var summary = await client.GetFromJsonAsync<TxSummaryBody>($"/transactions?month=2026-11&planId={planId}");
+        summary!.Items.Single().Bank.ShouldBe("VPBank");
+        (await client.GetFromJsonAsync<List<RecurringBankBody>>("/recurring-payments"))!.Single().Bank.ShouldBe("VPBank");
+        (await other.GetFromJsonAsync<List<NamedBankBody>>("/accounts"))!.Single().BankName.ShouldBe("VPB");
+    }
+
+    internal sealed record NamedBankBody(Guid Id, string? BankName);
+    internal sealed record TxItemBody(Guid Id, string? Bank);
+    internal sealed record TxSummaryBody(List<TxItemBody> Items);
+    internal sealed record RecurringBankBody(Guid Id, string? Bank);
+
+    [Fact]
     public async Task SetDefault_Switches_WithoutDuplicating()
     {
         HttpClient client = await CreateAuthenticatedClientAsync("bank-default@example.com", "bankdefault");
