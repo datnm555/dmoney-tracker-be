@@ -481,6 +481,12 @@
   <data name="accounts.installmentRemaining" xml:space="preserve"><value>Installments remaining</value></data>
   <data name="accounts.statementPaid" xml:space="preserve"><value>Statement paid</value></data>
   <data name="accounts.statementUntracked" xml:space="preserve"><value>Statement includes spending not recorded as transactions</value></data>
+  <data name="accounts.untrackedDebt" xml:space="preserve"><value>Unrecorded old debt</value></data>
+  <data name="accounts.untrackedDebtHint" xml:space="preserve"><value>Card debt from before you started this book, with no spending recorded for it. Later card payments pay this off first and count as spending.</value></data>
+  <data name="accounts.untrackedDebtRemaining" xml:space="preserve"><value>Old debt left</value></data>
+  <data name="form.oldDebtLeft" xml:space="preserve"><value>Unrecorded old debt left</value></data>
+  <data name="form.oldDebtSplitHint" xml:space="preserve"><value>The part paying off old debt counts as spending (Credit card payment); the rest is a transfer between accounts.</value></data>
+  <data name="form.oldDebtPart" xml:space="preserve"><value>old debt</value></data>
   <data name="accounts.statementRemaining" xml:space="preserve"><value>Left to pay</value></data>
   <data name="accounts.statementPaidSoFar" xml:space="preserve"><value>Paid so far</value></data>
   <data name="accounts.closeMonth" xml:space="preserve"><value>Close month</value></data>

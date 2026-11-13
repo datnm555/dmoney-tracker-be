@@ -31,7 +31,7 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
     private sealed record SnapshotBody(DateOnly Date, MoneyBody Balance);
     private sealed record AccountBody(
         Guid Id, SnapshotBody? LatestSnapshot, MoneyBody CurrentBalance, int TransactionsSinceSnapshot,
-        MoneyBody StatementPaidAmount);
+        MoneyBody StatementPaidAmount, MoneyBody? UntrackedDebt = null, MoneyBody? UntrackedDebtRemaining = null);
     private sealed record ItemBody(Guid Id, Guid? AccountId, Guid? ToAccountId);
     private sealed record SummaryBody(List<ItemBody> Items);
 
@@ -326,6 +326,75 @@ public sealed class AccountBalanceEndpointTests(ApiTestFactory factory) : IClass
             rows = new[] { new { date = "2026-11-11", content = "X", amount = 1m, note = (string?)null } }
         });
         foreign.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    private static object CardBody(decimal? untrackedDebt, string type = "credit_card") =>
+        new { name = "Thẻ tín dụng Diamond", type, untrackedDebt };
+
+    [Fact]
+    public async Task UntrackedDebt_PaymentsEnteredAfterItPayItOffFirst()
+    {
+        Ledger ledger = await LedgerAsync("bal-old@example.com", "balold");
+        Guid overdraft = await ledger.AccountAsync("overdraft", 144_492_665m);
+        Guid card = await ledger.AccountAsync("credit_card", 24_625_403m);
+        // Paid before the old debt was stated: already left out of it.
+        await ledger.AddAsync("2026-11-11", 16_135_984m, overdraft, toAccountId: card);
+
+        (await ledger.Client.PutAsJsonAsync($"/accounts/{card}", CardBody(8_489_419m)))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        AccountBody stated = await ledger.GetAsync(card);
+        stated.UntrackedDebt!.Amount.ShouldBe(8_489_419m);
+        stated.UntrackedDebtRemaining!.Amount.ShouldBe(8_489_419m);
+
+        await ledger.AddAsync("2026-11-12", 132_000m, card); // a new swipe is not a payment
+        Guid first = await ledger.AddAsync("2026-11-20", 5_000_000m, overdraft, toAccountId: card);
+        (await ledger.GetAsync(card)).UntrackedDebtRemaining!.Amount.ShouldBe(3_489_419m);
+
+        // Restating the same amount keeps counting from when it was first set.
+        (await ledger.Client.PutAsJsonAsync($"/accounts/{card}", CardBody(8_489_419m)))
+            .StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ledger.GetAsync(card)).UntrackedDebtRemaining!.Amount.ShouldBe(3_489_419m);
+
+        await ledger.AddAsync("2026-12-11", 3_621_419m, overdraft, toAccountId: card);
+        (await ledger.GetAsync(card)).UntrackedDebtRemaining!.Amount.ShouldBe(0m);
+
+        // Deleting a payment puts the old debt back.
+        (await ledger.Client.DeleteAsync($"/transactions/{first}")).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        (await ledger.GetAsync(card)).UntrackedDebtRemaining!.Amount.ShouldBe(4_868_000m);
+    }
+
+    [Fact]
+    public async Task UntrackedDebt_CountsPaymentsDatedBeforeTheLatestReading()
+    {
+        Ledger ledger = await LedgerAsync("bal-oldr@example.com", "baloldr");
+        Guid checking = await ledger.AccountAsync("checking", 10_000_000m, "2026-11-12");
+        var create = await ledger.Client.PostAsJsonAsync("/accounts", CardBody(2_000_000m));
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid card = (await create.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+        await ledger.SnapshotAsync(card, 2_000_000m, "2026-11-12");
+
+        // Entered late but dated before the readings: inside them, yet it still paid old debt.
+        await ledger.AddAsync("2026-11-10", 500_000m, checking, toAccountId: card);
+
+        AccountBody account = await ledger.GetAsync(card);
+        account.CurrentBalance.Amount.ShouldBe(2_000_000m);
+        account.UntrackedDebtRemaining!.Amount.ShouldBe(1_500_000m);
+    }
+
+    [Fact]
+    public async Task UntrackedDebt_OnlyOnCards_AndNeverNegative()
+    {
+        Ledger ledger = await LedgerAsync("bal-oldx@example.com", "baloldx");
+        var overdraft = await ledger.Client.PostAsJsonAsync("/accounts", CardBody(1_000_000m, "overdraft"));
+        overdraft.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid id = (await overdraft.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+        AccountBody account = await ledger.GetAsync(id);
+        account.UntrackedDebt.ShouldBeNull();
+        account.UntrackedDebtRemaining.ShouldBeNull();
+
+        var negative = await ledger.Client.PostAsJsonAsync("/accounts", CardBody(-1m));
+        negative.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await negative.Content.ReadAsStringAsync()).ShouldContain("Accounts.NegativeAmount");
     }
 
     private sealed record AccountTxBody(Guid Id, MoneyBody Effect, bool Incoming, bool AfterSnapshot);

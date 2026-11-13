@@ -48,6 +48,23 @@ internal static class AccountBalances
         return new AccountBalance((latest?.Balance ?? 0m) + net, count, paidIn);
     }
 
+    /// <summary>
+    /// What is left of a card's untracked debt: every payment into the card entered after the debt was
+    /// last set pays it off first. Null when the account carries none.
+    /// </summary>
+    public static decimal? UntrackedDebtRemaining(Account account, IEnumerable<AccountMove> moves)
+    {
+        if (account.UntrackedDebt is not { } debt || account.UntrackedDebtSince is not { } since)
+        {
+            return null;
+        }
+
+        decimal paid = moves
+            .Where(m => m.ToAccountId == account.Id && m.CreatedAt > since)
+            .Sum(m => m.Debit);
+        return Math.Max(0m, debt - paid);
+    }
+
     private static bool IsAfter(AccountMove move, AccountSnapshot? latest) =>
         latest is null
         || move.Date > latest.Date

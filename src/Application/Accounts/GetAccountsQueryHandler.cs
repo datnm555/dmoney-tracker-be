@@ -61,13 +61,18 @@ internal sealed class GetAccountsQueryHandler(
                 a.IsDefault,
                 new MoneyResponse(balances[a.Id].Amount, Money.DefaultCurrency),
                 balances[a.Id].TransactionsSinceSnapshot,
-                new MoneyResponse(balances[a.Id].PaidInSinceSnapshot, Money.DefaultCurrency)))
+                new MoneyResponse(balances[a.Id].PaidInSinceSnapshot, Money.DefaultCurrency),
+                a.UntrackedDebt is { } debt ? new MoneyResponse(debt, Money.DefaultCurrency) : null,
+                AccountBalances.UntrackedDebtRemaining(a, moves) is { } left
+                    ? new MoneyResponse(left, Money.DefaultCurrency)
+                    : null))
             .ToList();
     }
 
     /// <summary>
     /// One query for every transaction touching the accounts, from the oldest latest reading on
-    /// (all of them when an account has no reading yet).
+    /// (all of them when an account has no reading yet), plus any entered after a card's untracked
+    /// debt was set, whatever their date.
     /// </summary>
     private async Task<List<AccountMove>> LinkedMovesAsync(
         Guid userId,
@@ -88,7 +93,10 @@ internal sealed class GetAccountsQueryHandler(
         if (accounts.All(a => latest.ContainsKey(a.Id)))
         {
             DateOnly from = latest.Values.Min(s => s.Date);
-            linked = linked.Where(t => t.Date >= from);
+            DateTime? debtSince = accounts.Min(a => a.UntrackedDebtSince);
+            linked = debtSince is { } since
+                ? linked.Where(t => t.Date >= from || t.CreatedAt > since)
+                : linked.Where(t => t.Date >= from);
         }
 
         return await linked
