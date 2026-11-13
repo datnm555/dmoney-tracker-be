@@ -8,4 +8,5 @@ public sealed record AccountResponse(
     decimal? InterestRatePercent, AccountSnapshotResponse? LatestSnapshot,
     string? BankName = null, bool IsDefault = false,
     MoneyResponse? CurrentBalance = null, int TransactionsSinceSnapshot = 0,
-    MoneyResponse? StatementPaidAmount = null);
+    MoneyResponse? StatementPaidAmount = null,
+    MoneyResponse? UntrackedDebt = null, MoneyResponse? UntrackedDebtRemaining = null);

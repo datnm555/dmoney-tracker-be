@@ -10,7 +10,8 @@ namespace Application.Accounts;
 
 internal sealed class UpdateAccountCommandHandler(
     IApplicationDbContext dbContext,
-    IUserContext userContext)
+    IUserContext userContext,
+    IDateTimeProvider clock)
     : ICommandHandler<UpdateAccountCommand>
 {
     public async Task<Result> Handle(UpdateAccountCommand command, CancellationToken cancellationToken)
@@ -39,6 +40,12 @@ internal sealed class UpdateAccountCommandHandler(
         if (updated.IsFailure)
         {
             return updated;
+        }
+
+        Result debt = account.SetUntrackedDebt(command.UntrackedDebt, clock.UtcNow);
+        if (debt.IsFailure)
+        {
+            return debt;
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);

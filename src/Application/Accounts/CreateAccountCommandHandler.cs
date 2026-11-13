@@ -9,7 +9,8 @@ namespace Application.Accounts;
 
 internal sealed class CreateAccountCommandHandler(
     IApplicationDbContext dbContext,
-    IUserContext userContext)
+    IUserContext userContext,
+    IDateTimeProvider clock)
     : ICommandHandler<CreateAccountCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(CreateAccountCommand command, CancellationToken cancellationToken)
@@ -32,6 +33,12 @@ internal sealed class CreateAccountCommandHandler(
         if (account.IsFailure)
         {
             return Result.Failure<Guid>(account.Error);
+        }
+
+        Result debt = account.Value.SetUntrackedDebt(command.UntrackedDebt, clock.UtcNow);
+        if (debt.IsFailure)
+        {
+            return Result.Failure<Guid>(debt.Error);
         }
 
         dbContext.Accounts.Add(account.Value);

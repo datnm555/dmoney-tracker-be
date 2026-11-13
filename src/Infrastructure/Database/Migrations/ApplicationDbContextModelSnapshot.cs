@@ -69,6 +69,12 @@ namespace Infrastructure.Database.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<decimal?>("UntrackedDebt")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime?>("UntrackedDebtSince")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 

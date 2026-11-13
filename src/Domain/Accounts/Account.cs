@@ -32,6 +32,16 @@ public sealed class Account : AuditedEntity
     /// <summary>Preselected in the transaction form's "Trả bằng"; at most one per user, possibly none.</summary>
     public bool IsDefault { get; private set; }
 
+    /// <summary>
+    /// Credit cards only: debt from before the owner started the book, whose spending was never recorded.
+    /// Payments into the card entered after <see cref="UntrackedDebtSince"/> pay it off first, and
+    /// that part counts as spending ("Trả thẻ tín dụng"); the rest is a transfer.
+    /// </summary>
+    public decimal? UntrackedDebt { get; private set; }
+
+    /// <summary>When <see cref="UntrackedDebt"/> was last set (UTC); payments entered after it reduce it.</summary>
+    public DateTime? UntrackedDebtSince { get; private set; }
+
     public static Result<Account> Create(
         Guid userId,
         string name,
@@ -74,6 +84,27 @@ public sealed class Account : AuditedEntity
         DueDay = scratch.DueDay;
         InterestRatePercent = scratch.InterestRatePercent;
         BankName = scratch.BankName;
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Restates the card's untracked debt as of <paramref name="utcNow"/>; an unchanged amount keeps
+    /// its date. Zero or null clears it, and so does any non-card type.
+    /// </summary>
+    public Result SetUntrackedDebt(decimal? amount, DateTime utcNow)
+    {
+        if (amount is < 0)
+        {
+            return Result.Failure(AccountErrors.NegativeAmount);
+        }
+
+        decimal? debt = Type == AccountTypes.CreditCard && amount is > 0 ? amount : null;
+        if (debt != UntrackedDebt)
+        {
+            UntrackedDebt = debt;
+            UntrackedDebtSince = debt is null ? null : utcNow;
+        }
+
         return Result.Success();
     }
 

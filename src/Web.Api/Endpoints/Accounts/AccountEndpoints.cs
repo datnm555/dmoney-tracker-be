@@ -54,7 +54,8 @@ internal sealed class UpdateAccount : IEndpoint
         int? StatementDay,
         int? DueDay,
         decimal? InterestRatePercent,
-        string? BankName = null);
+        string? BankName = null,
+        decimal? UntrackedDebt = null);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -75,7 +76,8 @@ internal sealed class UpdateAccount : IEndpoint
                     request.StatementDay,
                     request.DueDay,
                     request.InterestRatePercent,
-                    request.BankName),
+                    request.BankName,
+                    request.UntrackedDebt),
                 cancellationToken);
 
             return result.ToHttpResult(localizer);
