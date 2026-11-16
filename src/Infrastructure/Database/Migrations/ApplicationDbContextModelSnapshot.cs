@@ -671,6 +671,9 @@ namespace Infrastructure.Database.Migrations
                     b.Property<Guid?>("SubCategoryId")
                         .HasColumnType("uuid");
 
+                    b.Property<TimeOnly?>("Time")
+                        .HasColumnType("time without time zone");
+
                     b.Property<Guid?>("ToAccountId")
                         .HasColumnType("uuid");
 

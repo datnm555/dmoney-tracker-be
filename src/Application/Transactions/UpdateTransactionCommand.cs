@@ -28,4 +28,5 @@ public sealed record UpdateTransactionCommand(
     Guid? PurchasePlaceId = null,
     string? SavingsBank = null,
     Guid? AccountId = null,
-    Guid? ToAccountId = null) : ICommand;
+    Guid? ToAccountId = null,
+    TimeOnly? Time = null) : ICommand;

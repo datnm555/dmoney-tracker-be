@@ -48,6 +48,8 @@ internal sealed class GetTransactionsByMonthQueryHandler(
 
         List<TransactionResponse> items = await monthScope
             .OrderByDescending(t => t.Date)
+            .ThenBy(t => t.Time == null)
+            .ThenByDescending(t => t.Time)
             .ThenByDescending(t => t.CreatedAt)
             .Select(t => new TransactionResponse(
                 t.Id,
@@ -96,7 +98,10 @@ internal sealed class GetTransactionsByMonthQueryHandler(
                 t.SavingsBank,
                 false,
                 t.AccountId,
-                t.ToAccountId))
+                t.ToAccountId,
+                null,
+                null,
+                t.Time))
             .ToListAsync(cancellationToken);
 
         items = await AttachLinksAsync(items, cancellationToken);

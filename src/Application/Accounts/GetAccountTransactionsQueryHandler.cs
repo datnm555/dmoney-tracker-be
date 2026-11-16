@@ -44,6 +44,8 @@ internal sealed class GetAccountTransactionsQueryHandler(
         var rows = await dbContext.Transactions
             .Where(t => t.UserId == userId && (t.AccountId == account.Id || t.ToAccountId == account.Id))
             .OrderByDescending(t => t.Date)
+            .ThenBy(t => t.Time == null)
+            .ThenByDescending(t => t.Time)
             .ThenByDescending(t => t.CreatedAt)
             .Take(MaxRows)
             .Select(t => new

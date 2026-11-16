@@ -34,7 +34,8 @@ public sealed record TransactionResponse(
     Guid? AccountId = null,
     Guid? ToAccountId = null,
     MoneyResponse? CountedCredit = null,
-    MoneyResponse? CountedDebit = null);
+    MoneyResponse? CountedDebit = null,
+    TimeOnly? Time = null);
 
 public sealed record LinkedTransactionResponse(
     Guid Id,
