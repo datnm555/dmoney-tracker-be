@@ -79,6 +79,7 @@ có `Credit` (tiền vào) và `Debit` (tiền ra) → 4 cột `*_amount` / `*_c
 | `CardType` | varchar(20) | null | chỉ khi `PaymentMethod = 'card'`; mã: `visa`, `credit` |
 | `Bank` | varchar(100) | null | tên ngân hàng tự do (tối đa 100 ký tự) |
 | `SavingsBank` | varchar(100) | null | nơi gửi tiết kiệm, tự do (tối đa 100 ký tự) — khác `Bank` (tài khoản nguồn) |
+| `Time` | time | null | giờ giao dịch (phút); trong 1 ngày xếp giờ mới nhất trước, không có giờ xếp cuối, rồi `CreatedAt`. Migration `AddTransactionTime` điền giờ cũ = giờ nhập (Asia/Ho_Chi_Minh) |
 
 Index: `IX_transactions_UserId_Date` btree (`UserId`, `Date`) — phục vụ query theo tháng.
 

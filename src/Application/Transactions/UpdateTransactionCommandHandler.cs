@@ -164,7 +164,7 @@ internal sealed class UpdateTransactionCommandHandler(
             command.IsPrepaid, command.PrepaidFrom, command.PrepaidTo,
             command.PrepaidTransactionId, command.SubCategoryId, command.BeneficiaryId,
             command.GoldTypeId, command.GoldQuantity, command.PurchasePlaceId, command.SavingsBank,
-            command.AccountId, command.ToAccountId);
+            command.AccountId, command.ToAccountId, command.Time);
         if (updated.IsFailure)
         {
             return updated;

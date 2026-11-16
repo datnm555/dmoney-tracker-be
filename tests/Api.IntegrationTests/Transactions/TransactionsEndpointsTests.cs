@@ -1142,11 +1142,81 @@ public sealed class TransactionsEndpointsTests(ApiTestFactory factory) : IClassF
         summary!.Items.Single(i => i.Id == transactionId).SavingsBank.ShouldBeNull();
     }
 
+    [Fact]
+    public async Task Time_OrdersWithinDay_NewestTimeFirst_UntimedLast()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("txtime-order@example.com", "txtimeorder");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi TxTime", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+
+        async Task<Guid> Create(string content, string? time, string date = "2026-08-14")
+        {
+            var response = await client.PostAsJsonAsync("/transactions", new
+            {
+                date, content, creditAmount = 0m, debitAmount = 1_000m,
+                note = (string?)null, categoryId, planId, time
+            });
+            response.StatusCode.ShouldBe(HttpStatusCode.Created);
+            return (await response.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+        }
+
+        // Entered in this order, but happened in a different one.
+        await Create("Không giờ", null);
+        await Create("Chiều", "15:10");
+        await Create("Sáng", "08:05:59");
+        await Create("Trưa", "12:00");
+        await Create("Hôm sau", "07:00", "2026-08-15");
+
+        var summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        summary!.Items.Select(i => i.Content).ShouldBe(["Hôm sau", "Chiều", "Trưa", "Sáng", "Không giờ"]);
+        summary.Items.Single(i => i.Content == "Sáng").Time.ShouldBe("08:05:00");
+        summary.Items.Single(i => i.Content == "Không giờ").Time.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Time_UpdatePath_ThreadsField()
+    {
+        HttpClient client = await CreateAuthenticatedClientAsync("txtime-upd@example.com", "txtimeupd");
+        Guid categoryId = await CreateCategoryAsync(client, "Chi TxTimeUpd", "tag");
+        Guid planId = await GetDefaultPlanIdAsync(client);
+
+        var create = await client.PostAsJsonAsync("/transactions", new
+        {
+            date = "2026-08-14", content = "Đăng kiểm", creditAmount = 0m, debitAmount = 1_000m,
+            note = (string?)null, categoryId, planId, time = "10:00"
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        Guid transactionId = (await create.Content.ReadFromJsonAsync<CreatedBody>())!.Id;
+
+        // PUT with a new time — guards the explicit request-DTO threading.
+        (await client.PutAsJsonAsync($"/transactions/{transactionId}", new
+        {
+            date = "2026-08-14", content = "Đăng kiểm", creditAmount = 0m, debitAmount = 1_000m,
+            note = (string?)null, categoryId, planId, time = "07:30"
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        var summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        summary!.Items.Single(i => i.Id == transactionId).Time.ShouldBe("07:30:00");
+
+        // PUT without a time clears it.
+        (await client.PutAsJsonAsync($"/transactions/{transactionId}", new
+        {
+            date = "2026-08-14", content = "Đăng kiểm", creditAmount = 0m, debitAmount = 1_000m,
+            note = (string?)null, categoryId, planId
+        })).StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        summary = await (await client.GetAsync($"/transactions?month=2026-08&planId={planId}"))
+            .Content.ReadFromJsonAsync<SummaryBody>();
+        summary!.Items.Single(i => i.Id == transactionId).Time.ShouldBeNull();
+    }
+
     internal sealed record ImportedBody(int Imported);
     internal sealed record LoginBody(string Token, Guid UserId, string Email, string Username, string DisplayName);
     internal sealed record CreatedBody(Guid Id);
     internal sealed record MoneyBody(decimal Amount, string Currency);
     internal sealed record ItemBody(Guid Id, string Date, string Content, MoneyBody Credit, MoneyBody Debit, string? Note, Guid? CategoryId, string PaymentMethod, string? CardType, string? Bank, bool IsAdvance, List<Guid> AdvanceTransactionIds, bool IsPrepaid, string? PrepaidFrom, string? PrepaidTo, Guid? PrepaidTransactionId, Guid? BeneficiaryId, string? BeneficiaryName,
-        Guid? GoldTypeId, string? GoldTypeName, decimal? GoldQuantity, Guid? PurchasePlaceId, string? PurchasePlaceName, string? SavingsBank);
+        Guid? GoldTypeId, string? GoldTypeName, decimal? GoldQuantity, Guid? PurchasePlaceId, string? PurchasePlaceName, string? SavingsBank, string? Time = null);
     internal sealed record SummaryBody(List<ItemBody> Items, MoneyBody TotalCredit, MoneyBody TotalDebit, MoneyBody Balance);
 }

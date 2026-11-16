@@ -26,4 +26,5 @@ public sealed record CreateTransactionCommand(
     Guid? PurchasePlaceId = null,
     string? SavingsBank = null,
     Guid? AccountId = null,
-    Guid? ToAccountId = null) : ICommand<Guid>;
+    Guid? ToAccountId = null,
+    TimeOnly? Time = null) : ICommand<Guid>;

@@ -76,6 +76,12 @@ public sealed class Transaction : AuditedEntity
     /// </summary>
     public Guid? ToAccountId { get; private set; }
 
+    /// <summary>
+    /// Time of day the money moved ("Giờ"), minute precision. Optional; within a day transactions are
+    /// listed newest time first, rows without a time last.
+    /// </summary>
+    public TimeOnly? Time { get; private set; }
+
     public static Result<Transaction> Create(
         Guid userId,
         Guid planId,
@@ -100,7 +106,8 @@ public sealed class Transaction : AuditedEntity
         Guid? purchasePlaceId = null,
         string? savingsBank = null,
         Guid? accountId = null,
-        Guid? toAccountId = null)
+        Guid? toAccountId = null,
+        TimeOnly? time = null)
     {
         if (date == default)
         {
@@ -190,7 +197,8 @@ public sealed class Transaction : AuditedEntity
             PurchasePlaceId = purchasePlaceId,
             SavingsBank = normalizedSavingsBank,
             AccountId = accountId,
-            ToAccountId = toAccountId
+            ToAccountId = toAccountId,
+            Time = TruncateToMinute(time)
         };
 
         return transaction;
@@ -219,7 +227,8 @@ public sealed class Transaction : AuditedEntity
         Guid? purchasePlaceId = null,
         string? savingsBank = null,
         Guid? accountId = null,
-        Guid? toAccountId = null)
+        Guid? toAccountId = null,
+        TimeOnly? time = null)
     {
         if (date == default)
         {
@@ -306,9 +315,13 @@ public sealed class Transaction : AuditedEntity
         SavingsBank = normalizedSavingsBank;
         AccountId = accountId;
         ToAccountId = toAccountId;
+        Time = TruncateToMinute(time);
 
         return Result.Success();
     }
+
+    private static TimeOnly? TruncateToMinute(TimeOnly? time) =>
+        time is { } t ? new TimeOnly(t.Hour, t.Minute) : null;
 
     private static Result ValidateTransfer(Money debit, Guid? accountId, Guid? toAccountId)
     {
