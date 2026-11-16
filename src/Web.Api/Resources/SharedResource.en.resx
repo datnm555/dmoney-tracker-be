@@ -41,6 +41,7 @@
   <data name="summary.excludedBadge" xml:space="preserve"><value>Not counted</value></data>
   <data name="form.date" xml:space="preserve"><value>Date</value></data>
   <data name="form.time" xml:space="preserve"><value>Time</value></data>
+  <data name="form.timeInvalid" xml:space="preserve"><value>Invalid time — use 24-hour format, 00:00 to 23:59.</value></data>
   <data name="form.content" xml:space="preserve"><value>Content</value></data>
   <data name="form.credit" xml:space="preserve"><value>Credit amount (money in)</value></data>
   <data name="form.debit" xml:space="preserve"><value>Debit amount (money out)</value></data>
