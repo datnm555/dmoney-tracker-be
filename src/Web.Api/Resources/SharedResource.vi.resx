@@ -41,7 +41,7 @@
   <data name="summary.excludedBadge" xml:space="preserve"><value>Không tính</value></data>
   <data name="form.date" xml:space="preserve"><value>Ngày</value></data>
   <data name="form.time" xml:space="preserve"><value>Giờ</value></data>
-  <data name="form.timeInvalid" xml:space="preserve"><value>Giờ không hợp lệ — nhập theo 24 giờ, từ 00:00 đến 23:59.</value></data>
+  <data name="form.minute" xml:space="preserve"><value>Phút</value></data>
   <data name="form.content" xml:space="preserve"><value>Nội dung</value></data>
   <data name="form.credit" xml:space="preserve"><value>Số tiền ghi có (tiền vào)</value></data>
   <data name="form.debit" xml:space="preserve"><value>Số tiền ghi nợ (tiền ra)</value></data>
