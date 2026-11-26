@@ -499,6 +499,12 @@
   <data name="accounts.spent" xml:space="preserve"><value>Spent this period</value></data>
   <data name="accounts.received" xml:space="preserve"><value>Received this period</value></data>
   <data name="accounts.closeContent" xml:space="preserve"><value>Summary</value></data>
+  <data name="accounts.diffSpend" xml:space="preserve"><value>Record the difference as spending (Other)</value></data>
+  <data name="accounts.diffSpendHint" xml:space="preserve"><value>The balance is lower than the book. Untick if you are only correcting a wrong reading.</value></data>
+  <data name="accounts.diffContent" xml:space="preserve"><value>Balance difference</value></data>
+  <data name="accounts.diffIncomeWarning" xml:space="preserve"><value>The balance is higher than the book with no income recorded. Create a transaction for it</value></data>
+  <data name="accounts.diffRecordIncome" xml:space="preserve"><value>Record income</value></data>
+  <data name="accounts.saveBalanceOnly" xml:space="preserve"><value>Save balance only</value></data>
   <data name="accounts.continue" xml:space="preserve"><value>Continue</value></data>
   <data name="accounts.note" xml:space="preserve"><value>Note</value></data>
   <data name="accounts.lastUpdated" xml:space="preserve"><value>Updated</value></data>
