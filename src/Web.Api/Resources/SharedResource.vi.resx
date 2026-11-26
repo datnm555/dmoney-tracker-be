@@ -499,6 +499,12 @@
   <data name="accounts.spent" xml:space="preserve"><value>Đã chi trong kỳ</value></data>
   <data name="accounts.received" xml:space="preserve"><value>Thu thêm trong kỳ</value></data>
   <data name="accounts.closeContent" xml:space="preserve"><value>Tổng hợp</value></data>
+  <data name="accounts.diffSpend" xml:space="preserve"><value>Ghi giao dịch chi phần chênh lệch (Khác)</value></data>
+  <data name="accounts.diffSpendHint" xml:space="preserve"><value>Số dư thấp hơn sổ sách. Bỏ chọn nếu bạn chỉ sửa một số dư nhập sai.</value></data>
+  <data name="accounts.diffContent" xml:space="preserve"><value>Chênh lệch số dư</value></data>
+  <data name="accounts.diffIncomeWarning" xml:space="preserve"><value>Số dư cao hơn sổ sách nhưng chưa có giao dịch ghi có. Hãy tạo giao dịch cho khoản này</value></data>
+  <data name="accounts.diffRecordIncome" xml:space="preserve"><value>Tạo giao dịch ghi có</value></data>
+  <data name="accounts.saveBalanceOnly" xml:space="preserve"><value>Chỉ lưu số dư</value></data>
   <data name="accounts.continue" xml:space="preserve"><value>Tiếp tục</value></data>
   <data name="accounts.note" xml:space="preserve"><value>Ghi chú</value></data>
   <data name="accounts.lastUpdated" xml:space="preserve"><value>Cập nhật</value></data>
